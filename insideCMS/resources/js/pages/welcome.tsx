@@ -2,6 +2,15 @@ import { dashboard, info, login, register, reviews } from '@/routes';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+  } from "@/components/ui/carousel"
+
+
 export default function Welcome() {
     const { auth } = usePage<SharedData>().props;
 
@@ -14,8 +23,8 @@ export default function Welcome() {
                     rel="stylesheet"
                 />
             </Head>
-            <div className="flex min-h-screen flex-col items-center bg-[#FDFDFC] p-6 text-[#1b1b18] lg:justify-center lg:p-8 dark:bg-[#0a0a0a]">
-                <header className="mb-6 w-full max-w-[335px] text-sm not-has-[nav]:hidden lg:max-w-4xl">
+            <div className="dark:bg-[#0a0a0a]">
+                <header className="mb-6 w-full py-6 max-w-[335px] text-sm not-has-[nav]:hidden lg:max-w-4xl">
                     <nav className="flex items-center justify-end gap-4">
                         <Link
                             href={reviews()}
@@ -56,12 +65,19 @@ export default function Welcome() {
                         )}
                     </nav>
                 </header>
-                <div className="flex w-full items-center justify-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0">
-                    <main className="flex w-full max-w-[335px] flex-col-reverse lg:max-w-4xl lg:flex-row">
-
-                    </main>
-                </div>
-                <div className="hidden h-14.5 lg:block"></div>
+                <main className="py-6">
+                    <div className="container">
+                        <Carousel>
+                            <CarouselContent>
+                                <CarouselItem>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.</CarouselItem>
+                                <CarouselItem>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.</CarouselItem>
+                                <CarouselItem>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.</CarouselItem>
+                            </CarouselContent>
+                            <CarouselPrevious />
+                            <CarouselNext />
+                        </Carousel>
+                    </div>
+                </main>
             </div>
         </>
     );

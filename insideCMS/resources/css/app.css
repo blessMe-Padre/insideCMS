@@ -141,3 +141,7 @@
         @apply bg-background text-foreground;
     }
 }
+
+.container {
+    @apply mx-auto max-w-[1200px];
+}
