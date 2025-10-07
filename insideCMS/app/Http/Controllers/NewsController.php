@@ -18,7 +18,7 @@ class NewsController extends Controller
     public function adminShow()
     {
         return Inertia::render('admin/news-admin', [
-            // 'news' => News::all(),
+            'news' => \App\Models\News::all(),
         ]);
     }
 
@@ -27,7 +27,7 @@ class NewsController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('admin/add-news-admin');
     }
 
     /**
@@ -35,7 +35,36 @@ class NewsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'excerpt' => 'required|string',
+            'slug' => 'required|string|max:255|unique:news,slug',
+            'time_to_read' => 'required|integer|min:1',
+            'is_published' => 'boolean',
+            'images.*' => 'nullable|image|max:2048',
+        ]);
+
+        $news = \App\Models\News::create([
+            'title' => $validated['title'],
+            'content' => $validated['content'],
+            'excerpt' => $validated['excerpt'],
+            'slug' => $validated['slug'],
+            'time_to_read' => $validated['time_to_read'],
+            'is_published' => $validated['is_published'] ?? false,
+        ]);
+
+        if ($request->hasFile('images')) {
+            $imagePaths = [];
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('news', 'public');
+                $imagePaths[] = $path;
+            }
+            $news->images = $imagePaths;
+            $news->save();
+        }
+
+        return redirect()->back()->with('success', 'Новость успешно создана');
     }
 
     /**

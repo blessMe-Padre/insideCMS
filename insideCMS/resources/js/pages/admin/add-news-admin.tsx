@@ -1,27 +1,8 @@
 import AppLayout from '@/layouts/app-layout';
-import { dashboard } from '@/routes';
+import { dashboard, newsAdmin, addNewsAdmin } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import NewsForm from '@/components/form/NewsForm';
-
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-  } from "@/components/ui/accordion"
-
-interface NewsAdminPageProps {
-    news: News[];
-}
-
-interface News {
-    id: number;
-    title: string;
-    content: string;
-    created_at: string;
-    updated_at: string;
-}
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -30,16 +11,20 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: 'Новости',
-        href: '/news-admin',
+        href: newsAdmin().url,
+    },
+    {
+        title: 'Добавить новость',
+        href: addNewsAdmin().url,
     },
 ];
 
-export default function NewsAdmin({ news }: NewsAdminPageProps) {
+export default function AddNewsAdmin() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="px-4 py-8">
-                <Head title="Отзывы">
+                <Head title="Добавить новость">
                     <link rel="preconnect" href="https://fonts.bunny.net" />
                     <link
                         href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
@@ -47,8 +32,9 @@ export default function NewsAdmin({ news }: NewsAdminPageProps) {
                     />
                 </Head>
 
-                <h1 className="text-3xl font-bold text-white mb-4">Все новости</h1>
+                <h1 className="text-3xl font-bold text-white mb-4">Добавить новость</h1>
                 
+                <NewsForm />
             </div>
 
        </AppLayout>

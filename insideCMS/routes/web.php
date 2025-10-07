@@ -21,6 +21,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('reviews/{review}', [App\Http\Controllers\ReviewsController::class, 'destroy'])->name('reviews.destroy');
 
     Route::get('news-admin', [App\Http\Controllers\NewsController::class, 'adminShow'])->name('news-admin');
+    Route::get('add-news-admin', [App\Http\Controllers\NewsController::class, 'create'])->name('add-news-admin');
+    Route::post('news', [App\Http\Controllers\NewsController::class, 'store'])->name('news.store');
 });
 
 Route::get('reviews', [App\Http\Controllers\ReviewsController::class, 'show'])->name('reviews');

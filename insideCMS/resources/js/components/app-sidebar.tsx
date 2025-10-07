@@ -10,11 +10,12 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, info, reviewsAdmin, newsAdmin } from '@/routes';
+import { dashboard, info, reviewsAdmin, newsAdmin} from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, MessageCircle, Newspaper, User } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, MessageCircle, Newspaper, Plus, User } from 'lucide-react';
 import AppLogo from './app-logo';
+import { addNewsAdmin } from '@/routes';
 
 const mainNavItems: NavItem[] = [
     {
@@ -36,6 +37,19 @@ const mainNavItems: NavItem[] = [
         title: 'Новости',
         href: newsAdmin(),
         icon: Newspaper,
+
+        subItems: [
+            {
+                title: 'Все новости',
+                href: newsAdmin(),
+                icon: Newspaper,
+            },
+            {
+                title: 'Добавить новость',
+                href: addNewsAdmin(),
+                icon: Plus,
+            },
+        ],
     },
 ];
 

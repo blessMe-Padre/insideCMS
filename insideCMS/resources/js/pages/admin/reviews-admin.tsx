@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
  * TODO: Добавить кнопку для удаления отзыва
  * TODO: Добавить панинацию
  * TODO: Добавить сортировку
+ * TODO: Добавить выбор обображения отзывов (плитка, список, таблица)
  */
 
 const breadcrumbs: BreadcrumbItem[] = [
