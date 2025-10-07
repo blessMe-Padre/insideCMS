@@ -14,7 +14,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Роуты для админки
     Route::get('info', [App\Http\Controllers\InfoController::class, 'show'])->name('info');
+
     Route::get('reviews-admin', [App\Http\Controllers\ReviewsController::class, 'adminShow'])->name('reviews-admin');
+    Route::patch('reviews/{review}/publish', [App\Http\Controllers\ReviewsController::class, 'publish'])->name('reviews.publish');
+    Route::patch('reviews/{review}/unpublish', [App\Http\Controllers\ReviewsController::class, 'unpublish'])->name('reviews.unpublish');
+    Route::delete('reviews/{review}', [App\Http\Controllers\ReviewsController::class, 'destroy'])->name('reviews.destroy');
+
+    Route::get('news-admin', [App\Http\Controllers\NewsController::class, 'adminShow'])->name('news-admin');
 });
 
 Route::get('reviews', [App\Http\Controllers\ReviewsController::class, 'show'])->name('reviews');

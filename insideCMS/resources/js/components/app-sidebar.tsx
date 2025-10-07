@@ -10,10 +10,10 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, info, reviewsAdmin } from '@/routes';
+import { dashboard, info, reviewsAdmin, newsAdmin } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, MessageCircle, User } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, MessageCircle, Newspaper, User } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -31,6 +31,11 @@ const mainNavItems: NavItem[] = [
         title: 'Отзывы ',
         href: reviewsAdmin(),
         icon: MessageCircle,
+    },
+    {
+        title: 'Новости',
+        href: newsAdmin(),
+        icon: Newspaper,
     },
 ];
 

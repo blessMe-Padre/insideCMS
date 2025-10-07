@@ -13,7 +13,7 @@ class InfoController extends Controller
      */
     public function show(Request $request): Response
     {
-        return Inertia::render('info', [
+        return Inertia::render('admin/info', [
             'user' => $request->user(),
         ]);
     }

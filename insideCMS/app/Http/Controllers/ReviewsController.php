@@ -19,13 +19,13 @@ class ReviewsController extends Controller
 
     public function adminShow(Request $request): Response
     {
-        return Inertia::render('reviews-admin', [
+        return Inertia::render('admin/reviews-admin', [
             'reviews' => Review::all(),
         ]);
     }
 
     /**
-     * Store a new review.
+     * Создание нового отзыва
      */
     public function store(Request $request)
     {
@@ -37,9 +37,27 @@ class ReviewsController extends Controller
 
         Review::create([
             ...$validated,
-            'is_published' => true, // По умолчанию отзыв опубликован
+            'is_published' => false, // По умолчанию отзыв не опубликован
         ]);
 
         return redirect()->route('reviews')->with('success', 'Отзыв успешно отправлен и будет рассмотрен администратором.');
+    }
+
+    public function publish(Request $request, Review $review)
+    {
+        $review->update(['is_published' => true]);
+        return redirect()->back()->with('success', 'Отзыв опубликован.');
+    }
+
+    public function unpublish(Request $request, Review $review)
+    {
+        $review->update(['is_published' => false]);
+        return redirect()->back()->with('success', 'Отзыв снят с публикации.');
+    }
+
+    public function destroy(Request $request, Review $review)
+    {
+        $review->delete();
+        return redirect()->back()->with('success', 'Отзыв удален.');
     }
 }
