@@ -9,7 +9,7 @@ interface InfoPageProps {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Консоль',
         href: dashboard().url,
     },
     {
@@ -21,7 +21,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Info({ user }: InfoPageProps) {
 
     return (
-        <>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Информация о пользователе" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="grid auto-rows-min gap-4">
@@ -103,6 +103,6 @@ export default function Info({ user }: InfoPageProps) {
                     )}
                 </div>
             </div>
-        </>
+        </AppLayout>
     );
 }

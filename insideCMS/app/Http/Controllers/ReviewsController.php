@@ -17,6 +17,13 @@ class ReviewsController extends Controller
         ]);
     }
 
+    public function adminShow(Request $request): Response
+    {
+        return Inertia::render('reviews-admin', [
+            'reviews' => Review::all(),
+        ]);
+    }
+
     /**
      * Store a new review.
      */
