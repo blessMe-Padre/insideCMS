@@ -20,9 +20,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('reviews/{review}/unpublish', [App\Http\Controllers\ReviewsController::class, 'unpublish'])->name('reviews.unpublish');
     Route::delete('reviews/{review}', [App\Http\Controllers\ReviewsController::class, 'destroy'])->name('reviews.destroy');
 
+    Route::post('news', [App\Http\Controllers\NewsController::class, 'store'])->name('news.store');
     Route::get('news-admin', [App\Http\Controllers\NewsController::class, 'adminShow'])->name('news-admin');
     Route::get('add-news-admin', [App\Http\Controllers\NewsController::class, 'create'])->name('add-news-admin');
-    Route::post('news', [App\Http\Controllers\NewsController::class, 'store'])->name('news.store');
+    Route::delete('news/{news}', [App\Http\Controllers\NewsController::class, 'destroy'])->name('news.destroy');
 });
 
 Route::get('reviews', [App\Http\Controllers\ReviewsController::class, 'show'])->name('reviews');

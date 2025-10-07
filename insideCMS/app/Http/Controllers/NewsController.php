@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\News;
 
 class NewsController extends Controller
 {
@@ -94,8 +95,9 @@ class NewsController extends Controller
     /**
      * Удалить указанный ресурс из хранилища.
      */
-    public function destroy(string $id)
+    public function destroy(News $news)
     {
-        //
+        $news->delete();
+        return redirect()->back()->with('success', 'Новость удалена.');
     }
 }
