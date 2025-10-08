@@ -1,4 +1,3 @@
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
@@ -10,12 +9,11 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, info, reviewsAdmin, newsAdmin} from '@/routes';
+import { dashboard, info, reviewsAdmin, newsAdmin, addNewsAdmin, articlesAdmin, addArticleAdmin} from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, List, MessageCircle, Newspaper, Plus, User } from 'lucide-react';
+import { LayoutGrid, List, MessageCircle, Newspaper, Plus, User } from 'lucide-react';
 import AppLogo from './app-logo';
-import { addNewsAdmin } from '@/routes';
 
 const mainNavItems: NavItem[] = [
     {
@@ -53,34 +51,21 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Статьи',
-        href: '/',
+        href: articlesAdmin(),
         icon: Newspaper,
 
         subItems: [
             {
                 title: 'Все статьи',
-                href: '/',
+                href: articlesAdmin(),
                 icon: List,
             },
             {
                 title: 'Добавить статью',
-                href: '/',
+                href: addArticleAdmin(),
                 icon: Plus,
             },
         ],
-    },
-];
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
     },
 ];
 
@@ -104,7 +89,6 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

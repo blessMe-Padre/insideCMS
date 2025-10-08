@@ -20,7 +20,7 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: dashboard().url,
     },
     {
-        title: 'Отзывы администратора',
+        title: 'Отзывы',
         href: reviewsAdmin().url,
     },
 ];
