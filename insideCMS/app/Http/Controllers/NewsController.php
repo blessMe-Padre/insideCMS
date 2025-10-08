@@ -58,7 +58,7 @@ class NewsController extends Controller
         if ($request->hasFile('images')) {
             $imagePaths = [];
             foreach ($request->file('images') as $image) {
-                $path = $image->store('news', 'public');
+                $path = $image->store('', 'public');
                 $imagePaths[] = $path;
             }
             $news->images = $imagePaths;
@@ -113,7 +113,7 @@ class NewsController extends Controller
         if ($request->hasFile('images')) {
             $imagePaths = [];
             foreach ($request->file('images') as $image) {
-                $path = $image->store('news', 'public');
+                $path = $image->store('', 'public');
                 $imagePaths[] = $path;
             }
             $news->images = $imagePaths;

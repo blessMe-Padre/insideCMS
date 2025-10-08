@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import { createEditor, Descendant, Editor, Element as SlateElement, Transforms } from 'slate'
 import { Slate, Editable, withReact, useSlate, RenderLeafProps, RenderElementProps } from 'slate-react'
 import { BaseEditor } from 'slate'
@@ -51,8 +51,8 @@ interface TextEditorProps {
 export default function TextEditor({ value = '', onChange }: TextEditorProps) {
   const [editor] = useState(() => withReact(createEditor()))
   
-  const initialValue = useMemo(() => {
-    if (!value) {
+  const getInitialValue = (val: string): Descendant[] => {
+    if (!val) {
       return [
         {
           type: 'paragraph',
@@ -61,24 +61,66 @@ export default function TextEditor({ value = '', onChange }: TextEditorProps) {
       ] as Descendant[]
     }
     try {
-      const parsed = JSON.parse(value)
+      const parsed = JSON.parse(val)
       return Array.isArray(parsed) ? parsed : [
         {
           type: 'paragraph',
-          children: [{ text: value }],
+          children: [{ text: val }],
         },
       ]
     } catch {
       return [
         {
           type: 'paragraph',
-          children: [{ text: value }],
+          children: [{ text: val }],
         },
       ]
     }
-  }, [value])
+  }
+  
+  const initialValue = useMemo(() => getInitialValue(value), [value])
+  
+  const [editorValue, setEditorValue] = useState<Descendant[]>(initialValue)
+
+  useEffect(() => {
+    const newValue = getInitialValue(value)
+    const isEditorEmpty = editor.children.length === 1 && 
+      Editor.string(editor, []) === ''
+    
+    const firstElement = newValue[0]
+    const isNewValueEmpty = newValue.length === 1 && 
+      SlateElement.isElement(firstElement) &&
+      firstElement.children.length === 1 &&
+      'text' in firstElement.children[0] && 
+      firstElement.children[0].text === ''
+    
+    if (!value && isEditorEmpty) {
+      return
+    }
+    
+    if (value && !isNewValueEmpty) {
+      const currentContent = JSON.stringify(editor.children)
+      const newContent = JSON.stringify(newValue)
+      
+      if (currentContent !== newContent) {
+        editor.children = newValue
+        editor.onChange()
+      }
+    } else if (!value && !isEditorEmpty) {
+      Transforms.delete(editor, {
+        at: {
+          anchor: Editor.start(editor, []),
+          focus: Editor.end(editor, []),
+        },
+      })
+      Transforms.removeNodes(editor, { at: [0] })
+      Transforms.insertNodes(editor, newValue)
+      setEditorValue(newValue)
+    }
+  }, [value, editor])
 
   const handleChange = (newValue: Descendant[]) => {
+    setEditorValue(newValue)
     if (onChange) {
       const isAstChange = editor.operations.some(
         op => 'set_selection' !== op.type
@@ -95,7 +137,7 @@ export default function TextEditor({ value = '', onChange }: TextEditorProps) {
 
   return (
     <div className="border border-border rounded-lg overflow-hidden bg-background">
-      <Slate key={value} editor={editor} initialValue={initialValue} onChange={handleChange}>
+      <Slate editor={editor} initialValue={editorValue} onChange={handleChange}>
         <Toolbar />
         <div className="p-4 min-h-[100px] overflow-y-auto">
           <Editable
