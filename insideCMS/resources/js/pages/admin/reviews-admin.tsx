@@ -6,6 +6,7 @@ import AppLayout from '@/layouts/app-layout';
 import { dashboard, reviewsAdmin } from '@/routes';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { toast } from "sonner";
 
 /**
  * TODO: Добавить кнопку для удаления отзыва
@@ -36,9 +37,11 @@ export default function Reviews({ reviews }: { reviews: Review[] }) {
         publishForm.patch(`/reviews/${reviewId}/publish`, {
             onSuccess: () => {
                 setProcessingReviewId(null);
+                toast.success('Отзыв успешно опубликован');
             },
             onError: () => {
                 setProcessingReviewId(null);
+                toast.error('Ошибка при опубликовании отзыва');
             }
         });
     };
@@ -48,9 +51,11 @@ export default function Reviews({ reviews }: { reviews: Review[] }) {
         unpublishForm.patch(`/reviews/${reviewId}/unpublish`, {
             onSuccess: () => {
                 setProcessingReviewId(null);
+                toast.success('Отзыв успешно скрыт');
             },
             onError: () => {
                 setProcessingReviewId(null);
+                toast.error('Ошибка при скрытии отзыва');
             }
         });
     };
@@ -60,6 +65,11 @@ export default function Reviews({ reviews }: { reviews: Review[] }) {
         deleteForm.delete(`/reviews/${reviewId}`, {
             onSuccess: () => {
                 setProcessingReviewId(null);
+                toast.success('Отзыв успешно удален');
+            },
+            onError: () => {
+                setProcessingReviewId(null);
+                toast.error('Ошибка при удалении отзыва');
             }
         });
     };

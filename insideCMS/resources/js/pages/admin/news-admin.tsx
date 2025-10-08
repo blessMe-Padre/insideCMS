@@ -5,6 +5,7 @@ import { Head, useForm, router } from '@inertiajs/react';
 import placeholder from '/public/placeholder.svg';
 import { Edit, Trash } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from "sonner";
 
 
 /**
@@ -53,6 +54,10 @@ export default function NewsAdmin({ news }: NewsAdminPageProps) {
         deleteForm.delete(`/news/${id}`, {
             onSuccess: () => {
                 setProcessingNewsId(null);
+                toast.success('Новость удалена');
+            },
+            onError: () => {
+                toast.error('Ошибка при удалении новости');
             }
         });
     };

@@ -2,6 +2,7 @@ import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
+import { toast } from "sonner";
 
 interface News {
     id: number;
@@ -61,6 +62,10 @@ export default function EditNewsAdmin({ news }: EditNewsAdminPageProps) {
         post(`/news/${news.id}`, {
             onSuccess: () => {
                 window.location.href = '/news-admin';
+                toast.success('Новость успешно обновлена');
+            },
+            onError: () => {
+                toast.error('Ошибка при обновлении новости');
             },
         });
     };
