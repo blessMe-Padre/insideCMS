@@ -3,6 +3,7 @@ import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { toast } from "sonner";
+import TextEditor from '@/components/editor/TextEditor';
 
 interface Article {
     id: number;
@@ -91,13 +92,9 @@ export default function EditArticleAdmin({ article }: EditArticleAdminPageProps)
                         <label htmlFor="content" className="block text-sm font-medium text-foreground mb-1">
                             Контент *
                         </label>
-                        <textarea
-                            id="content"
+                        <TextEditor
                             value={data.content}
-                            onChange={(e) => setData('content', e.target.value)}
-                            className="w-full text-foreground px-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            rows={6}
-                            required
+                            onChange={(value) => setData('content', value)}
                         />
                         {errors.content && (
                             <p className="text-red-500 text-sm mt-1">{errors.content}</p>

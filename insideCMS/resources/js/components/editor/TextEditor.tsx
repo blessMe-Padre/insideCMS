@@ -43,25 +43,59 @@ const HOTKEYS: Record<string, string> = {
 const LIST_TYPES = ['numbered-list', 'bulleted-list']
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right']
 
-export default function TextEditor() {
+interface TextEditorProps {
+  value?: string;
+  onChange?: (value: string) => void;
+}
+
+export default function TextEditor({ value = '', onChange }: TextEditorProps) {
   const [editor] = useState(() => withReact(createEditor()))
   
-  const initialValue: Descendant[] = useMemo(
-    () => [
-      {
-        type: 'paragraph',
-        children: [{ text: '' }],
-      },
-    ],
-    []
-  )
+  const initialValue = useMemo(() => {
+    if (!value) {
+      return [
+        {
+          type: 'paragraph',
+          children: [{ text: '' }],
+        },
+      ] as Descendant[]
+    }
+    try {
+      const parsed = JSON.parse(value)
+      return Array.isArray(parsed) ? parsed : [
+        {
+          type: 'paragraph',
+          children: [{ text: value }],
+        },
+      ]
+    } catch {
+      return [
+        {
+          type: 'paragraph',
+          children: [{ text: value }],
+        },
+      ]
+    }
+  }, [value])
+
+  const handleChange = (newValue: Descendant[]) => {
+    if (onChange) {
+      const isAstChange = editor.operations.some(
+        op => 'set_selection' !== op.type
+      )
+      if (isAstChange) {
+        const content = JSON.stringify(newValue)
+        onChange(content)
+      }
+    }
+  }
 
   const renderElement = useCallback((props: RenderElementProps) => <Element {...props} />, [])
   const renderLeaf = useCallback((props: RenderLeafProps) => <Leaf {...props} />, [])
 
   return (
     <div className="border border-border rounded-lg overflow-hidden bg-background">
-      <Slate editor={editor} initialValue={initialValue}>
+      <Slate key={value} editor={editor} initialValue={initialValue} onChange={handleChange}>
         <Toolbar />
         <div className="p-4 min-h-[100px] overflow-y-auto">
           <Editable
