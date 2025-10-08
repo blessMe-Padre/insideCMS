@@ -31,7 +31,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Роуты для статей
     Route::get('articles-admin', [App\Http\Controllers\ArticleController::class, 'adminShow'])->name('articles-admin');
     Route::get('add-article-admin', [App\Http\Controllers\ArticleController::class, 'create'])->name('add-article-admin');
+    // Роуты для добавления, редактирования и удаления статей
     Route::post('articles/add', [App\Http\Controllers\ArticleController::class, 'store'])->name('articles.store');
+    Route::post('articles/{article}', [App\Http\Controllers\ArticleController::class, 'update'])->name('articles.edit');
+    Route::get('articles/{article}/edit', [App\Http\Controllers\ArticleController::class, 'edit'])->name('articles.update');
+    Route::delete('articles/{article}', [App\Http\Controllers\ArticleController::class, 'destroy'])->name('articles.destroy');
  });
 
 Route::get('reviews', [App\Http\Controllers\ReviewsController::class, 'show'])->name('reviews');

@@ -61,24 +61,37 @@ class ArticleController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Article $article)
     {
-        //
+        return Inertia::render('admin/edit-article-admin', ['article' => $article]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Article $article)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'slug' => 'required|string|max:255|unique:articles,slug,' . $article->id,
+        ]);
+
+        $article->update([
+            'title' => $validated['title'],
+            'content' => $validated['content'],
+            'slug' => $validated['slug'],
+        ]);
+
+        return redirect()->route('articles-admin')->with('success', 'Статья успешно обновлена');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Article $article)
     {
-        //
+        $article->delete();
+        return redirect()->back()->with('success', 'Статья удалена.');
     }
 }
