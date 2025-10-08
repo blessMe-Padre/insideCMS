@@ -23,8 +23,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('news', [App\Http\Controllers\NewsController::class, 'store'])->name('news.store');
     Route::get('news-admin', [App\Http\Controllers\NewsController::class, 'adminShow'])->name('news-admin');
     Route::get('add-news-admin', [App\Http\Controllers\NewsController::class, 'create'])->name('add-news-admin');
+    Route::get('news/{news}/edit', [App\Http\Controllers\NewsController::class, 'edit'])->name('news.edit');
+    Route::post('news/{news}', [App\Http\Controllers\NewsController::class, 'update'])->name('news.update');
     Route::delete('news/{news}', [App\Http\Controllers\NewsController::class, 'destroy'])->name('news.destroy');
-});
+ });
 
 Route::get('reviews', [App\Http\Controllers\ReviewsController::class, 'show'])->name('reviews');
 Route::post('reviews', [App\Http\Controllers\ReviewsController::class, 'store'])->name('reviews.store');

@@ -13,7 +13,7 @@ import {
 import { dashboard, info, reviewsAdmin, newsAdmin} from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, MessageCircle, Newspaper, Plus, User } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, List, MessageCircle, Newspaper, Plus, User } from 'lucide-react';
 import AppLogo from './app-logo';
 import { addNewsAdmin } from '@/routes';
 
@@ -42,11 +42,29 @@ const mainNavItems: NavItem[] = [
             {
                 title: 'Все новости',
                 href: newsAdmin(),
-                icon: Newspaper,
+                icon: List,
             },
             {
                 title: 'Добавить новость',
                 href: addNewsAdmin(),
+                icon: Plus,
+            },
+        ],
+    },
+    {
+        title: 'Статьи',
+        href: '/',
+        icon: Newspaper,
+
+        subItems: [
+            {
+                title: 'Все статьи',
+                href: '/',
+                icon: List,
+            },
+            {
+                title: 'Добавить статью',
+                href: '/',
                 icon: Plus,
             },
         ],

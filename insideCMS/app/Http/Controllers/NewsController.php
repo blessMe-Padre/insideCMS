@@ -19,7 +19,7 @@ class NewsController extends Controller
     public function adminShow()
     {
         return Inertia::render('admin/news-admin', [
-            'news' => \App\Models\News::all(),
+            'news' => News::all(),
         ]);
     }
 
@@ -46,7 +46,7 @@ class NewsController extends Controller
             'images.*' => 'nullable|image|max:2048',
         ]);
 
-        $news = \App\Models\News::create([
+        $news = News::create([
             'title' => $validated['title'],
             'content' => $validated['content'],
             'excerpt' => $validated['excerpt'],
@@ -79,17 +79,48 @@ class NewsController extends Controller
     /**
      * Показать форму редактирования указанного ресурса.
      */
-    public function edit(string $id)
+    public function edit(News $news)
     {
-        //
+        return Inertia::render('admin/edit-news-admin', [
+            'news' => $news,
+        ]);
     }
 
     /**
      * Обновить указанный ресурс в хранилище.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, News $news)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'excerpt' => 'required|string',
+            'slug' => 'required|string|max:255|unique:news,slug,' . $news->id,
+            'time_to_read' => 'required|integer|min:1',
+            'is_published' => 'boolean',
+            'images.*' => 'nullable|image|max:2048',
+        ]);
+
+        $news->update([
+            'title' => $validated['title'],
+            'content' => $validated['content'],
+            'excerpt' => $validated['excerpt'],
+            'slug' => $validated['slug'],
+            'time_to_read' => $validated['time_to_read'],
+            'is_published' => $validated['is_published'] ?? false,
+        ]);
+
+        if ($request->hasFile('images')) {
+            $imagePaths = [];
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('news', 'public');
+                $imagePaths[] = $path;
+            }
+            $news->images = $imagePaths;
+            $news->save();
+        }
+
+        return redirect()->route('news-admin')->with('success', 'Новость успешно обновлена');
     }
 
     /**

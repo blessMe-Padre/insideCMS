@@ -1,15 +1,19 @@
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
 import placeholder from '/public/placeholder.svg';
 import { Edit, Trash } from 'lucide-react';
 import { useState } from 'react';
 
 
 /**
- * TODO: добавить редактирование новостей
  * TODO: добавить иконку спинера при удалении новости
+ * TODO: добавить пагинацию
+ * TODO: добавить поиск по названию новости
+ * TODO: добавить сортировку по дате создания
+ * TODO: добавить API для получения новостей
+ * 
  */
 
 interface NewsAdminPageProps {
@@ -40,6 +44,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function NewsAdmin({ news }: NewsAdminPageProps) {
 
     const deleteForm = useForm();
+
     const [processingNewsId, setProcessingNewsId] = useState<number | null>(null);
 
     const handleDelete = (id: number) => {
@@ -52,10 +57,14 @@ export default function NewsAdmin({ news }: NewsAdminPageProps) {
         });
     };
 
+    const handleEdit = (id: number) => {
+        router.visit(`/news/${id}/edit`);
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="px-4 py-8">
-                <Head title="Отзывы">
+                <Head title="Новости">
                     <link rel="preconnect" href="https://fonts.bunny.net" />
                     <link
                         href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
@@ -92,7 +101,10 @@ export default function NewsAdmin({ news }: NewsAdminPageProps) {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <button title="редактировать" className="bg-blue-600 text-white px-2 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer">
+                                    <button
+                                     onClick={() => handleEdit(item.id)}
+                                     title="редактировать" 
+                                     className="bg-blue-600 text-white px-2 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer">
                                         <Edit className="w-5 h-5" />
                                     </button>
 
@@ -109,9 +121,7 @@ export default function NewsAdmin({ news }: NewsAdminPageProps) {
                         ))}
                     </div>
                 )}
-
-                
-                
+                           
             </div>
 
        </AppLayout>

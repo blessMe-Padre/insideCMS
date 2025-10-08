@@ -45,7 +45,7 @@ export default function NewsForm({ onSuccess }: NewsFormProps) {
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                    <label htmlFor="title" className="block text-sm font-medium text-white mb-1">
+                    <label htmlFor="title" className="block text-foreground text-sm font-medium mb-1">
                         Заголовок *
                     </label>
                     <input
@@ -62,7 +62,7 @@ export default function NewsForm({ onSuccess }: NewsFormProps) {
                 </div>
 
                 <div>
-                    <label htmlFor="content" className="block text-sm font-medium text-white mb-1">
+                    <label htmlFor="content" className="block text-sm font-medium text-foreground mb-1">
                         Контент *
                     </label>
                     <textarea
@@ -79,7 +79,7 @@ export default function NewsForm({ onSuccess }: NewsFormProps) {
                 </div>
 
                 <div>
-                    <label htmlFor="excerpt" className="block text-sm font-medium text-white mb-1">
+                    <label htmlFor="excerpt" className="block text-sm font-medium text-foreground mb-1">
                         Краткое описание *
                     </label>
                     <textarea
@@ -96,7 +96,7 @@ export default function NewsForm({ onSuccess }: NewsFormProps) {
                 </div>
 
                 <div>
-                    <label htmlFor="slug" className="block text-sm font-medium text-white mb-1">
+                    <label htmlFor="slug" className="block text-sm font-medium text-foreground mb-1">
                         Slug *
                     </label>
                     <input
@@ -113,7 +113,7 @@ export default function NewsForm({ onSuccess }: NewsFormProps) {
                 </div>
 
                 <div>
-                    <label htmlFor="time_to_read" className="block text-sm font-medium text-white mb-1">
+                    <label htmlFor="time_to_read" className="block text-sm font-medium text-foreground mb-1">
                         Время на чтение (минут) *
                     </label>
                     <input
@@ -138,7 +138,7 @@ export default function NewsForm({ onSuccess }: NewsFormProps) {
                         onChange={(e) => setData('is_published', e.target.checked)}
                         className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                     />
-                    <label htmlFor="is_published" className="ml-2 block text-sm font-medium text-white">
+                    <label htmlFor="is_published" className="ml-2 block text-sm font-medium text-foreground">
                         Опубликовать новость
                     </label>
                     {errors.is_published && (
@@ -147,7 +147,7 @@ export default function NewsForm({ onSuccess }: NewsFormProps) {
                 </div>
 
                 <div>
-                    <label htmlFor="images" className="block text-sm font-medium text-white mb-1">
+                    <label htmlFor="images" className="block text-sm font-medium text-foreground mb-1">
                         Изображения
                     </label>
                     <input
