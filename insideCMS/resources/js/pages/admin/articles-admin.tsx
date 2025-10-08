@@ -3,7 +3,6 @@ import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 
-
 interface ArticlesAdminPageProps {
     articles: Articles[];
 }
@@ -44,7 +43,7 @@ export default function ArticlesAdmin({ articles }: ArticlesAdminPageProps) {
                 </div>
 
                 <h1 className="text-3xl font-bold text-foreground mb-4">Все статьи</h1>
-                           
+
             </div>
 
        </AppLayout>

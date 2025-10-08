@@ -1,4 +1,6 @@
 import { useForm } from '@inertiajs/react';
+import { toast } from "sonner";
+
 
 /**
  * TODO: добавить редактор для контента
@@ -27,6 +29,10 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
             onSuccess: () => {
                 reset();
                 onSuccess?.();
+                toast.success('Статья успешно создана');
+            },
+            onError: () => {
+                toast.error('Ошибка при создании статьи');
             },
         });
     };
