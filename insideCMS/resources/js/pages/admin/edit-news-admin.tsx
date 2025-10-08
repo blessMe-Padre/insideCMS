@@ -1,3 +1,4 @@
+import TextEditor from '@/components/editor/TextEditor';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -105,13 +106,9 @@ export default function EditNewsAdmin({ news }: EditNewsAdminPageProps) {
                         <label htmlFor="content" className="block text-sm font-medium text-foreground mb-1">
                             Контент *
                         </label>
-                        <textarea
-                            id="content"
+                        <TextEditor
                             value={data.content}
-                            onChange={(e) => setData('content', e.target.value)}
-                            className="w-full text-foreground px-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            rows={6}
-                            required
+                            onChange={(value) => setData('content', value)}
                         />
                         {errors.content && (
                             <p className="text-red-500 text-sm mt-1">{errors.content}</p>
