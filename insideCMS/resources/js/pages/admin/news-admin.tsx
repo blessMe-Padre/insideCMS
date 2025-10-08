@@ -6,6 +6,8 @@ import placeholder from '/public/placeholder.svg';
 import { Edit, Trash } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from "sonner";
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Lock } from 'lucide-react';
 
 
 /**
@@ -76,6 +78,13 @@ export default function NewsAdmin({ news }: NewsAdminPageProps) {
                         rel="stylesheet"
                     />
                 </Head>
+
+                <Alert variant="default" className="mb-4">
+                    <Lock />
+                    <AlertDescription>
+                      API:  /api/v1/news
+                    </AlertDescription>
+                </Alert>
 
                 <div className="mb-3">
                     <p className="text-gray-500 text-lg">Всего новостей: {news.length}</p>

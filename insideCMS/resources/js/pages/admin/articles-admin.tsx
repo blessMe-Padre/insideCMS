@@ -6,6 +6,8 @@ import placeholder from '/public/placeholder.svg';
 import { Edit, Trash } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from "sonner";
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Lock } from 'lucide-react';
 
 interface ArticlesAdminPageProps {
     articles: Articles[];
@@ -64,6 +66,12 @@ export default function ArticlesAdmin({ articles }: ArticlesAdminPageProps) {
                     />
                 </Head>
                 <h1 className="text-3xl font-bold text-foreground mb-4">Cтатьи</h1>
+                <Alert variant="default" className="mb-4">
+                    <Lock />
+                    <AlertDescription>
+                      API:  /api/v1/articles
+                    </AlertDescription>
+                </Alert>
 
                 <div className="mb-3">
                     <p className="text-gray-500 text-lg">Всего статей: {articles.length}</p>

@@ -7,6 +7,8 @@ import { dashboard, reviewsAdmin } from '@/routes';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { toast } from "sonner";
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Lock } from 'lucide-react';
 
 /**
  * TODO: Добавить кнопку для удаления отзыва
@@ -85,10 +87,12 @@ export default function Reviews({ reviews }: { reviews: Review[] }) {
                     />
                 </Head>
 
-                <div className="mb-8">
-                    <span className="text-gray-500 text-lg">API: </span>
-                    <span className="text-gray-500 text-lg">/api/v1/reviews</span>
-                </div>
+                <Alert variant="default">
+                    <Lock />
+                    <AlertDescription>
+                      API:  /api/v1/reviews
+                    </AlertDescription>
+                </Alert>
 
                 <div className="mb-3">
                     <p className="text-gray-500 text-lg">Всего отзывов: {reviews.length}</p>
