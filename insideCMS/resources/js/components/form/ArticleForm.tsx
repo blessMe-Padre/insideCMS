@@ -1,5 +1,6 @@
 import { useForm } from '@inertiajs/react';
 import { toast } from "sonner";
+import TextEditor from '../editor/TextEditor';
 
 
 /**
@@ -10,6 +11,7 @@ interface ArticleFormData {
     title: string;
     content: string;
     slug: string;
+    images: File[];
 }
 
 interface ArticleFormProps {
@@ -21,6 +23,7 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
         title: '',
         content: '',
         slug: '',
+        images: [],
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -63,14 +66,10 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
                     <label htmlFor="content" className="block text-sm font-medium text-foreground mb-1">
                         Контент *
                     </label>
-                    <textarea
-                        id="content"
+                    <TextEditor
                         value={data.content}
-                        onChange={(e) => setData('content', e.target.value)}
-                        className="w-full text-whitepx-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        rows={6}
-                        required
-                    />
+                        onChange={(value) => setData('content', value)}
+                    />  
                     {errors.content && (
                         <p className="text-red-500 text-sm mt-1">{errors.content}</p>
                     )}
@@ -90,6 +89,23 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
                     />
                     {errors.slug && (
                         <p className="text-red-500 text-sm mt-1">{errors.slug}</p>
+                    )}
+                </div>
+
+                <div>
+                    <label htmlFor="images" className="block text-sm font-medium text-foreground mb-1">
+                        Изображения
+                    </label>
+                    <input
+                        id="images"
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={(e) => setData('images', Array.from(e.target.files || []))}
+                        className="w-full text-whitepx-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    {errors.images && (
+                        <p className="text-red-500 text-sm mt-1">{errors.images}</p>
                     )}
                 </div>
 

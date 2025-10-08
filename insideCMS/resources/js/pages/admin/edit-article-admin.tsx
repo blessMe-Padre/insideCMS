@@ -20,6 +20,7 @@ interface ArticleFormData {
     title: string;
     content: string;
     slug: string;
+    images: File[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -42,6 +43,7 @@ export default function EditArticleAdmin({ article }: EditArticleAdminPageProps)
         title: article.title,
         content: article.content,
         slug: article.slug,
+        images: [],
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -117,6 +119,23 @@ export default function EditArticleAdmin({ article }: EditArticleAdminPageProps)
                             <p className="text-red-500 text-sm mt-1">{errors.slug}</p>
                         )}
                     </div>
+
+                    <div>
+                    <label htmlFor="images" className="block text-sm font-medium text-foreground mb-1">
+                        Изображения
+                    </label>
+                    <input
+                        id="images"
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={(e) => setData('images', Array.from(e.target.files || []))}
+                        className="w-full text-whitepx-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    {errors.images && (
+                        <p className="text-red-500 text-sm mt-1">{errors.images}</p>
+                    )}
+                </div>
 
                     <div className="flex gap-2">
                         <button
