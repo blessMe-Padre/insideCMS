@@ -18,8 +18,15 @@ class ArticleController extends Controller
 
     public function adminShow()
     {
-        $articles = Article::all();
-        return Inertia::render('admin/articles-admin', ['articles' => $articles]);
+        $articles = Article::paginate(6);
+        return Inertia::render('admin/articles-admin', [
+            'articles' => $articles->items(),
+            'links' => $articles->linkCollection()->toArray(),
+            'current_page' => $articles->currentPage(),
+            'total_pages' => $articles->lastPage(),
+            'per_page' => $articles->perPage(),
+            'total' => $articles->total(),
+        ]);
     }
 
     /**

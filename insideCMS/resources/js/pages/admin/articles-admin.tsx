@@ -8,9 +8,19 @@ import { useState } from 'react';
 import { toast } from "sonner";
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Lock } from 'lucide-react';
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 
 interface ArticlesAdminPageProps {
     articles: Articles[];
+    links: Array<{
+        url: string | null;
+        label: string | null;
+        active: boolean | null;
+    }>;
+    current_page: number;
+    total_pages: number;
+    per_page: number;
+    total: number;
 }
 
 interface Articles {
@@ -33,7 +43,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function ArticlesAdmin({ articles }: ArticlesAdminPageProps) {
+export default function ArticlesAdmin({ articles, links, total_pages, total }: ArticlesAdminPageProps) {
     const deleteForm = useForm();
 
     const [processingNewsId, setProcessingNewsId] = useState<number | null>(null);
@@ -75,7 +85,7 @@ export default function ArticlesAdmin({ articles }: ArticlesAdminPageProps) {
                 </Alert>
 
                 <div className="mb-3">
-                    <p className="text-gray-500 text-lg">Всего статей: {articles.length}</p>
+                    <p className="text-gray-500 text-lg">Всего статей: {total}</p>
                 </div>
 
                 {articles.length === 0 ? (
@@ -122,9 +132,44 @@ export default function ArticlesAdmin({ articles }: ArticlesAdminPageProps) {
                     </div>
                 )}
 
-
+                {total_pages > 1 && (
+                    <Pagination className="mt-6">
+                        <PaginationContent>
+                            {links.find(link => link.label === '&laquo; Previous')?.url && (
+                                <PaginationItem>
+                                    <PaginationPrevious 
+                                        href={links.find(link => link.label === '&laquo; Previous')?.url || ''}
+                                    />
+                                </PaginationItem>
+                            )}
+                            {links
+                                .filter(link => link.label !== '&laquo; Previous' && link.label !== 'Next &raquo;')
+                                .map((link, index) => (
+                                    <PaginationItem key={index}>
+                                        {link.label === '...' ? (
+                                            <PaginationEllipsis />
+                                        ) : (
+                                            <PaginationLink 
+                                                href={link.url || ''} 
+                                                isActive={link.active || false}
+                                            >
+                                                {link.label}
+                                            </PaginationLink>
+                                        )}
+                                    </PaginationItem>
+                                ))
+                            }
+                            {links.find(link => link.label === 'Next &raquo;')?.url && (
+                                <PaginationItem>
+                                    <PaginationNext 
+                                        href={links.find(link => link.label === 'Next &raquo;')?.url || ''}
+                                    />
+                                </PaginationItem>
+                            )}
+                        </PaginationContent>
+                    </Pagination>
+                )}
             </div>
-
        </AppLayout>
     );
 }
