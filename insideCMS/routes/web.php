@@ -36,6 +36,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('articles/{article}', [App\Http\Controllers\ArticleController::class, 'update'])->name('articles.edit');
     Route::get('articles/{article}/edit', [App\Http\Controllers\ArticleController::class, 'edit'])->name('articles.update');
     Route::delete('articles/{article}', [App\Http\Controllers\ArticleController::class, 'destroy'])->name('articles.destroy');
+
+    // Роуты для настройки модулей
+    Route::get('modules-admin', [App\Http\Controllers\ModulesController::class, 'index'])->name('modules-admin');
+    Route::post('modules/{module}/active', [App\Http\Controllers\ModulesController::class, 'toggleActive'])->name('modules.toggleActive');
  });
 
 Route::get('reviews', [App\Http\Controllers\ReviewsController::class, 'show'])->name('reviews');

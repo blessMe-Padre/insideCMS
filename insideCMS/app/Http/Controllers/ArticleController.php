@@ -19,6 +19,7 @@ class ArticleController extends Controller
     public function adminShow()
     {
         $articles = Article::paginate(6);
+
         return Inertia::render('admin/articles-admin', [
             'articles' => $articles->items(),
             'links' => $articles->linkCollection()->toArray(),

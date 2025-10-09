@@ -9,10 +9,10 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, info, reviewsAdmin, newsAdmin, addNewsAdmin, articlesAdmin, addArticleAdmin} from '@/routes';
+import { dashboard, info, reviewsAdmin, newsAdmin, addNewsAdmin, articlesAdmin, addArticleAdmin, modulesAdmin} from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { LayoutGrid, List, MessageCircle, Newspaper, Plus, User } from 'lucide-react';
+import { LayoutGrid, List, MessageCircle, Newspaper, Plus, User, Settings } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -69,6 +69,14 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
+const settingsNavItems: NavItem[] = [
+    {
+        title: 'Настройка модулей',
+        href: modulesAdmin(),
+        icon: Settings,
+    },
+];
+
 export function AppSidebar() {
     return (
         <Sidebar collapsible="icon" variant="inset">
@@ -89,6 +97,7 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
+                <NavMain items={settingsNavItems} />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>
