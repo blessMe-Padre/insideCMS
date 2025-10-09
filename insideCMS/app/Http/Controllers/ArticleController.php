@@ -57,6 +57,7 @@ class ArticleController extends Controller
         ]);
 
         if ($request->hasFile('images')) {
+
             $imagePaths = [];
             foreach ($request->file('images') as $image) {
                 $path = $image->store('', 'public');
@@ -101,7 +102,6 @@ class ArticleController extends Controller
             'title' => $validated['title'],
             'content' => $validated['content'],
             'slug' => $validated['slug'],
-            'images' => $validated['images'],
         ]);
         
         if ($request->hasFile('images')) {

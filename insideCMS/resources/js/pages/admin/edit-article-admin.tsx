@@ -4,6 +4,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { toast } from "sonner";
 import TextEditor from '@/components/editor/TextEditor';
+import { useEffect, useRef, useState } from 'react';
 
 interface Article {
     id: number;
@@ -45,6 +46,28 @@ export default function EditArticleAdmin({ article }: EditArticleAdminPageProps)
         slug: article.slug,
         images: [],
     });
+
+    const [preview, setPreview] = useState<string[]>([]);
+    const previewUrlsRef = useRef<string[]>([]);
+
+    useEffect(() => {
+        // Очищаем старые URL
+        previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+        previewUrlsRef.current = [];
+
+        if (data.images.length > 0) {
+            const newPreview = data.images.map((image) => URL.createObjectURL(image));
+            previewUrlsRef.current = newPreview;
+            setPreview(newPreview);
+        } else {
+            setPreview([]);
+        }
+
+        // Очистка при размонтировании
+        return () => {
+            previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+        };
+    }, [data.images]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -134,6 +157,18 @@ export default function EditArticleAdmin({ article }: EditArticleAdminPageProps)
                     />
                     {errors.images && (
                         <p className="text-red-500 text-sm mt-1">{errors.images}</p>
+                    )}
+                       {preview.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                            {preview.map((image, index) => (
+                                <img 
+                                    key={`preview-${index}`}
+                                    src={image} 
+                                    alt={`Preview ${index + 1}`} 
+                                    className="w-20 h-20 object-cover rounded-md border" 
+                                />
+                            ))}
+                        </div>
                     )}
                 </div>
 
