@@ -38,7 +38,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('articles/{article}', [App\Http\Controllers\ArticleController::class, 'destroy'])->name('articles.destroy');
 
     // Роуты для настройки модулей
-    Route::get('modules-admin', [App\Http\Controllers\ModulesController::class, 'index'])->name('modules-admin');
+    Route::get('modules-admin', [App\Http\Controllers\ModulesController::class, 'adminShow'])->name('modules-admin');
     Route::post('modules/{module}/active', [App\Http\Controllers\ModulesController::class, 'toggleActive'])->name('modules.toggleActive');
  });
 
