@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('module_name')->unique();
             $table->string('module_description');
+            $table->string('module_slug')->unique();
             $table->boolean('is_active');
             $table->timestamps();
         });

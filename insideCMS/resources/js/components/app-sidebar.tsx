@@ -9,65 +9,11 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, info, reviewsAdmin, newsAdmin, addNewsAdmin, articlesAdmin, addArticleAdmin, modulesAdmin} from '@/routes';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
+import { dashboard, reviewsAdmin, newsAdmin, addNewsAdmin, articlesAdmin, addArticleAdmin, modulesAdmin} from '@/routes';
+import { type NavItem, type SharedData } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
 import { LayoutGrid, List, MessageCircle, Newspaper, Plus, User, Settings } from 'lucide-react';
 import AppLogo from './app-logo';
-
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Информация о пользователе',
-        href: info(),
-        icon: User,
-    },
-    {
-        title: 'Отзывы ',
-        href: reviewsAdmin(),
-        icon: MessageCircle,
-    },
-    {
-        title: 'Новости',
-        href: newsAdmin(),
-        icon: Newspaper,
-
-        subItems: [
-            {
-                title: 'Все новости',
-                href: newsAdmin(),
-                icon: List,
-            },
-            {
-                title: 'Добавить новость',
-                href: addNewsAdmin(),
-                icon: Plus,
-            },
-        ],
-    },
-    {
-        title: 'Статьи',
-        href: articlesAdmin(),
-        icon: Newspaper,
-
-        subItems: [
-            {
-                title: 'Все статьи',
-                href: articlesAdmin(),
-                icon: List,
-            },
-            {
-                title: 'Добавить статью',
-                href: addArticleAdmin(),
-                icon: Plus,
-            },
-        ],
-    },
-];
 
 const settingsNavItems: NavItem[] = [
     {
@@ -78,6 +24,64 @@ const settingsNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
+    const { modules } = usePage<SharedData>().props;
+
+    console.log(modules);
+
+    const mainNavItems: NavItem[] = [
+        {
+            title: 'Dashboard',
+            href: dashboard(),
+            icon: LayoutGrid,
+        },
+        ...(modules?.info?.is_active ? [{
+            title: 'Информация о пользователе',
+            href: '/info',
+            icon: User,
+        }] : []),
+        {
+            title: 'Отзывы ',
+            href: reviewsAdmin(),
+            icon: MessageCircle,
+        },
+        {
+            title: 'Новости',
+            href: newsAdmin(),
+            icon: Newspaper,
+
+            subItems: [
+                {
+                    title: 'Все новости',
+                    href: newsAdmin(),
+                    icon: List,
+                },
+                {
+                    title: 'Добавить новость',
+                    href: addNewsAdmin(),
+                    icon: Plus,
+                },
+            ],
+        },
+        {
+            title: 'Статьи',
+            href: articlesAdmin(),
+            icon: Newspaper,
+
+            subItems: [
+                {
+                    title: 'Все статьи',
+                    href: articlesAdmin(),
+                    icon: List,
+                },
+                {
+                    title: 'Добавить статью',
+                    href: addArticleAdmin(),
+                    icon: Plus,
+                },
+            ],
+        },
+    ];
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>

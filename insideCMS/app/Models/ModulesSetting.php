@@ -10,11 +10,13 @@ class ModulesSetting extends Model
         'module_name',
         'module_description',
         'is_active',
+        'module_slug',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'module_name' => 'string',
         'module_description' => 'string',
+        'module_slug' => 'string',
     ];
 }

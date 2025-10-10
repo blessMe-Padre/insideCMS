@@ -25,6 +25,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function ModulesAdmin({ modules }: { modules: ModulesSetting[] }) {
+    console.log('modules2222222222222222', modules);
     const [processingModuleId, setProcessingModuleId] = useState<number | null>(null);
 
     const handleToggleActive = (moduleId: number, isActive: boolean) => {

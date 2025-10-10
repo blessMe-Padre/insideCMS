@@ -2,18 +2,23 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
+
+$modules = DB::table('modules_settings')->select('module_slug','is_active')->get()->keyBy('module_slug');
 
 Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
     
     // Роуты для админки
-    Route::get('info', [App\Http\Controllers\InfoController::class, 'show'])->name('info');
+    if ($modules['info'] && $modules['info']->is_active === 1) {
+        Route::get('info', [App\Http\Controllers\InfoController::class, 'show'])->name('info');
+    }
 
     Route::get('reviews-admin', [App\Http\Controllers\ReviewsController::class, 'adminShow'])->name('reviews-admin');
     Route::patch('reviews/{review}/publish', [App\Http\Controllers\ReviewsController::class, 'publish'])->name('reviews.publish');

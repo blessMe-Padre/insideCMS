@@ -23,11 +23,16 @@ export interface NavItem {
     subItems?: NavItem[];
 }
 
+export interface Module {
+    is_active: boolean;
+}
+
 export interface SharedData {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
     sidebarOpen: boolean;
+    modules: Record<string, Module>;
     [key: string]: unknown;
 }
 
