@@ -15,7 +15,7 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
     })->name('dashboard');
     
     // Роуты для админки
-    if ($modules['info'] && $modules['info']['is_active'] === 1) {
+    if ($modules['info'] && $modules['info']['is_active']) {
         Route::get('info', [App\Http\Controllers\InfoController::class, 'show'])->name('info');
     }
 
