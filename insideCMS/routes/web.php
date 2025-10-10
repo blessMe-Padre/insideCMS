@@ -2,9 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\DB;
 
-$modules = DB::table('modules_settings')->select('module_slug','is_active')->get()->keyBy('module_slug');
+$modules = getModules();
 
 Route::get('/', function () {
     return Inertia::render('welcome');
@@ -16,7 +15,7 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
     })->name('dashboard');
     
     // Роуты для админки
-    if ($modules['info'] && $modules['info']->is_active === 1) {
+    if ($modules['info'] && $modules['info']['is_active'] === 1) {
         Route::get('info', [App\Http\Controllers\InfoController::class, 'show'])->name('info');
     }
 

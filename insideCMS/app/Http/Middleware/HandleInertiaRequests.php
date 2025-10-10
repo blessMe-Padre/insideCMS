@@ -2,10 +2,10 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\ModulesSetting;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use App\Http\Controllers\ModulesController;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -47,10 +47,7 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-            'modules' => ModulesSetting::all()
-                ->keyBy('module_slug')
-                ->map(fn($module) => ['is_active' => $module->is_active])
-                ->toArray(),
+            'modules' => getModules(),
         ];
     }
 }

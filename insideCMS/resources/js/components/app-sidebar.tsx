@@ -26,8 +26,6 @@ const settingsNavItems: NavItem[] = [
 export function AppSidebar() {
     const { modules } = usePage<SharedData>().props;
 
-    console.log(modules);
-
     const mainNavItems: NavItem[] = [
         {
             title: 'Dashboard',
