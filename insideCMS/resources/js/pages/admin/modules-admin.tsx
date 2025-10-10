@@ -25,7 +25,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function ModulesAdmin({ modules }: { modules: ModulesSetting[] }) {
-    console.log('modules2222222222222222', modules);
+
+    const modulesArray = Object.values(modules);
     const [processingModuleId, setProcessingModuleId] = useState<number | null>(null);
 
     const handleToggleActive = (moduleId: number, isActive: boolean) => {
@@ -57,8 +58,9 @@ export default function ModulesAdmin({ modules }: { modules: ModulesSetting[] })
                 <p className="mb-4 text-sm text-gray-500">Подключите дополнительные модули для расширения функционала сайта</p>
 
                 <ul className="space-y-4">
-                    {modules.map((module) => (
-                        <li key={module.id}  className="flex items-center justify-between max-w-md p-4 border rounded-lg">
+
+                    {modulesArray.map((module, index) => (
+                        <li key={index}  className="flex items-center justify-between max-w-md p-4 border rounded-lg">
                             <div>
                                 <h2 className="text-lg font-bold text-foreground mb-2">{module.module_name}</h2>
                                 <p className="mb-2 text-sm text-gray-500">{module.module_description}</p>

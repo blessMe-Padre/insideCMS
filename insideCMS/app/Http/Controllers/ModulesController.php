@@ -11,7 +11,9 @@ class ModulesController extends Controller
     public function adminShow()
     {
         return Inertia::render('admin/modules-admin', [
-            'modules' => ModulesSetting::all(),
+            'modules' => ModulesSetting::all()
+            ->keyBy('module_slug')
+            ->toArray(),
         ]);
     }
 
