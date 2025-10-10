@@ -29,4 +29,21 @@ class FileController extends Controller
             'initialFiles' => $files,
         ]);
     }
+
+    public function store(Request $request)
+    {
+        $file = $request->file('file');
+        dd($file);
+
+        $fileModel = FileModel::create([
+            'name' => $file->name,
+            'path' => $file->path,
+            'extension' => $file->extension,
+            'mime_type' => $file->mime_type,
+            'size' => $file->size,
+        ]);
+
+        $fileModel->save();
+        return response()->json(['message' => 'File uploaded successfully']);
+    }
 }

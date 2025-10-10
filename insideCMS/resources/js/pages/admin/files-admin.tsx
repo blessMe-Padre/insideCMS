@@ -1,19 +1,12 @@
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem} from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 
 import { useState } from "react";
 import { FileManager } from "@cubone/react-file-manager";
 import "@cubone/react-file-manager/dist/style.css";
 
-interface File {
-    name: string;
-    isDirectory: boolean;
-    path: string;
-    updatedAt: string;
-    size: number;
-}
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -26,8 +19,23 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function FilesAdmin({initialFiles}: {initialFiles: File[]}) {
+export default function FilesAdmin({initialFiles}) {
+    const { data, setData, post, processing, errors, reset } = useForm({
+        file: null,
+    });
+
     const [files, setFiles] = useState(initialFiles);
+
+
+    const handleUploading = (file) => {
+        console.log(file);
+        setData('file', file);
+        post('/files', {
+            onSuccess: () => {
+                reset();
+            },
+        });
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -40,7 +48,15 @@ export default function FilesAdmin({initialFiles}: {initialFiles: File[]}) {
                     </div>
                 </div>
 
-                <FileManager files={files} />
+                <FileManager 
+                    files={files} 
+                    collapsibleNav={true}
+                    enableFilePreview={true}
+                    filePreviewPath=""
+                    uploadUrl="/public"
+                    onFileUploading={handleUploading}
+                    language="ru-RU"
+                />
 
             </div>
         </AppLayout>
