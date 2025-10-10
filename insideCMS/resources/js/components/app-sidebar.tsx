@@ -9,10 +9,10 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, reviewsAdmin, newsAdmin, addNewsAdmin, articlesAdmin, addArticleAdmin, modulesAdmin} from '@/routes';
+import { dashboard, reviewsAdmin, newsAdmin, addNewsAdmin, articlesAdmin, addArticleAdmin, modulesAdmin, filesAdmin} from '@/routes';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { LayoutGrid, List, MessageCircle, Newspaper, Plus, User, Settings } from 'lucide-react';
+import { LayoutGrid, List, MessageCircle, Newspaper, Plus, User, Settings, Folder } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const settingsNavItems: NavItem[] = [
@@ -77,6 +77,11 @@ export function AppSidebar() {
                     icon: Plus,
                 },
             ],
+        },
+        {
+            title: 'Файловый менеджер',
+            href: filesAdmin(),
+            icon: Folder,
         },
     ];
 

@@ -44,6 +44,9 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
     // Роуты для настройки модулей
     Route::get('modules-admin', [App\Http\Controllers\ModulesController::class, 'adminShow'])->name('modules-admin');
     Route::post('modules/{module}/active', [App\Http\Controllers\ModulesController::class, 'toggleActive'])->name('modules.toggleActive');
+
+    // Роуты для файлов
+    Route::get('files-admin', [App\Http\Controllers\FileController::class, 'adminShow'])->name('files-admin');
  });
 
 Route::get('reviews', [App\Http\Controllers\ReviewsController::class, 'show'])->name('reviews');
