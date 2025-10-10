@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+use App\Http\Controllers\FileController;
+
 $modules = getModules();
 
 Route::get('/', function () {
@@ -46,7 +48,10 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
     Route::post('modules/{module}/active', [App\Http\Controllers\ModulesController::class, 'toggleActive'])->name('modules.toggleActive');
 
     // Роуты для файлов
-    Route::get('files-admin', [App\Http\Controllers\FileController::class, 'adminShow'])->name('files-admin');
+    Route::controller(FileController::class)->group(function () {
+        Route::get('files-admin', 'adminShow')->name('files-admin');
+    });
+
  });
 
 Route::get('reviews', [App\Http\Controllers\ReviewsController::class, 'show'])->name('reviews');
