@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Lock } from 'lucide-react';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { Spinner } from '@/components/ui/spinner';
 
 interface ArticlesAdminPageProps {
     articles: Articles[];
@@ -123,7 +124,7 @@ export default function ArticlesAdmin({ articles, links, total_pages, total }: A
                                      className="bg-red-600 text-white px-2 py-2 rounded-lg hover:bg-red-700 transition-colors cursor-pointer"
                                      onClick={() => handleDelete(item.id)}
                                      >
-                                        {processingNewsId === item.id ? "удаление..." : (<Trash className="w-5 h-5" />)}
+                                        {processingNewsId === item.id ? (<Spinner />) : (<Trash className="w-5 h-5" />)}
                                        
                                     </button>
                                 </div>
