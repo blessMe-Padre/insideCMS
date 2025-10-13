@@ -19,7 +19,20 @@ declare module '@cubone/react-file-manager' {
         collapsibleNav?: boolean;
         enableFilePreview?: boolean;
         language?: string;
+        initialPath?: string;
         fileUploadConfig?: FileUploadConfig;
+        onDelete?: (files: FileManagerFile | FileManagerFile[]) => void;
+        onRefresh?: () => void;
+        onUpload?: (files: FileManagerFile | FileManagerFile[]) => void;
+        permissions?: {
+            create?: boolean;
+            delete?: boolean;
+            download?: boolean;
+            copy?: boolean;
+            move?: boolean;
+            rename?: boolean;
+            upload?: boolean;
+        };
     }
 
     export const FileManager: React.FC<FileManagerProps>;

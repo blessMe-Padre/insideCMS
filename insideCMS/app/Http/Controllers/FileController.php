@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\FileModel;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class FileController extends Controller
 {
@@ -69,6 +69,31 @@ class FileController extends Controller
             'original'    => $originalName,
         ], 200);
             
+    }
+
+    public function destroy(Request $request)
+    {
+        $path = $request->input('path');
+        if (!$path) {
+            return back()->with('error', 'Путь не указан');
+        }
+        // Находим файл в базе данных по пути
+        $fileModel = FileModel::where('path', $path)->first();
+
+        if (!$fileModel) {
+            return back()->with('error', 'Файл не найден в базе данных');
+        }
+
+        // Удаляем физический файл из storage/app/public
+        $fileName = $fileModel->name . '.' . $fileModel->extension;
+        if (Storage::disk('public')->exists($fileName)) {
+            Storage::disk('public')->delete($fileName);
+        }
+
+        // Удаляем запись из базы данных
+        $fileModel->delete();
+
+        return back()->with('success', 'Файл успешно удален');
     }
     
 }

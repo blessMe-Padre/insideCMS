@@ -6,6 +6,17 @@ import { Head, router} from '@inertiajs/react';
 import { useState } from "react";
 import { FileManager } from "@cubone/react-file-manager";
 import "@cubone/react-file-manager/dist/style.css";
+import { toast } from 'sonner';
+
+/**
+ * Доработать функцонал файлового менеждера
+ * копировать
+ * переместить
+ * переименовать
+ * скачать
+ * создать пути
+ */
+
 
 interface File {
     name: string;
@@ -36,8 +47,26 @@ export default function FilesAdmin({initialFiles}: {initialFiles: File[]}) {
     };
 
     // Обработчик удаления файла
-    const handleDelete = (file: File) => {
-        console.log(file);
+    const handleDelete = (files: File | File[]) => {
+        const filesToDelete = Array.isArray(files) ? files : [files];
+        
+        filesToDelete.forEach(file => {
+            router.delete('/files-delete', {
+                data: { path: file.path },
+                preserveScroll: true,
+                onBefore: () => {
+                    console.log('Перед отправкой запроса для:', file.name);
+                },
+                onSuccess: () => {
+                    toast.success(`Файл "${file.name}" успешно удален`);
+                    handleRefresh();
+                },
+                onError: (errors) => {
+                    toast.error(`Ошибка при удалении файла "${file.name}": ${errors}`);
+                    handleRefresh();
+                },
+            });
+        });
     };
 
     return (
@@ -55,10 +84,20 @@ export default function FilesAdmin({initialFiles}: {initialFiles: File[]}) {
                     files={files} 
                     collapsibleNav={true}
                     enableFilePreview={true}
-                    language="ru-RU"
                     initialPath="/public"
+                    language="ru-RU"
                     onDelete={handleDelete}
                     onRefresh={handleRefresh}
+
+                    permissions={{
+                        create: false, // Disable "Create Folder"
+                        delete: true, // Disable "Delete"
+                        download: true, // Enable "Download"
+                        copy: false,
+                        move: false,
+                        rename: false,
+                        upload: true,
+                      }}
 
                     fileUploadConfig={{
                         url: "/files-upload",
