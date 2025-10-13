@@ -60,13 +60,13 @@ export default function FileManagerComponent({initialFiles}: {initialFiles: File
                 document.body.removeChild(link);
             });
         };
+        
     return (
 
         <FileManager 
             files={files} 
             collapsibleNav={true}
             filePreviewPath=""
-
             initialPath="/public"
             language="ru-RU"
             onDelete={handleDelete}

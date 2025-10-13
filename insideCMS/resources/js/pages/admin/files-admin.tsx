@@ -3,7 +3,11 @@ import { dashboard } from '@/routes';
 import { type BreadcrumbItem} from '@/types';
 import { Head} from '@inertiajs/react';
 import "@cubone/react-file-manager/dist/style.css";
+import { Button } from '@/components/ui/button';
 import FileManagerComponent from '@/components/editor/fileManager/FileManagerComponent';
+
+import Popup from '@/components/popup/Popup';
+import { useState } from 'react';
 
 /**
  * Доработать функцонал файлового менеждера
@@ -30,15 +34,17 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: dashboard().url,
     },
     {
-        title: 'Файлы',
+        title: 'Файловый менеджер',
         href: '/files-admin',
     },
 ];
 
 export default function FilesAdmin({initialFiles}: {initialFiles: File[]}) {
-    return (
+    const [activePopup, setActivePopup] = useState(false);
+        return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Файловый менеджер" />
+                <Button onClick={() => setActivePopup(true)}>Открыть popup</Button>
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="grid auto-rows-min gap-4">
@@ -49,7 +55,11 @@ export default function FilesAdmin({initialFiles}: {initialFiles: File[]}) {
 
                 <FileManagerComponent initialFiles={initialFiles} />
 
-            </div>
+                <Popup activePopup={activePopup} setActivePopup={setActivePopup}>
+                    <FileManagerComponent initialFiles={initialFiles} />
+                </Popup>
+
+             </div>
         </AppLayout>
     );
 }

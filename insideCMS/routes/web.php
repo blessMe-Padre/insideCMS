@@ -7,6 +7,12 @@ use App\Http\Controllers\FileController;
 
 $modules = getModules();
 
+/**
+ * TODO:
+ * Сгруппировать роуты по модулям 
+ * Добавить проверку на активность модуля
+ */
+
 Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
