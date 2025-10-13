@@ -1,11 +1,20 @@
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem} from '@/types';
-import { Head, useForm } from '@inertiajs/react';
+import { Head} from '@inertiajs/react';
 
 import { useState } from "react";
 import { FileManager } from "@cubone/react-file-manager";
 import "@cubone/react-file-manager/dist/style.css";
+
+interface File {
+    name: string;
+    path: string;
+    isDirectory: boolean;
+    updatedAt: string;
+    size: number;
+    mime_type: string;
+}
 
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -19,13 +28,8 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function FilesAdmin({initialFiles}) {
-    const [files, setFiles] = useState(initialFiles);
-
-
-    const handleUploading = (file) => {
-        console.log(file);
-     };
+export default function FilesAdmin({initialFiles}: {initialFiles: File[]}) {
+    const [files] = useState(initialFiles);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -42,7 +46,6 @@ export default function FilesAdmin({initialFiles}) {
                     files={files} 
                     collapsibleNav={true}
                     enableFilePreview={true}
-                    onFileUploading={handleUploading}
                     language="ru-RU"
                     fileUploadConfig={{
                         url: "/files-upload",

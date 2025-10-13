@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\FileModel;
+use Illuminate\Support\Facades\Log;
 
 class FileController extends Controller
 {
@@ -36,21 +37,55 @@ class FileController extends Controller
         $file = $request->file('file');
     
         if (!$file) {
-            return response()->json(['ok' => false, 'message' => 'file not found'], 422);
+            return response()->json(['ok' => false, 'message' => 'файл не найден'], 422);
         }
-    
-        // сохраняем в storage/app/public
-        $stored = $file->store('', 'public'); // не забудь: php artisan storage:link
-    
-        return response()->json([
-            'name'        => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
-            'isDirectory' => false,
-            'path'        => '/storage/' . $stored,   // публичный URL
-            'updatedAt'   => now()->toISOString(),
-            'size'        => $file->getSize(),
-            'mime_type'   => $file->getMimeType(),
-            'original'    => $file->getClientOriginalName(),
-        ], 200);
+
+        try {
+            // сохраняем в storage/app/public
+            $stored = $file->store('', 'public');
+
+            // Получаем данные файла
+            $originalName = $file->getClientOriginalName();
+            $fileName = pathinfo($originalName, PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+
+            // Записывает в базу данных
+            $fileModel = FileModel::create([
+                'name'      => $fileName,
+                'path'      => '/public/' . $stored,
+                'extension' => $extension,
+                'mime_type' => $file->getMimeType(),
+                'size'      => $file->getSize(),
+                'alt'       => null,
+            ]);
+
+            Log::info('Файл сохранен в БД', [
+                'id' => $fileModel->id,
+                'name' => $fileName,
+                'path' => '/public/' . $stored,
+            ]);
+        
+            return response()->json([
+                'name'        => $fileName,
+                'isDirectory' => false,
+                'path'        => '/storage/' . $stored,
+                'updatedAt'   => now()->toISOString(),
+                'size'        => $file->getSize(),
+                'mime_type'   => $file->getMimeType(),
+                'original'    => $originalName,
+            ], 200);
+            
+        } catch (\Exception $e) {
+            Log::error('Ошибка при сохранении файла: ' . $e->getMessage(), [
+                'file' => $originalName ?? 'unknown',
+                'trace' => $e->getTraceAsString(),
+            ]);
+            
+            return response()->json([
+                'ok' => false,
+                'message' => 'Ошибка при сохранении файла: ' . $e->getMessage(),
+            ], 500);
+        }
     }
     
 }
