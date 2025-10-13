@@ -9,6 +9,26 @@ use Illuminate\Support\Facades\Storage;
 
 class FileController extends Controller
 {
+    public function index()
+    {
+        $filesData = FileModel::all();
+        $files = array_merge([[
+            'name' => 'Public',
+            'isDirectory' => true,
+            'path' => '/public',
+            'updatedAt' => '2025-10-10T10:00:00Z',
+        ]], $filesData->map(function ($file) {
+            return [
+                'name' => $file->name .'.'. $file->extension,
+                'isDirectory' => false,
+                'path' => $file->path,
+                'updatedAt' => $file->updated_at,
+            ];
+        })->toArray());
+
+        return response()->json($files);
+    }
+
     public function adminShow()
     {
         $filesData = FileModel::all();

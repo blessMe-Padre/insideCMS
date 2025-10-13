@@ -14,16 +14,6 @@ import FileManagerComponent from '@/components/editor/fileManager/FileManagerCom
  * создать пути
  */
 
-
-interface File {
-    name: string;
-    path: string;
-    isDirectory: boolean;
-    updatedAt: string;
-    size: number;
-    mime_type: string;
-}
-
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Консоль',
@@ -35,7 +25,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function FilesAdmin({initialFiles}: {initialFiles: File[]}) {
+export default function FilesAdmin() {
         return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Файловый менеджер" />
@@ -47,7 +37,7 @@ export default function FilesAdmin({initialFiles}: {initialFiles: File[]}) {
                     </div>
                 </div>
 
-                <FileManagerComponent initialFiles={initialFiles} />
+                <FileManagerComponent initialFiles={[]} />
 
              </div>
         </AppLayout>

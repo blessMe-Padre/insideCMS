@@ -25,6 +25,7 @@ declare module '@cubone/react-file-manager' {
         onRefresh?: () => void;
         onUpload?: (files: FileManagerFile | FileManagerFile[]) => void;
         onDownload?: (files: FileManagerFile | FileManagerFile[]) => void;
+        isLoading?: boolean;
         filePreviewPath?: string;
         permissions?: {
             create?: boolean;
