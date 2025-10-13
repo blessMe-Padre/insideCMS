@@ -1,9 +1,9 @@
 import AppLayout from '@/layouts/app-layout';
-import { dashboard } from '@/routes';
+import { addArticleAdmin, dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm, router } from '@inertiajs/react';
+import { Head, useForm, router, Link } from '@inertiajs/react';
 import placeholder from '/public/placeholder.svg';
-import { Edit, Trash } from 'lucide-react';
+import { Edit, Plus, Trash } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from "sonner";
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -85,8 +85,15 @@ export default function ArticlesAdmin({ articles, links, total_pages, total }: A
                     </AlertDescription>
                 </Alert>
 
-                <div className="mb-3">
+                <div className="mb-5 flex justify-between items-center">
                     <p className="text-gray-500 text-lg">Всего статей: {total}</p>
+                    <Link
+                        href={addArticleAdmin()}
+                        className="bg-blue-600 flex items-center gap-2 cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                        <Plus className="w-5 h-5" />
+                        Добавить статью
+                    </Link>
                 </div>
 
                 {articles.length === 0 ? (

@@ -16,7 +16,7 @@ interface File {
 }
 
 
-export default function FileManagerComponent({initialFiles}: {initialFiles: File[]}) {
+export default function FileManagerComponent({initialFiles = []}: {initialFiles: File[]}) {
     const [files] = useState(initialFiles);
 
         // Обработчик кнопки "Обновить"

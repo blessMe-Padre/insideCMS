@@ -2,7 +2,9 @@ import { useForm } from '@inertiajs/react';
 import { toast } from "sonner";
 import TextEditor from '../editor/TextEditor';
 import { useEffect, useState, useRef } from 'react';
-
+import Popup from '../popup/Popup';
+import FileManagerComponent from '../editor/fileManager/FileManagerComponent';
+import { Button } from '@/components/ui/button';
 
 /**
  * TODO: добавить редактор для контента
@@ -29,6 +31,7 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
 
     const [preview, setPreview] = useState<string[]>([]);
     const previewUrlsRef = useRef<string[]>([]);
+    const [activePopup, setActivePopup] = useState(false);
 
     useEffect(() => {
         // Очищаем старые URL
@@ -116,24 +119,9 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
                 </div>
 
                 <div>
-                    <label htmlFor="images" className="block text-sm font-medium text-foreground mb-1">
-                        Изображения
-                    </label>
-
-                    <input
-                        id="images"
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        onChange={(e) => setData('images', Array.from(e.target.files || []))}
-                        className="w-full text-whitepx-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                    {errors.images && (
-                        <p className="text-red-500 text-sm mt-1">{errors.images}</p>
-                    )}
-
+                    <p className="block text-sm font-medium text-foreground mb-1">Изображения</p>
                     {preview.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-2">
+                        <div className="flex flex-wrap gap-2 mt-2 mb-2">
                             {preview.map((image, index) => (
                                 <img 
                                     key={`preview-${index}`}
@@ -144,6 +132,26 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
                             ))}
                         </div>
                     )}
+
+                    <label htmlFor="images" className="block mb-3">
+                        <input
+                            id="images"
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            onChange={(e) => setData('images', Array.from(e.target.files || []))}
+                            className="w-full text-white px-3 py-2 px-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                        />
+                    </label>
+                    <Button variant="outline" onClick={() => setActivePopup(true)}>Файловый менеджер</Button>
+
+                    {errors.images && (
+                        <p className="text-red-500 text-sm mt-1">{errors.images}</p>
+                    )}
+
+                <Popup activePopup={activePopup} setActivePopup={setActivePopup}>
+                    <FileManagerComponent initialFiles={[]} />
+                </Popup>
                     
                 </div>
 
