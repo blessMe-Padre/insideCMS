@@ -1,12 +1,9 @@
 import AppLayout from '@/layouts/app-layout';
-import { dashboard, filesAdmin } from '@/routes';
+import { dashboard } from '@/routes';
 import { type BreadcrumbItem} from '@/types';
-import { Head, router} from '@inertiajs/react';
-
-import { useState } from "react";
-import { FileManager } from "@cubone/react-file-manager";
+import { Head} from '@inertiajs/react';
 import "@cubone/react-file-manager/dist/style.css";
-import { toast } from 'sonner';
+import FileManagerComponent from '@/components/editor/fileManager/FileManagerComponent';
 
 /**
  * Доработать функцонал файлового менеждера
@@ -39,50 +36,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function FilesAdmin({initialFiles}: {initialFiles: File[]}) {
-    const [files] = useState(initialFiles);
-    console.log(files);
-
-    // Обработчик кнопки "Обновить"
-    const handleRefresh = () => {
-        router.get(filesAdmin());
-    };
-
-    // Обработчик удаления файла
-    const handleDelete = (files: File | File[]) => {
-        const filesToDelete = Array.isArray(files) ? files : [files];
-        
-        filesToDelete.forEach(file => {
-            router.delete('/files-delete', {
-                data: { path: file.path },
-                preserveScroll: true,
-                onBefore: () => {
-                    console.log('Перед отправкой запроса для:', file.name);
-                },
-                onSuccess: () => {
-                    toast.success(`Файл "${file.name}" успешно удален`);
-                    handleRefresh();
-                },
-                onError: (errors) => {
-                    toast.error(`Ошибка при удалении файла "${file.name}": ${errors}`);
-                    handleRefresh();
-                },
-            });
-        });
-    };
-
-    // Обработчик скачивания файла
-    const handleDownload = (files: File | File[]) => {
-        const filesToDownload = Array.isArray(files) ? files : [files];
-        filesToDownload.forEach(file => {
-            const url = `/files-download?path=${encodeURIComponent(file.path)}`;
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = file.name;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
-    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -95,38 +48,7 @@ export default function FilesAdmin({initialFiles}: {initialFiles: File[]}) {
                     </div>
                 </div>
 
-                <FileManager 
-                    files={files} 
-                    collapsibleNav={true}
-                    filePreviewPath=""
-
-                    initialPath="/public"
-                    language="ru-RU"
-                    onDelete={handleDelete}
-                    onDownload={handleDownload}
-                    onRefresh={handleRefresh}
-
-                    permissions={{
-                        create: false, // Disable "Create Folder"
-                        delete: true, // Disable "Delete"
-                        download: true, // Enable "Download"
-                        copy: false,
-                        move: false,
-                        rename: false,
-                        upload: true,
-                      }}
-
-                    fileUploadConfig={{
-                        url: "/files-upload",
-                        method: "POST",
-                        headers: {
-                          "X-CSRF-TOKEN":
-                            (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)
-                              ?.content || "",
-                          "X-Requested-With": "XMLHttpRequest",
-                        },
-                      }}
-                />
+                <FileManagerComponent initialFiles={initialFiles} />
 
             </div>
         </AppLayout>
