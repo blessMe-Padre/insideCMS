@@ -40,13 +40,15 @@ class FileController extends Controller
             return response()->json(['ok' => false, 'message' => 'файл не найден'], 422);
         }
 
-        // сохраняем в storage/app/public
-        $stored = $file->store('', 'public');
-
         // Получаем данные файла
         $originalName = $file->getClientOriginalName();
         $fileName = transliterateFileName($originalName);
         $extension = $file->getClientOriginalExtension();
+
+        // сохраняем в storage/app/public
+        // $stored = $file->store('', 'public');
+        $storageFileName = $fileName . '.' . $extension;
+        $stored = $file->storeAs('', $storageFileName, 'public');
 
         // Записывает в базу данных
         $fileModel = FileModel::create([

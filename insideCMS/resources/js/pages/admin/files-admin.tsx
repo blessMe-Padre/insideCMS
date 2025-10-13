@@ -40,6 +40,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function FilesAdmin({initialFiles}: {initialFiles: File[]}) {
     const [files] = useState(initialFiles);
+    console.log(files);
 
     // Обработчик кнопки "Обновить"
     const handleRefresh = () => {
@@ -97,7 +98,8 @@ export default function FilesAdmin({initialFiles}: {initialFiles: File[]}) {
                 <FileManager 
                     files={files} 
                     collapsibleNav={true}
-                    enableFilePreview={true}
+                    filePreviewPath=""
+
                     initialPath="/public"
                     language="ru-RU"
                     onDelete={handleDelete}
