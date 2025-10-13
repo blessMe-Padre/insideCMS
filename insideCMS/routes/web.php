@@ -4,6 +4,10 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\ModulesController;
+use App\Http\Controllers\NewsController;
+use App\Http\Controllers\ReviewsController;
+use App\Http\Controllers\ArticleController;
 
 $modules = getModules();
 
@@ -27,31 +31,40 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
         Route::get('info', [App\Http\Controllers\InfoController::class, 'show'])->name('info');
     }
 
-    Route::get('reviews-admin', [App\Http\Controllers\ReviewsController::class, 'adminShow'])->name('reviews-admin');
-    Route::patch('reviews/{review}/publish', [App\Http\Controllers\ReviewsController::class, 'publish'])->name('reviews.publish');
-    Route::patch('reviews/{review}/unpublish', [App\Http\Controllers\ReviewsController::class, 'unpublish'])->name('reviews.unpublish');
-    Route::delete('reviews/{review}', [App\Http\Controllers\ReviewsController::class, 'destroy'])->name('reviews.destroy');
+    Route::controller(ReviewsController::class)->group(function () {
+        Route::get('reviews-admin', 'adminShow')->name('reviews-admin');
+        Route::patch('reviews/{review}/publish', 'publish')->name('reviews.publish');
+        Route::patch('reviews/{review}/unpublish', 'unpublish')->name('reviews.unpublish');
+        Route::delete('reviews/{review}', 'destroy')->name('reviews.destroy');
+    });
 
     // Роуты для новостей
-    Route::post('news', [App\Http\Controllers\NewsController::class, 'store'])->name('news.store');
-    Route::get('news-admin', [App\Http\Controllers\NewsController::class, 'adminShow'])->name('news-admin');
-    Route::get('add-news-admin', [App\Http\Controllers\NewsController::class, 'create'])->name('add-news-admin');
-    Route::get('news/{news}/edit', [App\Http\Controllers\NewsController::class, 'edit'])->name('news.edit');
-    Route::post('news/{news}', [App\Http\Controllers\NewsController::class, 'update'])->name('news.update');
-    Route::delete('news/{news}', [App\Http\Controllers\NewsController::class, 'destroy'])->name('news.destroy');
+    Route::controller(NewsController::class)->group(function () {
+        Route::post('news', 'store')->name('news.store');
+        Route::get('news-admin', 'adminShow')->name('news-admin');
+        Route::get('add-news-admin', 'create')->name('add-news-admin');
+        Route::get('news/{news}/edit', 'edit')->name('news.edit');
+        Route::post('news/{news}', 'update')->name('news.update');
+        Route::delete('news/{news}', 'destroy')->name('news.destroy');
+    });
 
     // Роуты для статей
-    Route::get('articles-admin', [App\Http\Controllers\ArticleController::class, 'adminShow'])->name('articles-admin');
-    Route::get('add-article-admin', [App\Http\Controllers\ArticleController::class, 'create'])->name('add-article-admin');
-    // Роуты для добавления, редактирования и удаления статей
-    Route::post('articles/add', [App\Http\Controllers\ArticleController::class, 'store'])->name('articles.store');
-    Route::post('articles/{article}', [App\Http\Controllers\ArticleController::class, 'update'])->name('articles.edit');
-    Route::get('articles/{article}/edit', [App\Http\Controllers\ArticleController::class, 'edit'])->name('articles.update');
-    Route::delete('articles/{article}', [App\Http\Controllers\ArticleController::class, 'destroy'])->name('articles.destroy');
+    Route::controller(ArticleController::class)->group(function () {
+        Route::get('articles-admin', 'adminShow')->name('articles-admin');
+        Route::get('add-article-admin', 'create')->name('add-article-admin');
+        // Роуты для добавления, редактирования и удаления статей
+        Route::post('articles/add', 'store')->name('articles.store');
+        Route::post('articles/{article}', 'update')->name('articles.edit');
+        Route::get('articles/{article}/edit', 'edit')->name('articles.update');
+        Route::delete('articles/{article}', 'destroy')->name('articles.destroy');
+
+    });
 
     // Роуты для настройки модулей
-    Route::get('modules-admin', [App\Http\Controllers\ModulesController::class, 'adminShow'])->name('modules-admin');
-    Route::post('modules/{module}/active', [App\Http\Controllers\ModulesController::class, 'toggleActive'])->name('modules.toggleActive');
+    Route::controller(ModulesController::class)->group(function () {
+        Route::get('modules-admin', 'adminShow')->name('modules-admin');
+        Route::post('modules/{module}/active', 'toggleActive')->name('modules.toggleActive');
+    });
 
     // Роуты для файлов
     Route::controller(FileController::class)->group(function () {
@@ -60,8 +73,8 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
         Route::delete('files-delete', 'destroy')->name('files.destroy');
         Route::get('files-download', 'download')->name('files.download');
     });
-
  });
+
 
 Route::get('reviews', [App\Http\Controllers\ReviewsController::class, 'show'])->name('reviews');
 Route::post('reviews', [App\Http\Controllers\ReviewsController::class, 'store'])->name('reviews.store');
