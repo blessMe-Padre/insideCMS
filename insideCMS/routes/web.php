@@ -50,7 +50,7 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
     // Роуты для файлов
     Route::controller(FileController::class)->group(function () {
         Route::get('files-admin', 'adminShow')->name('files-admin');
-        Route::post('files', 'store')->name('files.store');
+        Route::post('files-upload', 'store')->name('files.store');
     });
 
  });

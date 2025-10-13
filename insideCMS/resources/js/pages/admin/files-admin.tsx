@@ -20,22 +20,12 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function FilesAdmin({initialFiles}) {
-    const { data, setData, post, processing, errors, reset } = useForm({
-        file: null,
-    });
-
     const [files, setFiles] = useState(initialFiles);
 
 
     const handleUploading = (file) => {
         console.log(file);
-        setData('file', file);
-        post('/files', {
-            onSuccess: () => {
-                reset();
-            },
-        });
-    };
+     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -52,10 +42,18 @@ export default function FilesAdmin({initialFiles}) {
                     files={files} 
                     collapsibleNav={true}
                     enableFilePreview={true}
-                    filePreviewPath=""
-                    uploadUrl="/public"
                     onFileUploading={handleUploading}
                     language="ru-RU"
+                    fileUploadConfig={{
+                        url: "/files-upload",
+                        method: "POST",
+                        headers: {
+                          "X-CSRF-TOKEN":
+                            (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)
+                              ?.content || "",
+                          "X-Requested-With": "XMLHttpRequest",
+                        },
+                      }}
                 />
 
             </div>

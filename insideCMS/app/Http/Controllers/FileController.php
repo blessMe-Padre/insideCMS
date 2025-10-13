@@ -32,18 +32,25 @@ class FileController extends Controller
 
     public function store(Request $request)
     {
+        // файл лежит под ключом "file"
         $file = $request->file('file');
-        dd($file);
-
-        $fileModel = FileModel::create([
-            'name' => $file->name,
-            'path' => $file->path,
-            'extension' => $file->extension,
-            'mime_type' => $file->mime_type,
-            'size' => $file->size,
-        ]);
-
-        $fileModel->save();
-        return response()->json(['message' => 'File uploaded successfully']);
+    
+        if (!$file) {
+            return response()->json(['ok' => false, 'message' => 'file not found'], 422);
+        }
+    
+        // сохраняем в storage/app/public
+        $stored = $file->store('', 'public'); // не забудь: php artisan storage:link
+    
+        return response()->json([
+            'name'        => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+            'isDirectory' => false,
+            'path'        => '/storage/' . $stored,   // публичный URL
+            'updatedAt'   => now()->toISOString(),
+            'size'        => $file->getSize(),
+            'mime_type'   => $file->getMimeType(),
+            'original'    => $file->getClientOriginalName(),
+        ], 200);
     }
+    
 }
