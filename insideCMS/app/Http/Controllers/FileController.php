@@ -95,5 +95,32 @@ class FileController extends Controller
 
         return back()->with('success', 'Файл успешно удален');
     }
-    
+
+    public function download(Request $request)
+    {
+        $path = $request->input('path');
+        
+        if (!$path) {
+            return back()->with('error', 'Путь не указан');
+        }
+
+        // Находим файл в базе данных по пути
+        $fileModel = FileModel::where('path', $path)->first();
+
+        if (!$fileModel) {
+            return back()->with('error', 'Файл не найден в базе данных');
+        }
+
+        // Формируем полный путь к файлу
+        $fileName = $fileModel->name . '.' . $fileModel->extension;
+        $filePath = storage_path('app/public/' . $fileName);
+
+        // Проверяем существование файла
+        if (!file_exists($filePath)) {
+            return back()->with('error', 'Файл не найден на сервере');
+        }
+
+        // Скачиваем файл с оригинальным именем
+        return response()->download($filePath, $fileName);
+    }
 }

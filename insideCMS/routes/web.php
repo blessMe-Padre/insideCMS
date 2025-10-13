@@ -52,6 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
         Route::get('files-admin', 'adminShow')->name('files-admin');
         Route::post('files-upload', 'store')->name('files.store');
         Route::delete('files-delete', 'destroy')->name('files.destroy');
+        Route::get('files-download', 'download')->name('files.download');
     });
 
  });

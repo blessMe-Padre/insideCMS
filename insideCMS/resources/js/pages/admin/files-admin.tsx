@@ -69,6 +69,20 @@ export default function FilesAdmin({initialFiles}: {initialFiles: File[]}) {
         });
     };
 
+    // Обработчик скачивания файла
+    const handleDownload = (files: File | File[]) => {
+        const filesToDownload = Array.isArray(files) ? files : [files];
+        filesToDownload.forEach(file => {
+            const url = `/files-download?path=${encodeURIComponent(file.path)}`;
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = file.name;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Файловый менеджер" />
@@ -87,6 +101,7 @@ export default function FilesAdmin({initialFiles}: {initialFiles: File[]}) {
                     initialPath="/public"
                     language="ru-RU"
                     onDelete={handleDelete}
+                    onDownload={handleDownload}
                     onRefresh={handleRefresh}
 
                     permissions={{
