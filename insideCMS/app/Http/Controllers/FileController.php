@@ -45,13 +45,13 @@ class FileController extends Controller
 
         // Получаем данные файла
         $originalName = $file->getClientOriginalName();
-        $fileName = pathinfo($originalName, PATHINFO_FILENAME);
+        $fileName = transliterateFileName($originalName);
         $extension = $file->getClientOriginalExtension();
 
         // Записывает в базу данных
         $fileModel = FileModel::create([
             'name'      => $fileName,
-            'path'      => '/public/' . $stored,
+            'path'      => '/public/' . $fileName . '.' . $extension,
             'extension' => $extension,
             'mime_type' => $file->getMimeType(),
             'size'      => $file->getSize(),

@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
-import { dashboard } from '@/routes';
+import { dashboard, filesAdmin } from '@/routes';
 import { type BreadcrumbItem} from '@/types';
-import { Head} from '@inertiajs/react';
+import { Head, router} from '@inertiajs/react';
 
 import { useState } from "react";
 import { FileManager } from "@cubone/react-file-manager";
@@ -16,7 +16,6 @@ interface File {
     mime_type: string;
 }
 
-
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Консоль',
@@ -30,6 +29,16 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function FilesAdmin({initialFiles}: {initialFiles: File[]}) {
     const [files] = useState(initialFiles);
+
+    // Обработчик кнопки "Обновить"
+    const handleRefresh = () => {
+        router.get(filesAdmin());
+    };
+
+    // Обработчик удаления файла
+    const handleDelete = (file: File) => {
+        console.log(file);
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -47,6 +56,10 @@ export default function FilesAdmin({initialFiles}: {initialFiles: File[]}) {
                     collapsibleNav={true}
                     enableFilePreview={true}
                     language="ru-RU"
+                    initialPath="/public"
+                    onDelete={handleDelete}
+                    onRefresh={handleRefresh}
+
                     fileUploadConfig={{
                         url: "/files-upload",
                         method: "POST",
