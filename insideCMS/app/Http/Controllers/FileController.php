@@ -41,19 +41,20 @@ class FileController extends Controller
         }
 
         // Получаем данные файла
+        $uniqueId = uniqid();
         $originalName = $file->getClientOriginalName();
         $fileName = transliterateFileName($originalName);
         $extension = $file->getClientOriginalExtension();
 
         // сохраняем в storage/app/public
         // $stored = $file->store('', 'public');
-        $storageFileName = $fileName . '.' . $extension;
+        $storageFileName = $fileName . $uniqueId . '.' . $extension;
         $stored = $file->storeAs('', $storageFileName, 'public');
 
         // Записывает в базу данных
         $fileModel = FileModel::create([
-            'name'      => $fileName,
-            'path'      => '/public/' . $fileName . '.' . $extension,
+            'name'      => $fileName . $uniqueId,
+            'path'      => '/public/' . $fileName . $uniqueId . '.' . $extension,
             'extension' => $extension,
             'mime_type' => $file->getMimeType(),
             'size'      => $file->getSize(),
@@ -62,7 +63,7 @@ class FileController extends Controller
 
     
         return response()->json([
-            'name'        => $fileName,
+            'name'        => $fileName . $uniqueId,
             'isDirectory' => false,
             'path'        => '/storage/' . $stored,
             'updatedAt'   => now()->toISOString(),

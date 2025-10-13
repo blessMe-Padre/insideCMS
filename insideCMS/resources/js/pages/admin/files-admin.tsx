@@ -36,7 +36,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function FilesAdmin({initialFiles}: {initialFiles: File[]}) {
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Файловый менеджер" />
