@@ -105,8 +105,7 @@ export default function ArticlesAdmin({ articles, links, total_pages, total }: A
                         {articles.map((item) => (
                             <div key={item.id} className="flex justify-between items-center gap-4 bg-gray-700 py-2 px-4 rounded-lg shadow-md border hover:shadow-lg transition-shadow mb-4">
                                 <div className="flex items-center justify-between gap-4">
-                                    <img src={item.images ? `public/${item.images[0]}` : placeholder} alt={item.title} className="w-10 h-10 rounded-full" />
-                                    {/* <img src={ placeholder} alt={item.title} className="w-10 h-10 rounded-full" /> */}
+                                    <img src={item.images ? `${item.images[0]}` : placeholder} alt={item.title} className="w-10 h-10 rounded-full" />
                                     <div className="">
                                         <div className="flex items-center justify-between">
                                             <h3 className="font-semibold text-white">{item.title}</h3>

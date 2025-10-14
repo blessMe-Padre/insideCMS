@@ -15,7 +15,8 @@ interface ArticleFormData {
     title: string;
     content: string;
     slug: string;
-    images: File[];
+    images?: File[];
+    images_urls?: string[];
 }
 
 interface ArticleFormProps {
@@ -73,7 +74,8 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
 
     useEffect(() => {
         setPreview(selectedFiles.map((file) => file.path));
-    }, [selectedFiles]);
+        setData('images_urls', selectedFiles.map((file) => file.path));
+    }, [selectedFiles, setData]);
 
     return (
         <>

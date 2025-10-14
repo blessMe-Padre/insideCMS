@@ -68,6 +68,11 @@ class ArticleController extends Controller
             $article->save();
         }
 
+        if ($request->has('images_urls')) {
+            $article->images = $request->images_urls;
+            $article->save();
+        }
+
         return redirect()->back()->with('success', 'Статья успешно создана');
     }
 
