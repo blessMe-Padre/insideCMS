@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from 'react';
 import Popup from '../popup/Popup';
 import FileManagerComponent from '../editor/fileManager/FileManagerComponent';
 import { Button } from '@/components/ui/button';
+import { FileManagerFile } from '@cubone/react-file-manager';
 
 /**
  * TODO: добавить редактор для контента
@@ -30,27 +31,31 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
     });
 
     const [preview, setPreview] = useState<string[]>([]);
-    const previewUrlsRef = useRef<string[]>([]);
+    const [selectedFiles, setSelectedFiles] = useState<FileManagerFile[]>([]);
+
+    console.log('selectedFiles', selectedFiles);
+    console.log('preview', preview);
+
+    
+    // const previewUrlsRef = useRef<string[]>([]);
     const [activePopup, setActivePopup] = useState(false);
 
-    useEffect(() => {
-        // Очищаем старые URL
-        previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
-        previewUrlsRef.current = [];
+    // useEffect(() => {
+    //     previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+    //     previewUrlsRef.current = [];
 
-        if (data.images.length > 0) {
-            const newPreview = data.images.map((image) => URL.createObjectURL(image));
-            previewUrlsRef.current = newPreview;
-            setPreview(newPreview);
-        } else {
-            setPreview([]);
-        }
+    //     if (data.images.length > 0) {
+    //         const newPreview = data.images.map((image) => URL.createObjectURL(image));
+    //         previewUrlsRef.current = newPreview;
+    //         setPreview(newPreview);
+    //     } else {
+    //         setPreview([]);
+    //     }
 
-        // Очистка при размонтировании
-        return () => {
-            previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
-        };
-    }, [data.images]);
+    //     return () => {
+    //         previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+    //     };
+    // }, [data.images]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -65,6 +70,10 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
             },
         });
     };
+
+    useEffect(() => {
+        setPreview(selectedFiles.map((file) => file.path));
+    }, [selectedFiles]);
 
     return (
         <>
@@ -133,7 +142,7 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
                         </div>
                     )}
 
-                    <label htmlFor="images" className="block mb-3">
+                    {/* <label htmlFor="images" className="block mb-3">
                         <input
                             id="images"
                             type="file"
@@ -142,7 +151,7 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
                             onChange={(e) => setData('images', Array.from(e.target.files || []))}
                             className="w-full text-white px-3 py-2 px-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                         />
-                    </label>
+                    </label> */}
                     <Button variant="outline" onClick={() => setActivePopup(true)}>Файловый менеджер</Button>
 
                     {errors.images && (
@@ -150,7 +159,11 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
                     )}
 
                 <Popup activePopup={activePopup} setActivePopup={setActivePopup}>
-                    <FileManagerComponent initialFiles={[]} />
+                    <FileManagerComponent 
+                        initialFiles={[]}
+                        setActivePopup={setActivePopup}
+                        setSelectedFiles={setSelectedFiles}
+                    />
                 </Popup>
                     
                 </div>

@@ -37,9 +37,12 @@ export default function FilesAdmin() {
                     </div>
                 </div>
 
-                <FileManagerComponent initialFiles={[]} />
-
-             </div>
+                <FileManagerComponent 
+                    initialFiles={[]} 
+                    setActivePopup={() => {}} 
+                    setSelectedFiles={() => {}}
+                />
+            </div>
         </AppLayout>
     );
 }

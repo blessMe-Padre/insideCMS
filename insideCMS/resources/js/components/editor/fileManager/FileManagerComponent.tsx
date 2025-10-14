@@ -1,29 +1,31 @@
 import { router} from '@inertiajs/react';
 
 import { useState, useEffect } from "react";
-import { FileManager } from "@cubone/react-file-manager";
+import { FileManager, FileManagerFile } from "@cubone/react-file-manager";
 import "@cubone/react-file-manager/dist/style.css";
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 
-interface File {
-    name: string;
-    path: string;
-    isDirectory: boolean;
-    updatedAt: string;
-    size: number;
-    mime_type: string;
+interface FileManagerComponentProps {
+    initialFiles: FileManagerFile[];
+    setActivePopup: (active: boolean) => void;
+    setSelectedFiles: (files: FileManagerFile[]) => void;
 }
 
-
-export default function FileManagerComponent({initialFiles = []}: {initialFiles: File[]}) {
+export default function FileManagerComponent({
+    initialFiles,
+    setActivePopup,
+    setSelectedFiles,
+}: FileManagerComponentProps) {
     const [files, setFiles] = useState(initialFiles);
     const [loading, setLoading] = useState(false);
 
     // Загрузка файлов, если initialFiles пустой
     useEffect(() => {
-        if (initialFiles.length === 0) {
+        if (files.length === 0) {
             loadFiles();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const loadFiles = async () => {
@@ -40,7 +42,6 @@ export default function FileManagerComponent({initialFiles = []}: {initialFiles:
             if (response.ok) {
                 const data = await response.json();
                 setFiles(data);
-                console.log(data);
             } else {
                 toast.error('Ошибка загрузки файлов');
             }
@@ -51,15 +52,13 @@ export default function FileManagerComponent({initialFiles = []}: {initialFiles:
         }
     };
 
-
-
     // Обработчик кнопки "Обновить"
     const handleRefresh = () => {
         loadFiles();
     };
 
     // Обработчик удаления файла
-    const handleDelete = (files: File | File[]) => {
+    const handleDelete = (files: FileManagerFile | FileManagerFile[]) => {
         const filesToDelete = Array.isArray(files) ? files : [files];
         
         filesToDelete.forEach(file => {
@@ -82,7 +81,7 @@ export default function FileManagerComponent({initialFiles = []}: {initialFiles:
     };
 
     // Обработчик скачивания файла
-    const handleDownload = (files: File | File[]) => {
+    const handleDownload = (files: FileManagerFile | FileManagerFile[]) => {
         const filesToDownload = Array.isArray(files) ? files : [files];
         filesToDownload.forEach(file => {
             const url = `/files-download?path=${encodeURIComponent(file.path)}`;
@@ -94,40 +93,47 @@ export default function FileManagerComponent({initialFiles = []}: {initialFiles:
             document.body.removeChild(link);
         });
     };
+
+    const handleSelectionChange = (files: FileManagerFile[]) => {
+        setSelectedFiles(files);
+    };
         
     return (
+        <>
+            <FileManager 
+                files={files} 
+                collapsibleNav={true}
+                filePreviewPath=""
+                initialPath="/public"
+                language="ru-RU"
+                onDelete={handleDelete}
+                onDownload={handleDownload}
+                onRefresh={handleRefresh}
+                isLoading={loading}
+                onSelectionChange={handleSelectionChange}
 
-        <FileManager 
-            files={files} 
-            collapsibleNav={true}
-            filePreviewPath=""
-            initialPath="/public"
-            language="ru-RU"
-            onDelete={handleDelete}
-            onDownload={handleDownload}
-            onRefresh={handleRefresh}
-            isLoading={loading}
+                permissions={{
+                    create: false, // Disable "Create Folder"
+                    delete: true, // Disable "Delete"
+                    download: true, // Enable "Download"
+                    copy: false,
+                    move: false,
+                    rename: false,
+                    upload: true,
+                }}
 
-            permissions={{
-                create: false, // Disable "Create Folder"
-                delete: true, // Disable "Delete"
-                download: true, // Enable "Download"
-                copy: false,
-                move: false,
-                rename: false,
-                upload: true,
-            }}
-
-            fileUploadConfig={{
-                url: "/files-upload",
-                method: "POST",
-                headers: {
-                "X-CSRF-TOKEN":
-                    (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)
-                    ?.content || "",
-                "X-Requested-With": "XMLHttpRequest",
-                },
-            }}
-         />
+                fileUploadConfig={{
+                    url: "/files-upload",
+                    method: "POST",
+                    headers: {
+                    "X-CSRF-TOKEN":
+                        (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)
+                        ?.content || "",
+                    "X-Requested-With": "XMLHttpRequest",
+                    },
+                }}
+            />
+            <Button onClick={() => setActivePopup(false)}>Выбрать</Button>
+        </>
     );
 }
