@@ -8,6 +8,7 @@ use App\Http\Controllers\ModulesController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\ReviewsController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\PageController;
 
 $modules = getModules();
 
@@ -72,6 +73,13 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
         Route::post('files-upload', 'store')->name('files.store');
         Route::delete('files-delete', 'destroy')->name('files.destroy');
         Route::get('files-download', 'download')->name('files.download');
+    });
+
+    // Роуты для страниц
+    Route::controller(PageController::class)->group(function () {
+        Route::get('pages-admin', 'adminShow')->name('pages-admin');
+        Route::get('add-pages', 'create')->name('add-pages');
+        Route::delete('pages/{page}', 'destroy')->name('pages.destroy');
     });
  });
 
