@@ -3,7 +3,8 @@ import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head} from '@inertiajs/react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Lock } from 'lucide-react';
+import { Lock} from 'lucide-react';
+import PageBuilderForm from '@/components/form/PageBuilderForm';
 
 
 
@@ -40,7 +41,8 @@ export default function AddPages() {
                       API:  /api/v1/pages/slug
                     </AlertDescription>
                 </Alert>
-                
+
+                <PageBuilderForm/>
 
             </div>
        </AppLayout>
