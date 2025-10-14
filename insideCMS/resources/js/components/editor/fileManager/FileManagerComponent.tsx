@@ -133,7 +133,10 @@ export default function FileManagerComponent({
                     },
                 }}
             />
-            <Button onClick={() => setActivePopup(false)}>Выбрать</Button>
+            <Button onClick={(e) => {
+                e.preventDefault();
+                setActivePopup(false);
+            }}>Выбрать</Button>
         </>
     );
 }

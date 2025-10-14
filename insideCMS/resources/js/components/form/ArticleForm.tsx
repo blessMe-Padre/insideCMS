@@ -1,7 +1,7 @@
 import { useForm } from '@inertiajs/react';
 import { toast } from "sonner";
 import TextEditor from '../editor/TextEditor';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState} from 'react';
 import Popup from '../popup/Popup';
 import FileManagerComponent from '../editor/fileManager/FileManagerComponent';
 import { Button } from '@/components/ui/button';
@@ -33,10 +33,6 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
 
     const [preview, setPreview] = useState<string[]>([]);
     const [selectedFiles, setSelectedFiles] = useState<FileManagerFile[]>([]);
-
-    console.log('selectedFiles', selectedFiles);
-    console.log('preview', preview);
-
     
     // const previewUrlsRef = useRef<string[]>([]);
     const [activePopup, setActivePopup] = useState(false);
@@ -45,8 +41,10 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
     //     previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
     //     previewUrlsRef.current = [];
 
-    //     if (data.images.length > 0) {
-    //         const newPreview = data.images.map((image) => URL.createObjectURL(image));
+    //     const images = data.images || [];
+
+    //     if (images.length > 0) {
+    //         const newPreview = images.map((image) => URL.createObjectURL(image));
     //         previewUrlsRef.current = newPreview;
     //         setPreview(newPreview);
     //     } else {
@@ -57,6 +55,11 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
     //         previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
     //     };
     // }, [data.images]);
+
+    useEffect(() => {
+        setPreview(selectedFiles.map((file) => file.path));
+        setData('images_urls', selectedFiles.map((file) => file.path));
+    }, [selectedFiles, setData]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -71,11 +74,6 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
             },
         });
     };
-
-    useEffect(() => {
-        setPreview(selectedFiles.map((file) => file.path));
-        setData('images_urls', selectedFiles.map((file) => file.path));
-    }, [selectedFiles, setData]);
 
     return (
         <>
@@ -154,19 +152,23 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
                             className="w-full text-white px-3 py-2 px-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                         />
                     </label> */}
-                    <Button variant="outline" onClick={() => setActivePopup(true)}>Файловый менеджер</Button>
+
+                    <Button variant="outline" onClick={(e) => {
+                        e.preventDefault();
+                        setActivePopup(true);
+                    }}>Файловый менеджер</Button>
 
                     {errors.images && (
                         <p className="text-red-500 text-sm mt-1">{errors.images}</p>
                     )}
 
-                <Popup activePopup={activePopup} setActivePopup={setActivePopup}>
-                    <FileManagerComponent 
-                        initialFiles={[]}
-                        setActivePopup={setActivePopup}
-                        setSelectedFiles={setSelectedFiles}
-                    />
-                </Popup>
+                    <Popup activePopup={activePopup} setActivePopup={setActivePopup}>
+                        <FileManagerComponent 
+                            initialFiles={[]}
+                            setActivePopup={setActivePopup}
+                            setSelectedFiles={setSelectedFiles}
+                        />
+                    </Popup>
                     
                 </div>
 
