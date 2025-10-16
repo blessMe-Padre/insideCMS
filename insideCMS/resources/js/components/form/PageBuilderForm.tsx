@@ -6,11 +6,11 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 
-// const elementsList = [
-//     { name: 'text-block', type: 'text', description: 'Текстовый блок' },
-//     { name: 'image-block', type: 'file', description: 'Изображение' },
-//     { name: 'text-editor-block', type: 'text-editor', description: 'Текстовый редактор' },
-// ]
+const elementsList = [
+    { name: 'text-block', type: 'text', description: 'Текстовый блок' },
+    { name: 'image-block', type: 'file', description: 'Файл / Изображение' },
+    { name: 'text-editor-block', type: 'text-editor', description: 'Текстовый редактор' },
+]
 
 export default function PageBuilderForm() {
     const [elements, setElements] = useState<Array<{ id: string; type: string }>>([]);
@@ -24,7 +24,7 @@ export default function PageBuilderForm() {
           id: `element-${Date.now()}`,
           type: selectedElement
         };
-        
+
         setElements([...elements, newElement]);
         setSelectedElement('');
         setIsPopoverOpen(false);
@@ -63,9 +63,13 @@ export default function PageBuilderForm() {
                             <SelectValue placeholder="Выберите элемент" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="text-block">Текстовый блок</SelectItem>
-                            <SelectItem value="image-block">Изображение</SelectItem>
-                            <SelectItem value="text-editor-block">Текстовый редактор</SelectItem>
+                            {elementsList.map((element, index) => (
+                                <SelectItem 
+                                    key={index} 
+                                    value={element.type}>
+                                    {element.description}
+                                </SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
                     <Button 
