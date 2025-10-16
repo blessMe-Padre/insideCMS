@@ -77,10 +77,11 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
 
     // Роуты для страниц
     Route::controller(PageController::class)->group(function () {
-        Route::get('pages-admin', 'adminShow')->name('pages-admin');
-        Route::get('add-pages', 'create')->name('add-pages');
-        Route::delete('pages/{page}', 'destroy')->name('pages.destroy');
-        Route::post('pages', 'store')->name('pages.store');
+        Route::get('pages-admin', 'adminShow')->name('pages-admin'); // Список страниц
+        Route::get('add-pages', 'create')->name('add-pages'); // Создание страницы
+        Route::delete('pages/{page}', 'destroy')->name('pages.destroy'); // Удаление страницы
+        Route::post('pages', 'store')->name('pages.store'); // Сохранение созданой страницы
+        Route::get('pages/{page}/edit', 'edit')->name('pages.edit'); // Редактирование страницы
     });
  });
 

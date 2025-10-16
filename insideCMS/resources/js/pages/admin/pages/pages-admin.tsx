@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { addPages, dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm} from '@inertiajs/react';
+import { Head, router, useForm} from '@inertiajs/react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {  Lock, Plus, Trash, Edit } from 'lucide-react';
 import { Spinner } from '@/components/ui/spinner';
@@ -36,6 +36,7 @@ export default function PagesAdmin({ pages}: { pages: Page[] }) {
 
     const handleEdit = (id: number) => {
         setProcessingNewsId(id);
+        router.visit(`/pages/${id}/edit`);
     };
 
     const handleDelete = (id: number) => {

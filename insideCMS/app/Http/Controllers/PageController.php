@@ -62,9 +62,9 @@ class PageController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Page $page)
     {
-        //
+        return Inertia::render('admin/pages/edit-page', ['page' => $page]);
     }
 
     /**
