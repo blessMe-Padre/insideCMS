@@ -36,7 +36,19 @@ class PageController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255',
+            "description" => "string|max:2000",
+        ]);
+
+        Page::create([
+            'name' => $request->name,
+            'slug' => $request->slug,
+            'description' => $request->description,
+        ]);
+
+        return redirect()->route('pages-admin')->with('success', 'Страница создана');
     }
 
     /**

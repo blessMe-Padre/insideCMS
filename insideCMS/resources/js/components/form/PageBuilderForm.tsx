@@ -1,14 +1,25 @@
 import { useState, useEffect } from 'react';
-import { useForm } from '@inertiajs/react';
+import { router, useForm } from '@inertiajs/react';
+import { FileManagerFile } from '@cubone/react-file-manager';
+
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import { PlusIcon, TrashIcon } from 'lucide-react';
+import { LoaderCircle, PlusIcon, SaveIcon, TrashIcon } from 'lucide-react';
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import TextEditor from '../editor/TextEditor';
 import FileManagerComponent from '../editor/fileManager/FileManagerComponent';
 import Popup from '../popup/Popup';
+import { pagesAdmin } from '@/routes';
 
+interface ArticleFormData {
+    name: string;
+    description: string;
+    slug: string;
+    images?: File[];
+    images_urls?: string[];
+}
 
 const elementsList = [
     { name: 'text-block', type: 'text', description: 'Текстовый блок' },
@@ -19,17 +30,19 @@ const elementsList = [
 export default function PageBuilderForm() {
 
     const { data, setData, post, processing, errors, reset } = useForm<ArticleFormData>({
-        title: '',
-        content: '',
+        name: '',
+        description: '',
         slug: '',
         images: [],
     });
+
     const [elements, setElements] = useState<Array<{ id: string; type: string; description?: string }>>([]);
     const [selectedElement, setSelectedElement] = useState<string>('');
     const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
 
+    // File manager
     const [activePopup, setActivePopup] = useState<boolean>(false);
-    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const [selectedFiles, setSelectedFiles] = useState<FileManagerFile[]>([]);
     const [preview, setPreview] = useState<string[]>([]);
 
     useEffect(() => {
@@ -87,9 +100,52 @@ export default function PageBuilderForm() {
         ));
     }
 
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        post('pages', {
+                onSuccess: () => {
+                    reset();
+                    toast.success('Страница создана успешно');
+                    // router.visit(pagesAdmin().url);
+            },
+            onError: () => {
+                toast.error('Ошибка при создании страницы');
+            },
+        });
+    }
+
     return (
-        <div>
-            <h1 className="font-bold mb-4">Создайте страницу</h1>
+        <>
+           <div className="mb-4">
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                    Название страницы
+                </label>
+                <input 
+                    onChange={(e) => setData('name', e.target.value)}
+                    placeholder="Введите название страницы..."
+                    className="w-full p-2 border rounded"
+                />
+           </div>
+           <div className="mb-4">
+                <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">
+                    Slug
+                </label>
+                <input 
+                    onChange={(e) => setData('slug', e.target.value)}
+                    placeholder="Введите slug..."
+                    className="w-full p-2 border rounded"
+                />
+           </div>
+           <div className="mb-4">
+                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                    Описание
+                </label>
+                <input 
+                    onChange={(e) => setData('description', e.target.value)}
+                    placeholder="Введите описание..."
+                    className="w-full p-2 border rounded"
+                />
+           </div>
 
             {elements.map((element) => (
                 <div key={element.id} className="mb-4 p-4 border rounded">
@@ -115,17 +171,17 @@ export default function PageBuilderForm() {
                     {element.type === 'image-block' && (
                         <>
                            {preview.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                            {preview.map((image, index) => (
-                                <img 
-                                    key={`preview-${index}`}
-                                    src={image} 
-                                    alt={`Preview ${index + 1}`} 
-                                    className="w-20 h-20 object-cover rounded-md border" 
-                                />
-                            ))}
-                        </div>
-                    )}
+                                <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                                    {preview.map((image, index) => (
+                                        <img 
+                                            key={`preview-${index}`}
+                                            src={image} 
+                                            alt={`Preview ${index + 1}`} 
+                                            className="w-20 h-20 object-cover rounded-md border" 
+                                        />
+                                    ))}
+                                </div>
+                            )}
 
                           <Button 
                               variant="outline" 
@@ -138,7 +194,7 @@ export default function PageBuilderForm() {
                                 <FileManagerComponent 
                                     initialFiles={[]}
                                     setActivePopup={setActivePopup}
-                                    setSelectedFiles={setSelectedFiles}i
+                                    setSelectedFiles={setSelectedFiles}
                                 />
                             </Popup>
                         </>
@@ -148,7 +204,7 @@ export default function PageBuilderForm() {
          
 
             <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-                <PopoverTrigger className="flex items-center justify-center w-full h-full gap-2 cursor-pointer transition-all">
+                <PopoverTrigger className="flex items-center w-full justify-center gap-2 cursor-pointer transition-all mb-2">
                     <PlusIcon className="size-4 text-gray-500"/>
                     <span>Добавить элемент</span>
                 </PopoverTrigger>
@@ -170,16 +226,24 @@ export default function PageBuilderForm() {
                     </Select>
                     <Button 
                         variant="outline" 
-                        className="flex items-center justify-center w-full h-full gap-2 cursor-pointer transition-all"
+                        className="flex items-center justify-center gap-2 cursor-pointer transition-all"
                         onClick={handleAddElement}
                         disabled={!selectedElement}
                         >
                         <PlusIcon className="size-4 text-gray-500"/>
-                        <span>Добавить элемент</span>
+                        <span>Сохранить</span>
                     </Button>
                 </PopoverContent>
             </Popover>
 
-        </div>
+            <Button 
+                className="bg-blue-600 flex items-center gap-2 cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                onClick={handleSubmit}
+                disabled={processing}
+            >
+                {processing ? <LoaderCircle className="size-4 text-gray-500 animate-spin" /> : <SaveIcon className="size-4 text-gray-500"/>}
+                <span>Сохранить</span>
+            </Button>
+        </>
     );
 }

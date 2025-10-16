@@ -80,6 +80,7 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
         Route::get('pages-admin', 'adminShow')->name('pages-admin');
         Route::get('add-pages', 'create')->name('add-pages');
         Route::delete('pages/{page}', 'destroy')->name('pages.destroy');
+        Route::post('pages', 'store')->name('pages.store');
     });
  });
 
