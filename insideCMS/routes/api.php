@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\ReviewController;
 use App\Http\Controllers\Api\V1\NewsController;
 use App\Http\Controllers\Api\V1\ArticleController;
+use App\Http\Controllers\Api\V1\PageController;
 use App\Http\Controllers\FileController;
 
 Route::get('/user', function (Request $request) {
@@ -15,5 +16,6 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('reviews', ReviewController::class);
     Route::apiResource('news', NewsController::class);
     Route::apiResource('articles', ArticleController::class);
+    Route::apiResource('pages', PageController::class);
     Route::get('/files', [FileController::class, 'index']);
 });
