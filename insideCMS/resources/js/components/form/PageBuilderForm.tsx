@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useForm } from '@inertiajs/react';
 
 import { Button } from '@/components/ui/button';
 import { PlusIcon, TrashIcon } from 'lucide-react';
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import TextEditor from '../editor/TextEditor';
+import FileManagerComponent from '../editor/fileManager/FileManagerComponent';
+import Popup from '../popup/Popup';
 
 
 const elementsList = [
@@ -14,11 +17,25 @@ const elementsList = [
 ]
 
 export default function PageBuilderForm() {
+
+    const { data, setData, post, processing, errors, reset } = useForm<ArticleFormData>({
+        title: '',
+        content: '',
+        slug: '',
+        images: [],
+    });
     const [elements, setElements] = useState<Array<{ id: string; type: string; description?: string }>>([]);
     const [selectedElement, setSelectedElement] = useState<string>('');
     const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
 
-    console.log(elements);
+    const [activePopup, setActivePopup] = useState<boolean>(false);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const [preview, setPreview] = useState<string[]>([]);
+
+    useEffect(() => {
+        setPreview(selectedFiles.map((file) => file.path));
+        // setData('images_urls', selectedFiles.map((file) => file.path));
+    }, [selectedFiles, setData]);
 
     const handleAddElement = () => {
         if (!selectedElement) return;
@@ -96,7 +113,35 @@ export default function PageBuilderForm() {
                     )}
 
                     {element.type === 'image-block' && (
-                        <p>файловый менеджер</p>
+                        <>
+                           {preview.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                            {preview.map((image, index) => (
+                                <img 
+                                    key={`preview-${index}`}
+                                    src={image} 
+                                    alt={`Preview ${index + 1}`} 
+                                    className="w-20 h-20 object-cover rounded-md border" 
+                                />
+                            ))}
+                        </div>
+                    )}
+
+                          <Button 
+                              variant="outline" 
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setActivePopup(true);
+                            }}>Выбрать файл</Button>
+                            
+                            <Popup activePopup={activePopup} setActivePopup={setActivePopup}>
+                                <FileManagerComponent 
+                                    initialFiles={[]}
+                                    setActivePopup={setActivePopup}
+                                    setSelectedFiles={setSelectedFiles}i
+                                />
+                            </Popup>
+                        </>
                     )}
                 </div>
             ))}
