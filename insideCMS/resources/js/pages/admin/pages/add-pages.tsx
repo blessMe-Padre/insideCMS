@@ -2,8 +2,6 @@ import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head} from '@inertiajs/react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Lock} from 'lucide-react';
 import PageBuilderForm from '@/components/form/PageBuilderForm';
 
 
@@ -35,15 +33,7 @@ export default function AddPages() {
                     />
                 </Head>
                 <h1 className="text-3xl font-bold text-foreground mb-4">Создать страницу</h1>
-                <Alert variant="default" className="mb-4">
-                    <Lock />
-                    <AlertDescription>
-                      API:  /api/v1/pages/slug
-                    </AlertDescription>
-                </Alert>
-
                 <PageBuilderForm/>
-
             </div>
        </AppLayout>
     );

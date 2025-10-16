@@ -35,7 +35,6 @@ export default function PagesAdmin({ pages}: { pages: Page[] }) {
     const [processingNewsId, setProcessingNewsId] = useState<number | null>(null);
 
     const handleEdit = (id: number) => {
-        setProcessingNewsId(id);
         router.visit(`/pages/${id}/edit`);
     };
 
@@ -84,7 +83,7 @@ export default function PagesAdmin({ pages}: { pages: Page[] }) {
 
                 {pages.length === 0 ? (
                     <div className="text-center py-12">
-                        <p className="text-gray-500 text-lg">Пока нет опубликованных новостей.</p>
+                        <p className="text-gray-500 text-lg">Создайте свою первую страницу.</p>
                     </div>
                 ) : (
                     <div className="block">
@@ -93,11 +92,12 @@ export default function PagesAdmin({ pages}: { pages: Page[] }) {
                                 <div className="flex items-center justify-between gap-4">
                                     {/* <img src={item.images ? `${item.images[0]}` : placeholder} alt={item.title} className="w-10 h-10 rounded-full" /> */}
                                     <div className="">
-                                        <div className="flex items-center justify-between">
-                                            <h3 className="font-semibold text-white">{item.name}</h3>
+                                        <div className="">
+                                            <h3 className="text-white text-lg font-bold">{item.name}</h3>
+                                            <p className="text-sm text-gray-500">slug: <span className="text-white">{item.slug}</span></p>
                                         </div>
                                         <div className="mb-2">
-                                            <p className="text-sm text-gray-500">
+                                            <p className="text-xs text-gray-500">
                                                 {new Date(item.created_at).toLocaleDateString('ru-RU')}
                                             </p>
                                         </div>
