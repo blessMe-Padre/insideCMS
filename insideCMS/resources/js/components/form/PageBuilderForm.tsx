@@ -174,7 +174,7 @@ export default function PageBuilderForm() {
                     )}
                     
                     {element.type === 'text-editor-block' && (
-                        <TextEditor />
+                        <TextEditor value={element.content || ''} onChange={(value) => handleUpdateContent(element.id, value)} />
                     )}
 
                     {element.type === 'image-block' && (
