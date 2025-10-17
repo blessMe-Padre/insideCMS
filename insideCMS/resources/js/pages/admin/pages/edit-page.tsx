@@ -34,7 +34,18 @@ interface PageFormData {
     description: string;
 }
 
-export default function EditPage({ page }: { page: Page }) {
+interface Page_component {
+    id: number;
+    page_id: number;
+    component_id: number;
+    data: string;
+}
+
+export default function EditPage({ page, page_components }: { page: Page, page_components: Page_component[] }) {
+
+    console.log('page_components', page_components);
+    console.log('page', page);
+
     const { data, setData, post, processing, errors } = useForm<PageFormData>({
         name: page.name,
         slug: page.slug,
