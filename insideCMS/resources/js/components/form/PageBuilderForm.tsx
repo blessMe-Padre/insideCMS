@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { router, useForm } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
 import { FileManagerFile } from '@cubone/react-file-manager';
 
 import { toast } from 'sonner';
@@ -11,7 +11,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import TextEditor from '../editor/TextEditor';
 import FileManagerComponent from '../editor/fileManager/FileManagerComponent';
 import Popup from '../popup/Popup';
-import { pagesAdmin } from '@/routes';
 
 interface ArticleFormData {
     name: string;
@@ -29,14 +28,21 @@ const elementsList = [
 
 export default function PageBuilderForm() {
 
-    const { data, setData, post, processing, errors, reset } = useForm<ArticleFormData>({
+    const { data, setData, post, processing, reset } = useForm<ArticleFormData>({
         name: '',
         description: '',
         slug: '',
         images: [],
     });
 
-    const [elements, setElements] = useState<Array<{ id: string; type: string; description?: string }>>([]);
+    interface Element {
+        id: string;
+        type: string;
+        description: string;
+        content?: string;
+    }
+
+    const [elements, setElements] = useState<Element[]>([]);
     const [selectedElement, setSelectedElement] = useState<string>('');
     const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
 
@@ -44,6 +50,9 @@ export default function PageBuilderForm() {
     const [activePopup, setActivePopup] = useState<boolean>(false);
     const [selectedFiles, setSelectedFiles] = useState<FileManagerFile[]>([]);
     const [preview, setPreview] = useState<string[]>([]);
+    const [componentsContent, setComponentsContent] = useState<Element[]>([]);
+
+    console.log(componentsContent);
 
     useEffect(() => {
         setPreview(selectedFiles.map((file) => file.path));
@@ -61,6 +70,7 @@ export default function PageBuilderForm() {
                     id: `element-${Date.now()}`,
                     type: 'text-block',
                     description: 'Текстовый блок',
+                    content: '',
                 };
                 break;
             case 'image-block':
@@ -68,6 +78,7 @@ export default function PageBuilderForm() {
                     id: `element-${Date.now()}`,
                     type: 'image-block',
                     description: 'Файл / Изображение',
+                    content: '',
                 };
                 break;
             case 'text-editor-block':
@@ -75,6 +86,7 @@ export default function PageBuilderForm() {
                     id: `element-${Date.now()}`,
                     type: 'text-editor-block',
                     description: 'Текстовый редактор',
+                    content: '',
                 };
                 break;
             default:
@@ -95,18 +107,47 @@ export default function PageBuilderForm() {
     }
 
     const handleUpdateContent = (id: string, content: string) => {
+        // Обновляем массив elements
         setElements(elements.map(element => 
-            element.id === id ? { ...element, content } : element
-        ));
+            element.id === id ? { ...element, content } : element));
+        
+        // Обновляем componentsContent для сохранения в базу
+        setComponentsContent(prev => {
+            const existingIndex = prev.findIndex((item: Element) => item.id === id);
+            if (existingIndex !== -1) {
+                // Обновляем существующий элемент
+                const updated = [...prev];
+                updated[existingIndex] = { ...updated[existingIndex], content };
+                return updated;
+            } else {
+                // Добавляем новый элемент
+                const element = elements.find(el => el.id === id);
+                return [...prev, { 
+                    id, 
+                    type: element?.type || 'text-block', 
+                    description: element?.description || 'Текстовый блок',
+                    content 
+                }];
+            }
+        });
     }
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Обновляем данные формы с компонентами
+        const formData = {
+            ...data,
+            components: componentsContent
+        };
+        
         post('pages', {
-                onSuccess: () => {
-                    reset();
-                    toast.success('Страница создана успешно');
-                    // router.visit(pagesAdmin().url);
+            ...formData,
+            onSuccess: () => {
+                reset();
+                setComponentsContent([]);
+                setElements([]);
+                toast.success('Страница создана успешно');
             },
             onError: () => {
                 toast.error('Ошибка при создании страницы');
@@ -158,6 +199,7 @@ export default function PageBuilderForm() {
                     
                     {element.type === 'text-block' && (
                         <input 
+                            value={element.content || ''}
                             onChange={(e) => handleUpdateContent(element.id, e.target.value)}
                             placeholder="Введите текст..."
                             className="w-full p-2 border rounded"
