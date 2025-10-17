@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Page;
+use App\Models\Component;
 
 class PageController extends Controller
 {
@@ -28,7 +29,8 @@ class PageController extends Controller
      */
     public function create()
     {
-        return Inertia::render('admin/pages/add-pages');
+        $components = Component::all();
+        return Inertia::render('admin/pages/add-pages', ['components' => $components]);
     }
 
     /**

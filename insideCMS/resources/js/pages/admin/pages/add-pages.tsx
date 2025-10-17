@@ -5,7 +5,12 @@ import { Head} from '@inertiajs/react';
 import PageBuilderForm from '@/components/form/PageBuilderForm';
 
 
-
+interface Component {
+    id: string;
+    name: string;
+    description: string;
+    content?: string;
+}
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -18,8 +23,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function AddPages() {
-
+export default function AddPages({ components }: { components: Component[] }) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -32,7 +36,7 @@ export default function AddPages() {
                     />
                 </Head>
                 <h1 className="text-3xl font-bold text-foreground mb-4">Создать страницу</h1>
-                <PageBuilderForm/>
+                <PageBuilderForm components={components}/>
             </div>
        </AppLayout>
     );

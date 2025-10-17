@@ -27,14 +27,16 @@ interface Element {
     content?: string;
 }
 
-const elementsList = [
-    { name: 'text-block', type: 'text', description: 'Текстовый блок' },
-    { name: 'image-block', type: 'file', description: 'Файл / Изображение' },
-    { name: 'text-editor-block', type: 'text-editor', description: 'Текстовый редактор' },
-]
+// const elementsList = [
+//     { name: 'text-block', type: 'text', description: 'Текстовый блок' },
+//     { name: 'image-block', type: 'file', description: 'Файл / Изображение' },
+//     { name: 'text-editor-block', type: 'text-editor', description: 'Текстовый редактор' },
+// ]
 
-export default function PageBuilderForm() {
+export default function PageBuilderForm({ components }: { components: Component[] }) {
 
+    console.log(components);
+    
     const { setData, post, processing, reset } = useForm<ArticleFormData>({
         name: '',
         description: '',
@@ -224,7 +226,7 @@ export default function PageBuilderForm() {
                             <SelectValue placeholder="Выберите элемент" />
                         </SelectTrigger>
                         <SelectContent>
-                            {elementsList.map((element, index) => (
+                            {components.map((element, index) => (
                                 <SelectItem 
                                     key={index} 
                                     value={element.name}>
