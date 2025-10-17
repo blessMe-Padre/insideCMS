@@ -20,6 +20,13 @@ interface ArticleFormData {
     images_urls?: string[];
 }
 
+interface Element {
+    id: string;
+    type: string;
+    description: string;
+    content?: string;
+}
+
 const elementsList = [
     { name: 'text-block', type: 'text', description: 'Текстовый блок' },
     { name: 'image-block', type: 'file', description: 'Файл / Изображение' },
@@ -28,19 +35,12 @@ const elementsList = [
 
 export default function PageBuilderForm() {
 
-    const { data, setData, post, processing, reset } = useForm<ArticleFormData>({
+    const { setData, post, processing, reset } = useForm<ArticleFormData>({
         name: '',
         description: '',
         slug: '',
         images: [],
     });
-
-    interface Element {
-        id: string;
-        type: string;
-        description: string;
-        content?: string;
-    }
 
     const [elements, setElements] = useState<Element[]>([]);
     const [selectedElement, setSelectedElement] = useState<string>('');
@@ -50,9 +50,6 @@ export default function PageBuilderForm() {
     const [activePopup, setActivePopup] = useState<boolean>(false);
     const [selectedFiles, setSelectedFiles] = useState<FileManagerFile[]>([]);
     const [preview, setPreview] = useState<string[]>([]);
-    const [componentsContent, setComponentsContent] = useState<Element[]>([]);
-
-    console.log(componentsContent);
 
     useEffect(() => {
         setPreview(selectedFiles.map((file) => file.path));
@@ -106,48 +103,18 @@ export default function PageBuilderForm() {
         setSelectedElement(value);
     }
 
+    console.log(elements);
     const handleUpdateContent = (id: string, content: string) => {
-        // Обновляем массив elements
         setElements(elements.map(element => 
             element.id === id ? { ...element, content } : element));
-        
-        // Обновляем componentsContent для сохранения в базу
-        setComponentsContent(prev => {
-            const existingIndex = prev.findIndex((item: Element) => item.id === id);
-            if (existingIndex !== -1) {
-                // Обновляем существующий элемент
-                const updated = [...prev];
-                updated[existingIndex] = { ...updated[existingIndex], content };
-                return updated;
-            } else {
-                // Добавляем новый элемент
-                const element = elements.find(el => el.id === id);
-                return [...prev, { 
-                    id, 
-                    type: element?.type || 'text-block', 
-                    description: element?.description || 'Текстовый блок',
-                    content 
-                }];
-            }
-        });
     }
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        
-        // Обновляем данные формы с компонентами
-        const formData = {
-            ...data,
-            components: componentsContent
-        };
-        
         post('pages', {
-            ...formData,
-            onSuccess: () => {
-                reset();
-                setComponentsContent([]);
-                setElements([]);
-                toast.success('Страница создана успешно');
+                onSuccess: () => {
+                    reset();
+                    toast.success('Страница создана успешно');
             },
             onError: () => {
                 toast.error('Ошибка при создании страницы');

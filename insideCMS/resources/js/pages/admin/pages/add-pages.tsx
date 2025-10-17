@@ -21,7 +21,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function AddPages() {
 
 
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="px-4 py-8">
