@@ -9,7 +9,9 @@ interface Component {
     id: string;
     name: string;
     description: string;
+    type: string;
     content?: string;
+    component_id: string;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [

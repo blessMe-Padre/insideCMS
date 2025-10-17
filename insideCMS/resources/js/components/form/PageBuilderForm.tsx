@@ -18,30 +18,35 @@ interface ArticleFormData {
     slug: string;
     images?: File[];
     images_urls?: string[];
+    elements?: Element[];
 }
 
 interface Element {
     id: string;
-    type: string;
-    description: string;
+    type?: string;
+    description?: string;
     content?: string;
+    component_id?: string;
 }
 
-// const elementsList = [
-//     { name: 'text-block', type: 'text', description: 'Текстовый блок' },
-//     { name: 'image-block', type: 'file', description: 'Файл / Изображение' },
-//     { name: 'text-editor-block', type: 'text-editor', description: 'Текстовый редактор' },
-// ]
+interface Component {
+    id: string;
+    name: string;
+    description: string;
+    content?: string;
+    type: string;
+}
 
 export default function PageBuilderForm({ components }: { components: Component[] }) {
 
-    console.log(components);
+    console.log('PageBuilderForm', components);
     
     const { setData, post, processing, reset } = useForm<ArticleFormData>({
         name: '',
         description: '',
         slug: '',
         images: [],
+        elements: [],
     });
 
     const [elements, setElements] = useState<Element[]>([]);
@@ -70,6 +75,7 @@ export default function PageBuilderForm({ components }: { components: Component[
                     type: 'text-block',
                     description: 'Текстовый блок',
                     content: '',
+                    component_id: components.find((component) => component.name === 'text-block')?.id || '',
                 };
                 break;
             case 'image-block':
@@ -78,6 +84,7 @@ export default function PageBuilderForm({ components }: { components: Component[
                     type: 'image-block',
                     description: 'Файл / Изображение',
                     content: '',
+                    component_id: components.find((component) => component.name === 'image-block')?.id || '',
                 };
                 break;
             case 'text-editor-block':
@@ -86,6 +93,7 @@ export default function PageBuilderForm({ components }: { components: Component[
                     type: 'text-editor-block',
                     description: 'Текстовый редактор',
                     content: '',
+                    component_id: components.find((component) => component.name === 'text-editor-block')?.id || '',
                 };
                 break;
             default:
@@ -106,13 +114,17 @@ export default function PageBuilderForm({ components }: { components: Component[
     }
 
     console.log(elements);
+
     const handleUpdateContent = (id: string, content: string) => {
         setElements(elements.map(element => 
-            element.id === id ? { ...element, content } : element));
+            element.id === id ? { ...element, content: content } : element));
+
+        setData('elements', elements);
     }
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
         post('pages', {
                 onSuccess: () => {
                     reset();

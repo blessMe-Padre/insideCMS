@@ -15,13 +15,4 @@ class Page_component extends Model
         'data' => 'array',
     ];
 
-    public function page(): BelongsTo
-    {
-        return $this->belongsTo(Page::class);
-    }
-
-    public function component(): BelongsTo
-    {
-        return $this->belongsTo(Component::class);
-    }
 }

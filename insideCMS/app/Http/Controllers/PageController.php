@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Page;
 use App\Models\Component;
+use App\Models\Page_component;
 
 class PageController extends Controller
 {
@@ -44,11 +45,21 @@ class PageController extends Controller
             "description" => "string|max:2000",
         ]);
 
-        Page::create([
+        $page = Page::create([
             'name' => $request->name,
             'slug' => $request->slug,
             'description' => $request->description,
         ]);
+
+
+        foreach ($request->elements as $element) {
+            $elementData = [
+                'page_id' => $page->id,
+                'component_id' => $element['component_id'],
+                'data' => is_array(json_decode($element['content'], true)) ? $element['content'] : json_encode([$element['content']], JSON_UNESCAPED_UNICODE),
+            ];
+            Page_component::create($elementData);
+        }
 
         return redirect()->route('pages-admin')->with('success', 'Страница создана');
     }
