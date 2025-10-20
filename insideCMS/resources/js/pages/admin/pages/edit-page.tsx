@@ -105,6 +105,16 @@ export default function EditPage({ page, components }: { page: Page, components:
         }
     }, [selectedFiles, currentImageElementId, handleUpdateContent]);
 
+    // Обработчик выбора файлов из FileManager
+    const handleFileSelection = (files: FileManagerFile[]) => {
+        if (currentImageElementId) {
+            const imageUrls = files.map((file) => file.path);
+            handleUpdateContent(currentImageElementId, JSON.stringify(imageUrls));
+            setCurrentImageElementId(null);
+        }
+        setSelectedFiles(files);
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="px-4 py-8">
@@ -199,31 +209,49 @@ export default function EditPage({ page, components }: { page: Page, components:
 
                     {element.component_type === 'file' && (
                         <>
-                           {element.data && (() => {
-                                try {
-                                    const images = JSON.parse(element.data);
-                                    return Array.isArray(images) && images.length > 0;
-                                } catch {
-                                    return false;
-                                }
-                            })() && (
-                                <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                                    {(() => {
-                                        try {
-                                            return JSON.parse(element.data).map((image: string, index: number) => (
+                           {/* Отображение файлов: selectedFiles заменяют element.data при активном выборе */}
+                           {(() => {
+                                // Если есть активный выбор для этого элемента, показываем selectedFiles
+                                if (currentImageElementId === element.id && selectedFiles.length > 0) {
+                                    return (
+                                        <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                                            {selectedFiles.map((file, index) => (
                                                 <img 
-                                                    key={`preview-${index}`}
-                                                    src={image} 
-                                                    alt={`Preview ${index + 1}`} 
-                                                    className="w-20 h-20 object-cover rounded-md border" 
+                                                    key={`selected-${index}`}
+                                                    src={file.path} 
+                                                    alt={`Selected ${index + 1}`} 
+                                                    className="w-20 h-20 object-cover rounded-md border border-blue-500" 
                                                 />
-                                            ));
-                                        } catch {
-                                            return null;
+                                            ))}
+                                        </div>
+                                    );
+                                }
+                                
+                                // Иначе показываем существующие файлы из element.data
+                                if (element.data) {
+                                    try {
+                                        const images = JSON.parse(element.data);
+                                        if (Array.isArray(images) && images.length > 0) {
+                                            return (
+                                                <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                                                    {images.map((image: string, index: number) => (
+                                                        <img 
+                                                            key={`preview-${index}`}
+                                                            src={image} 
+                                                            alt={`Preview ${index + 1}`} 
+                                                            className="w-20 h-20 object-cover rounded-md border" 
+                                                        />
+                                                    ))}
+                                                </div>
+                                            );
                                         }
-                                    })()}
-                                </div>
-                            )}
+                                    } catch {
+                                        return null;
+                                    }
+                                }
+                                
+                                return null;
+                            })()}
 
                           <Button 
                               variant="outline" 
@@ -237,7 +265,7 @@ export default function EditPage({ page, components }: { page: Page, components:
                                 <FileManagerComponent 
                                     initialFiles={[]}
                                     setActivePopup={setActivePopup}
-                                    setSelectedFiles={setSelectedFiles}
+                                    setSelectedFiles={handleFileSelection}
                                 />
                             </Popup>
                         </>
