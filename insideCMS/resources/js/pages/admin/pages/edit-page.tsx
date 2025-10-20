@@ -58,8 +58,6 @@ export default function EditPage({ page, components }: { page: Page, components:
     });
 
     const [elements, setElements] = useState<Page_component[]>(components);
-
-    console.log('elements', elements);
     
     // File manager states
     const [activePopup, setActivePopup] = useState<boolean>(false);
@@ -122,6 +120,19 @@ export default function EditPage({ page, components }: { page: Page, components:
         }
         setSelectedFiles(files);
     };
+
+    const componentName = (component_type: string) => {
+        switch (component_type) {
+            case 'text':
+                return 'Текст';
+            case "text-editor'":
+                return 'Текстовый редактор';
+            case 'file':
+                return 'Файлы / Изображения';
+            default:
+                return component_type;
+        }
+    }
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -196,7 +207,7 @@ export default function EditPage({ page, components }: { page: Page, components:
                     {elements.map((element, index) => (
                     <div key={index} className="mb-4 p-4 border rounded">
                         <div className="flex items-center justify-between mb-2">
-                            <h2 className="font-medium">{element.component_type}</h2>
+                            <h2 className="font-medium">{componentName(element.component_type)}</h2>
                             <button className="cursor-pointer text-red-500 hover:text-red-700" onClick={() => handleRemoveElement(element.id)}>
                                 <TrashIcon className="size-4"/>
                             </button>
