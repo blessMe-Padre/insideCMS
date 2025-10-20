@@ -17,5 +17,6 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('news', NewsController::class);
     Route::apiResource('articles', ArticleController::class);
     Route::apiResource('pages', PageController::class);
+    Route::get('pages/{slug}', [PageController::class, 'show']);
     Route::get('/files', [FileController::class, 'index']);
 });
