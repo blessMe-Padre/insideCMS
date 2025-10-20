@@ -78,7 +78,7 @@ class PageController extends Controller
     public function edit(Page $page)
     {
         $page_component = Page_component::query()
-         ->select('pc.data', 'c.type as component_type')
+         ->select('pc.id', 'pc.data', 'c.type as component_type')
          ->from('page_components as pc')
          ->join('components as c', 'pc.component_id', '=', 'c.id')
          ->where('pc.page_id', $page->id)

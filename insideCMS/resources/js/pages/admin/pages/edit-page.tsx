@@ -43,8 +43,8 @@ interface PageFormData {
 
 interface Page_component {
     id: number;
-    page_id: number;
-    component_id: number;
+    page_id?: number;
+    component_id?: number;
     data: string;
     component_type: string;
 }
@@ -64,9 +64,17 @@ export default function EditPage({ page, components }: { page: Page, components:
     const [selectedFiles, setSelectedFiles] = useState<FileManagerFile[]>([]);
     const [currentImageElementId, setCurrentImageElementId] = useState<number | null>(null);
 
+    // Безопасный парсинг JSON
+    const safeJsonParse = (data: string, fallback: string | string[] = '') => {
+        if (!data) return fallback;
+        try {
+            return JSON.parse(data);
+        } catch {
+            return fallback;
+        }
+    };
+
     console.log('elements', elements);
-    console.log('selectedFiles', selectedFiles);
-    
     
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -196,22 +204,23 @@ export default function EditPage({ page, components }: { page: Page, components:
                     
                     {element.component_type === 'text' && (
                         <input 
-                            value={JSON.parse(element.data)}
-                            onChange={(e) => handleUpdateContent(element.id, e.target.value)}
+                            id={`text-input-${element.id}`}
+                            value={safeJsonParse(element.data)}
+                            onChange={(e) => handleUpdateContent(element.id, JSON.stringify(e.target.value))}
                             placeholder="Введите текст..."
                             className="w-full p-2 border rounded"
                          />
                     )}
                     
                     {element.component_type === "text-editor'" && (
-                        <TextEditor value={element.data || ''} onChange={(value) => handleUpdateContent(element.id, value)} />
+                        <div id={`text-editor-${element.id}`}>
+                            <TextEditor value={element.data || ''} onChange={(value) => handleUpdateContent(element.id, value)} />
+                        </div>
                     )}
 
                     {element.component_type === 'file' && (
                         <>
-                           {/* Отображение файлов: selectedFiles заменяют element.data при активном выборе */}
                            {(() => {
-                                // Если есть активный выбор для этого элемента, показываем selectedFiles
                                 if (currentImageElementId === element.id && selectedFiles.length > 0) {
                                     return (
                                         <div className="flex flex-wrap gap-2 mt-2 mb-2">
@@ -229,24 +238,20 @@ export default function EditPage({ page, components }: { page: Page, components:
                                 
                                 // Иначе показываем существующие файлы из element.data
                                 if (element.data) {
-                                    try {
-                                        const images = JSON.parse(element.data);
-                                        if (Array.isArray(images) && images.length > 0) {
-                                            return (
-                                                <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                                                    {images.map((image: string, index: number) => (
-                                                        <img 
-                                                            key={`preview-${index}`}
-                                                            src={image} 
-                                                            alt={`Preview ${index + 1}`} 
-                                                            className="w-20 h-20 object-cover rounded-md border" 
-                                                        />
-                                                    ))}
-                                                </div>
-                                            );
-                                        }
-                                    } catch {
-                                        return null;
+                                    const images = safeJsonParse(element.data, []);
+                                    if (Array.isArray(images) && images.length > 0) {
+                                        return (
+                                            <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                                                {images.map((image: string, index: number) => (
+                                                    <img 
+                                                        key={`preview-${index}`}
+                                                        src={image} 
+                                                        alt={`Preview ${index + 1}`} 
+                                                        className="w-20 h-20 object-cover rounded-md border" 
+                                                    />
+                                                ))}
+                                            </div>
+                                        );
                                     }
                                 }
                                 
@@ -270,8 +275,9 @@ export default function EditPage({ page, components }: { page: Page, components:
                             </Popup>
                         </>
                     )}
-                </div>
-            ))}
+
+                    </div>
+                     ))}
 
 
                     <div className="flex gap-2 mt-4">
