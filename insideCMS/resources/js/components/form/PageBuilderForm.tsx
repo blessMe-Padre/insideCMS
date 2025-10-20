@@ -120,8 +120,6 @@ export default function PageBuilderForm({ components }: { components: Component[
         setSelectedElement(value);
     }
 
-    console.log(elements);
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 

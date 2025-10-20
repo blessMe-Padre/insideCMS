@@ -39,8 +39,6 @@ class PageController extends Controller
      */
     public function store(Request $request)
     {
-
-        dd($request->all());
         $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255',
@@ -86,7 +84,12 @@ class PageController extends Controller
          ->where('pc.page_id', $page->id)
          ->get();
 
-        return Inertia::render('admin/pages/edit-page', ['page' => $page, 'page_components' => $page_component->toArray()]);
+        $page_data = [
+            'page' => $page,
+            'components' => $page_component->toArray(),
+        ];
+
+        return Inertia::render('admin/pages/edit-page', $page_data);
     }
 
     /**

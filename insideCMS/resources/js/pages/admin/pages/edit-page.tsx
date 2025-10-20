@@ -41,9 +41,9 @@ interface Page_component {
     data: string;
 }
 
-export default function EditPage({ page, page_components }: { page: Page, page_components: Page_component[] }) {
+export default function EditPage({ page, components }: { page: Page, components: Page_component[] }) {
 
-    console.log('page_components', page_components);
+    console.log('components', components);
     console.log('page', page);
 
     const { data, setData, post, processing, errors } = useForm<PageFormData>({
