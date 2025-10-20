@@ -78,7 +78,7 @@ class PageController extends Controller
     public function edit(Page $page)
     {
         $page_component = Page_component::query()
-         ->select('pc.id', 'pc.data', 'c.type as component_type')
+         ->select('pc.id', 'pc.data', 'pc.component_id', 'c.type as component_type')
          ->from('page_components as pc')
          ->join('components as c', 'pc.component_id', '=', 'c.id')
          ->where('pc.page_id', $page->id)
@@ -108,6 +108,21 @@ class PageController extends Controller
             'slug' => $request->slug,
             'description' => $request->description,
         ]);
+
+        // Удаляем старые компоненты страницы
+        Page_component::where('page_id', $page->id)->delete();
+
+        // Добавляем новые компоненты, если они есть
+        if ($request->components && is_array($request->components)) {
+            foreach ($request->components as $component) {
+                $elementData = [
+                    'page_id' => $page->id,
+                    'component_id' => $component['component_id'],
+                    'data' => $component['data'],
+                ];
+                Page_component::create($elementData);
+            }
+        }
 
         return redirect()->route('pages-admin')->with('success', 'Страница обновлена');
     }

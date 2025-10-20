@@ -58,6 +58,8 @@ export default function EditPage({ page, components }: { page: Page, components:
     });
 
     const [elements, setElements] = useState<Page_component[]>(components);
+
+    console.log('elements', elements);
     
     // File manager states
     const [activePopup, setActivePopup] = useState<boolean>(false);
@@ -74,8 +76,6 @@ export default function EditPage({ page, components }: { page: Page, components:
         }
     };
 
-    console.log('elements', elements);
-    
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post(`/pages/${page.id}`, {
