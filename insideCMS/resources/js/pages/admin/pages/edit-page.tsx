@@ -64,10 +64,9 @@ export default function EditPage({ page, components }: { page: Page, components:
     const [selectedFiles, setSelectedFiles] = useState<FileManagerFile[]>([]);
     const [currentImageElementId, setCurrentImageElementId] = useState<number | null>(null);
 
-    console.log('currentImageElementId', currentImageElementId);
     console.log('elements', elements);
-
-
+    console.log('selectedFiles', selectedFiles);
+    
     
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -176,8 +175,8 @@ export default function EditPage({ page, components }: { page: Page, components:
                         )}
                     </div>
                     
-                    {elements.map((element) => (
-                    <div key={element.id} className="mb-4 p-4 border rounded">
+                    {elements.map((element, index) => (
+                    <div key={index} className="mb-4 p-4 border rounded">
                         <div className="flex items-center justify-between mb-2">
                             <h2 className="font-medium">{element.component_type}</h2>
                             <button className="cursor-pointer text-red-500 hover:text-red-700" onClick={() => handleRemoveElement(element.id)}>
