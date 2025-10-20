@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useForm } from '@inertiajs/react';
 import { FileManagerFile } from '@cubone/react-file-manager';
 
@@ -38,14 +38,10 @@ interface Component {
 }
 
 export default function PageBuilderForm({ components }: { components: Component[] }) {
-
-    console.log('PageBuilderForm', components);
-    
-    const { setData, post, processing, reset } = useForm<ArticleFormData>({
+       const { setData, post, processing, reset } = useForm<ArticleFormData>({
         name: '',
         description: '',
         slug: '',
-        images: [],
         elements: [],
     });
 
@@ -56,12 +52,23 @@ export default function PageBuilderForm({ components }: { components: Component[
     // File manager
     const [activePopup, setActivePopup] = useState<boolean>(false);
     const [selectedFiles, setSelectedFiles] = useState<FileManagerFile[]>([]);
-    const [preview, setPreview] = useState<string[]>([]);
+    const [currentImageElementId, setCurrentImageElementId] = useState<string>('');
+
+    const handleUpdateContent = useCallback((id: string, content: string) => {
+        const updatedElements = elements.map(element => 
+            element.id === id ? { ...element, content: content } : element);
+        
+        setElements(updatedElements);
+        setData('elements', updatedElements);
+    }, [elements, setData]);
 
     useEffect(() => {
-        setPreview(selectedFiles.map((file) => file.path));
-        // setData('images_urls', selectedFiles.map((file) => file.path));
-    }, [selectedFiles, setData]);
+        if (selectedFiles.length > 0 && currentImageElementId) {
+            const imageUrls = selectedFiles.map((file) => file.path);
+            handleUpdateContent(currentImageElementId, JSON.stringify(imageUrls));
+            setSelectedFiles([]); // Очищаем выбранные файлы после обработки
+        }
+    }, [selectedFiles, currentImageElementId, handleUpdateContent]);
 
     const handleAddElement = () => {
         if (!selectedElement) return;
@@ -114,13 +121,6 @@ export default function PageBuilderForm({ components }: { components: Component[
     }
 
     console.log(elements);
-
-    const handleUpdateContent = (id: string, content: string) => {
-        setElements(elements.map(element => 
-            element.id === id ? { ...element, content: content } : element));
-
-        setData('elements', elements);
-    }
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -193,16 +193,29 @@ export default function PageBuilderForm({ components }: { components: Component[
 
                     {element.type === 'image-block' && (
                         <>
-                           {preview.length > 0 && (
+                           {element.content && (() => {
+                                try {
+                                    const images = JSON.parse(element.content);
+                                    return Array.isArray(images) && images.length > 0;
+                                } catch {
+                                    return false;
+                                }
+                            })() && (
                                 <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                                    {preview.map((image, index) => (
-                                        <img 
-                                            key={`preview-${index}`}
-                                            src={image} 
-                                            alt={`Preview ${index + 1}`} 
-                                            className="w-20 h-20 object-cover rounded-md border" 
-                                        />
-                                    ))}
+                                    {(() => {
+                                        try {
+                                            return JSON.parse(element.content).map((image: string, index: number) => (
+                                                <img 
+                                                    key={`preview-${index}`}
+                                                    src={image} 
+                                                    alt={`Preview ${index + 1}`} 
+                                                    className="w-20 h-20 object-cover rounded-md border" 
+                                                />
+                                            ));
+                                        } catch {
+                                            return null;
+                                        }
+                                    })()}
                                 </div>
                             )}
 
@@ -210,6 +223,7 @@ export default function PageBuilderForm({ components }: { components: Component[
                               variant="outline" 
                               onClick={(e) => {
                                 e.preventDefault();
+                                setCurrentImageElementId(element.id);
                                 setActivePopup(true);
                             }}>Выбрать файл</Button>
                             
