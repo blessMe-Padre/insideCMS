@@ -4,6 +4,12 @@ import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { toast } from "sonner";
+import Popup from '@/components/popup/Popup';
+import FileManagerComponent from '@/components/editor/fileManager/FileManagerComponent';
+import { Button } from '@/components/ui/button';
+import { useState, useEffect } from 'react';
+import { FileManagerFile } from '@cubone/react-file-manager';
+import { TrashIcon } from 'lucide-react';
 
 interface News {
     id: number;
@@ -29,7 +35,7 @@ interface NewsFormData {
     slug: string;
     time_to_read: number;
     is_published: boolean;
-    images: File[];
+    images: string[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -55,8 +61,70 @@ export default function EditNewsAdmin({ news }: EditNewsAdminPageProps) {
         slug: news.slug,
         time_to_read: news.time_to_read,
         is_published: news.is_published,
-        images: [],
+        images: news.images || [],
     });
+
+    
+    const [activePopup, setActivePopup] = useState(false);
+    const [selectedFiles, setSelectedFiles] = useState<string[]>(news.images || []);
+    const [currentImageElementId, setCurrentImageElementId] = useState<number | null>(null);
+    const [elements, setElements] = useState<Array<{ id: number; data: string[] }>>([]);
+
+    // Синхронизация selectedFiles с data.images при изменении data.images
+    useEffect(() => {
+        setSelectedFiles(data.images || []);
+    }, [data.images]);
+
+    // Инициализация при первой загрузке
+    useEffect(() => {
+        if (news.images && news.images.length > 0) {
+            setSelectedFiles(news.images);
+            setData('images', news.images);
+        }
+    }, [news.images, setData]); // Зависимости для правильной работы
+
+    // Обработчик выбора файлов из FileManager
+    const handleFileSelection = (files: FileManagerFile[]) => {
+        const filePaths = files.map(file => file.path);
+        setSelectedFiles(filePaths);
+        setData('images', filePaths);
+        
+        // Затем синхронизируем данные элемента
+        if (currentImageElementId) {
+            const updatedElements = elements.map((element) => 
+                element.id === currentImageElementId ? { ...element, data: filePaths } : element
+            );
+            setElements(updatedElements);
+        }
+    };
+    
+    const handleRemoveFile = (e: React.FormEvent, elementId: number, fileIndex: number) => {
+        e.preventDefault();
+
+        // Если удаляем файл из временно выбранных (предпросмотр), синхронизируем и элементы
+        if (currentImageElementId === elementId && selectedFiles.length > 0) {
+            const updatedSelectedFiles = selectedFiles.filter((_, index) => index !== fileIndex);
+            setSelectedFiles(updatedSelectedFiles);
+            setData('images', updatedSelectedFiles);
+
+            const updatedElements = elements.map((element) =>
+                element.id === elementId ? { ...element, data: updatedSelectedFiles } : element
+            );
+            setElements(updatedElements);
+            return;
+        }
+
+        // Иначе удаляем из уже сохранённых файлов
+        if (data.images && data.images.length > 0) {
+            const updatedImages = data.images.filter((_, index) => index !== fileIndex);
+            setData('images', updatedImages);
+            // Принудительно обновляем selectedFiles
+            setSelectedFiles(updatedImages);
+        } else {
+            // Если data.images пустой, принудительно очищаем selectedFiles
+            setSelectedFiles([]);
+        }
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -184,20 +252,49 @@ export default function EditNewsAdmin({ news }: EditNewsAdminPageProps) {
                     </div>
 
                     <div>
-                        <label htmlFor="images" className="block text-sm font-medium text-foreground mb-1">
-                            Изображения (оставьте пустым, чтобы не менять)
+                        <label className="block text-sm font-medium text-foreground mb-1">
+                            Изображения
                         </label>
-                        <input
-                            id="images"
-                            type="file"
-                            multiple
-                            accept="image/*"
-                            onChange={(e) => setData('images', Array.from(e.target.files || []))}
-                            className="w-full text-white px-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                        {errors.images && (
-                            <p className="text-red-500 text-sm mt-1">{errors.images}</p>
+                        
+                        {selectedFiles.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                                {selectedFiles.map((file, index) => (
+                                    <div key={`selected-${index}`} className="relative">
+                                        <button
+                                            className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700 z-10"
+                                            onClick={(e) => handleRemoveFile(e, 0, index)}>
+                                            <TrashIcon className="w-4 h-4" />
+                                        </button>
+                                        <img  
+                                            src={file} 
+                                            alt={`Selected ${index + 1}`} 
+                                            className={`w-20 h-20 object-cover rounded-md border ${
+                                                currentImageElementId === 0 ? 'border-blue-500' : ''
+                                            }`}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
                         )}
+
+                        <Button 
+                            type="button"
+                            variant="outline" 
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setCurrentImageElementId(0);
+                                setActivePopup(true);
+                            }}>
+                            Выбрать файл
+                        </Button>
+                        
+                        <Popup activePopup={activePopup} setActivePopup={setActivePopup}>
+                            <FileManagerComponent 
+                                initialFiles={[]}
+                                setActivePopup={setActivePopup}
+                                setSelectedFiles={handleFileSelection}
+                            />
+                        </Popup>
                     </div>
 
                     <div className="flex gap-2">
