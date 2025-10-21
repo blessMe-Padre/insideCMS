@@ -5,7 +5,7 @@ import { dashboard, pagesAdmin } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { LoaderCircle, LockIcon, SaveIcon, TrashIcon } from 'lucide-react';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import TextEditor from '@/components/editor/TextEditor';
 import FileManagerComponent from '@/components/editor/fileManager/FileManagerComponent';
@@ -50,8 +50,7 @@ export default function EditPage({ page, components }: { page: Page, components:
         components: components,
     });
 
-    console.log(components);
-    const [elements, setElements] = useState<Page_component[]>(components);
+   const [elements, setElements] = useState<Page_component[]>(components);
     
     // File manager states
     const [activePopup, setActivePopup] = useState<boolean>(false);
@@ -96,34 +95,21 @@ export default function EditPage({ page, components }: { page: Page, components:
         setData('components', updatedElements);
     }, [elements, setData]);
 
-    // Обработка выбранных файлов
-    useEffect(() => {
-        if (selectedFiles.length > 0 && currentImageElementId) {
-            const imageUrls = selectedFiles.map((file) => file.path);
-            // Для файлов сохраняем как массив URL
-            const updatedElements = elements.map((element) => 
-                element.id === currentImageElementId ? { ...element, data: imageUrls } : element
-            );
-            setElements(updatedElements);
-            setData('components', updatedElements);
-            setSelectedFiles([]);
-            setCurrentImageElementId(null);
-        }
-    }, [selectedFiles, currentImageElementId, elements, setData]);
+    // Обработка выбранных файлов выполняется непосредственно в handleFileSelection
 
     // Обработчик выбора файлов из FileManager
     const handleFileSelection = (files: FileManagerFile[]) => {
+        // Сначала сохраняем выбранные файлы для мгновенного предпросмотра
+        setSelectedFiles(files);
+        // Затем синхронизируем данные элемента
         if (currentImageElementId) {
             const imageUrls = files.map((file) => file.path);
-            // Для файлов сохраняем как массив URL
             const updatedElements = elements.map((element) => 
                 element.id === currentImageElementId ? { ...element, data: imageUrls } : element
             );
             setElements(updatedElements);
             setData('components', updatedElements);
-            setCurrentImageElementId(null);
         }
-        setSelectedFiles(files);
     };
 
     const componentName = (component_type: string) => {
@@ -301,7 +287,6 @@ export default function EditPage({ page, components }: { page: Page, components:
 
                     </div>
                      ))}
-
 
                     <div className="flex gap-2 mt-4">
                         <button
