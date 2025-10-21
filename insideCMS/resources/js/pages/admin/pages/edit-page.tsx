@@ -34,29 +34,23 @@ interface Page {
     description: string;
 }
 
-interface PageFormData {
-    name: string;
-    slug: string;
-    description: string;
-    components: Page_component[];
-}
-
 interface Page_component {
     id: number;
     page_id?: number;
     component_id?: number;
-    data: string[] | string;
+    data: string | string[];
     component_type: string;
 }
 
 export default function EditPage({ page, components }: { page: Page, components: Page_component[] }) {
-    const { data, setData, post, processing, errors } = useForm<PageFormData>({
+    const { data, setData, post, processing, errors } = useForm({
         name: page.name,
         slug: page.slug,
         description: page.description,
         components: components,
     });
 
+    console.log(components);
     const [elements, setElements] = useState<Page_component[]>(components);
     
     // File manager states
@@ -87,11 +81,12 @@ export default function EditPage({ page, components }: { page: Page, components:
     const handleUpdateContent = useCallback((id: number, content: string) => {
         const updatedElements = elements.map((element) => {
             if (element.id === id) {
-                // Для текстовых компонентов сохраняем как массив с одним элементом
                 if (element.component_type === 'text') {
                     return { ...element, data: [content] };
                 }
-                // Для других компонентов сохраняем как есть
+                if (element.component_type === 'text-editor') {
+                    return { ...element, data: content };
+                }
                 return { ...element, data: content };
             }
             return element;
@@ -235,7 +230,14 @@ export default function EditPage({ page, components }: { page: Page, components:
                     
                     {element.component_type === "text-editor" && (
                         <div id={`text-editor-${element.id}`}>
-                            <TextEditor value={Array.isArray(element.data) ? element.data[0] || '' : element.data || ''} onChange={(value) => handleUpdateContent(element.id, value)} />
+                            <TextEditor 
+                                value={
+                                    Array.isArray(element.data)
+                                        ? JSON.stringify(element.data)
+                                        : (typeof element.data === 'string' ? element.data : JSON.stringify(element.data ?? ''))
+                                }
+                                onChange={(value) => handleUpdateContent(element.id, value)} 
+                            />
                         </div>
                     )}
 
