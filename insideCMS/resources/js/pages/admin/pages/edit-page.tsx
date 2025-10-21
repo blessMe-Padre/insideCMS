@@ -70,12 +70,12 @@ export default function EditPage({ page, components }: { page: Page, components:
         });
     };
 
-    const handleRemoveElement = (e: React.FormEvent, id: number) => {
-        e.preventDefault();
-        const updatedElements = elements.filter((element) => element.id !== id);
-        setElements(updatedElements);
-        setData('components', updatedElements);
-    };
+    // const handleRemoveElement = (e: React.FormEvent, id: number) => {
+    //     e.preventDefault();
+    //     const updatedElements = elements.filter((element) => element.id !== id);
+    //     setElements(updatedElements);
+    //     setData('components', updatedElements);
+    // };
 
     const handleUpdateContent = useCallback((id: number, content: string) => {
         const updatedElements = elements.map((element) => {
@@ -199,9 +199,9 @@ export default function EditPage({ page, components }: { page: Page, components:
                     <div key={index} className="mb-4 p-4 border rounded">
                         <div className="flex items-center justify-between mb-2">
                             <h2 className="font-medium">{componentName(element.component_type)}</h2>
-                            <button className="cursor-pointer text-red-500 hover:text-red-700" onClick={(e) => handleRemoveElement(e, element.id)}>
+                            {/* <button className="cursor-pointer text-red-500 hover:text-red-700" onClick={(e) => handleRemoveElement(e, element.id)}>
                                 <TrashIcon className="size-4"/>
-                            </button>
+                            </button> */}
                         </div>
                     
                     {element.component_type === 'text' && (
