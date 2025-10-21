@@ -77,7 +77,8 @@ export default function EditPage({ page, components }: { page: Page, components:
         });
     };
 
-    const handleRemoveElement = (id: number) => {
+    const handleRemoveElement = (e: React.FormEvent, id: number) => {
+        e.preventDefault();
         const updatedElements = elements.filter((element) => element.id !== id);
         setElements(updatedElements);
         setData('components', updatedElements);
@@ -134,7 +135,7 @@ export default function EditPage({ page, components }: { page: Page, components:
         switch (component_type) {
             case 'text':
                 return 'Текст';
-            case "text-editor'":
+            case "text-editor":
                 return 'Текстовый редактор';
             case 'file':
                 return 'Файлы / Изображения';
@@ -217,7 +218,7 @@ export default function EditPage({ page, components }: { page: Page, components:
                     <div key={index} className="mb-4 p-4 border rounded">
                         <div className="flex items-center justify-between mb-2">
                             <h2 className="font-medium">{componentName(element.component_type)}</h2>
-                            <button className="cursor-pointer text-red-500 hover:text-red-700" onClick={() => handleRemoveElement(element.id)}>
+                            <button className="cursor-pointer text-red-500 hover:text-red-700" onClick={(e) => handleRemoveElement(e, element.id)}>
                                 <TrashIcon className="size-4"/>
                             </button>
                         </div>
@@ -232,7 +233,7 @@ export default function EditPage({ page, components }: { page: Page, components:
                          />
                     )}
                     
-                    {element.component_type === "text-editor'" && (
+                    {element.component_type === "text-editor" && (
                         <div id={`text-editor-${element.id}`}>
                             <TextEditor value={Array.isArray(element.data) ? element.data[0] || '' : element.data || ''} onChange={(value) => handleUpdateContent(element.id, value)} />
                         </div>
