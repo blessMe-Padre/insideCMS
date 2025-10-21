@@ -81,7 +81,7 @@ export default function EditNewsAdmin({ news }: EditNewsAdminPageProps) {
             setSelectedFiles(news.images);
             setData('images', news.images);
         }
-    }, [news.images, setData]); // Зависимости для правильной работы
+    }, [setData]); // Зависимости для правильной работы
 
     // Обработчик выбора файлов из FileManager
     const handleFileSelection = (files: FileManagerFile[]) => {
