@@ -112,9 +112,30 @@ export default function EditPage({ page, components }: { page: Page, components:
         }
     };
 
-    const handleRemoveFile = (e: React.FormEvent, id: number) => {
+    const handleRemoveFile = (e: React.FormEvent, elementId: number, fileIndex: number) => {
         e.preventDefault();
-        const updatedElements = elements.filter((element) => element.id !== id);
+
+        // Если удаляем файл из временно выбранных (предпросмотр), синхронизируем и элементы
+        if (currentImageElementId === elementId && selectedFiles.length > 0) {
+            const updatedSelectedFiles = selectedFiles.filter((_, index) => index !== fileIndex);
+            setSelectedFiles(updatedSelectedFiles);
+
+            const imageUrls = updatedSelectedFiles.map((file) => file.path);
+            const updatedElements = elements.map((element) =>
+                element.id === elementId ? { ...element, data: imageUrls } : element
+            );
+            setElements(updatedElements);
+            setData('components', updatedElements);
+            return;
+        }
+
+        // Иначе удаляем из уже сохранённых файлов элемента
+        const updatedElements = elements.map((element) => {
+            if (element.id !== elementId) return element;
+            const images = Array.isArray(element.data) ? element.data : [];
+            const nextImages = images.filter((_, index) => index !== fileIndex);
+            return { ...element, data: nextImages };
+        });
         setElements(updatedElements);
         setData('components', updatedElements);
     };
@@ -245,7 +266,7 @@ export default function EditPage({ page, components }: { page: Page, components:
                                                     <button
                                                         key={`remove-${index}`}
                                                         className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700"
-                                                        onClick={(e) => handleRemoveFile(e, index)}>
+                                                        onClick={(e) => handleRemoveFile(e, element.id, index)}>
                                                         <TrashIcon className="w-4 h-4" />
                                                     </button>
                                                     <img  
@@ -267,10 +288,10 @@ export default function EditPage({ page, components }: { page: Page, components:
                                         return (
                                             <div className="flex flex-wrap gap-2 mt-2 mb-2">
                                                 {images.map((image: string, index: number) => (
-                                                    <div className="relative">
+                                                    <div key={`image-${index}`} className="relative">
                                                         <button className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700"
                                                         key={`remove-${index}`}
-                                                        onClick={(e) => handleRemoveFile(e, index)}>
+                                                        onClick={(e) => handleRemoveFile(e, element.id, index)}>
                                                             <TrashIcon className="w-4 h-4" />
                                                         </button>   
                                                     <img 
