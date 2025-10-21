@@ -53,10 +53,14 @@ class PageController extends Controller
 
 
         foreach ($request->elements as $element) {
+            $contentJson = json_decode($element['content'], true);
+
             $elementData = [
                 'page_id' => $page->id,
                 'component_id' => $element['component_id'],
-                'data' => is_array(json_decode($element['content'], true)) ? $element['content'] : json_encode([$element['content']], JSON_UNESCAPED_UNICODE),
+                'data' => is_array($contentJson)
+                    ? $contentJson
+                    : [$element['content']],
             ];
             Page_component::create($elementData);
         }

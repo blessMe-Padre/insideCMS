@@ -45,7 +45,7 @@ interface Page_component {
     id: number;
     page_id?: number;
     component_id?: number;
-    data: string;
+    data: string[] | string;
     component_type: string;
 }
 
@@ -63,16 +63,6 @@ export default function EditPage({ page, components }: { page: Page, components:
     const [activePopup, setActivePopup] = useState<boolean>(false);
     const [selectedFiles, setSelectedFiles] = useState<FileManagerFile[]>([]);
     const [currentImageElementId, setCurrentImageElementId] = useState<number | null>(null);
-
-    // Безопасный парсинг JSON
-    const safeJsonParse = (data: string, fallback: string | string[] = '') => {
-        if (!data) return fallback;
-        try {
-            return JSON.parse(data);
-        } catch {
-            return fallback;
-        }
-    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -94,9 +84,18 @@ export default function EditPage({ page, components }: { page: Page, components:
     };
 
     const handleUpdateContent = useCallback((id: number, content: string) => {
-        const updatedElements = elements.map((element) => 
-            element.id === id ? { ...element, data: content } : element
-        );
+        const updatedElements = elements.map((element) => {
+            if (element.id === id) {
+                // Для текстовых компонентов сохраняем как массив с одним элементом
+                if (element.component_type === 'text') {
+                    return { ...element, data: [content] };
+                }
+                // Для других компонентов сохраняем как есть
+                return { ...element, data: content };
+            }
+            return element;
+        });
+
         setElements(updatedElements);
         setData('components', updatedElements);
     }, [elements, setData]);
@@ -105,17 +104,27 @@ export default function EditPage({ page, components }: { page: Page, components:
     useEffect(() => {
         if (selectedFiles.length > 0 && currentImageElementId) {
             const imageUrls = selectedFiles.map((file) => file.path);
-            handleUpdateContent(currentImageElementId, JSON.stringify(imageUrls));
+            // Для файлов сохраняем как массив URL
+            const updatedElements = elements.map((element) => 
+                element.id === currentImageElementId ? { ...element, data: imageUrls } : element
+            );
+            setElements(updatedElements);
+            setData('components', updatedElements);
             setSelectedFiles([]);
             setCurrentImageElementId(null);
         }
-    }, [selectedFiles, currentImageElementId, handleUpdateContent]);
+    }, [selectedFiles, currentImageElementId, elements, setData]);
 
     // Обработчик выбора файлов из FileManager
     const handleFileSelection = (files: FileManagerFile[]) => {
         if (currentImageElementId) {
             const imageUrls = files.map((file) => file.path);
-            handleUpdateContent(currentImageElementId, JSON.stringify(imageUrls));
+            // Для файлов сохраняем как массив URL
+            const updatedElements = elements.map((element) => 
+                element.id === currentImageElementId ? { ...element, data: imageUrls } : element
+            );
+            setElements(updatedElements);
+            setData('components', updatedElements);
             setCurrentImageElementId(null);
         }
         setSelectedFiles(files);
@@ -216,8 +225,8 @@ export default function EditPage({ page, components }: { page: Page, components:
                     {element.component_type === 'text' && (
                         <input 
                             id={`text-input-${element.id}`}
-                            value={safeJsonParse(element.data)}
-                            onChange={(e) => handleUpdateContent(element.id, JSON.stringify(e.target.value))}
+                            value={element.data?.[0] || ''}
+                            onChange={(e) => handleUpdateContent(element.id, e.target.value)}
                             placeholder="Введите текст..."
                             className="w-full p-2 border rounded"
                          />
@@ -225,7 +234,7 @@ export default function EditPage({ page, components }: { page: Page, components:
                     
                     {element.component_type === "text-editor'" && (
                         <div id={`text-editor-${element.id}`}>
-                            <TextEditor value={element.data || ''} onChange={(value) => handleUpdateContent(element.id, value)} />
+                            <TextEditor value={Array.isArray(element.data) ? element.data[0] || '' : element.data || ''} onChange={(value) => handleUpdateContent(element.id, value)} />
                         </div>
                     )}
 
@@ -249,7 +258,7 @@ export default function EditPage({ page, components }: { page: Page, components:
                                 
                                 // Иначе показываем существующие файлы из element.data
                                 if (element.data) {
-                                    const images = safeJsonParse(element.data, []);
+                                    const images = element.data;
                                     if (Array.isArray(images) && images.length > 0) {
                                         return (
                                             <div className="flex flex-wrap gap-2 mt-2 mb-2">

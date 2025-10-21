@@ -23,13 +23,21 @@ class PageController extends Controller
             'slug' => $page->slug,
             'description' => $page->description,
             'components' => $page->components->map(function ($component) {
+
+                $data = json_decode($component->pivot->data, true);
+
+                if($component->type === 'text') {
+                    $data = $data[0];
+                } else {
+                    $data = $data;
+                }
                 
                 return [
                     'id' => $component->id,
                     'name' => $component->name,
                     'type' => $component->type,
                     'description' => $component->description,
-                    'content' => $component->pivot->data,
+                    'content' => $data,
                 ];
             }),
         ];
@@ -37,9 +45,6 @@ class PageController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => $pageParsed,
-            'meta' => [
-                'message' => 'Page fetched successfully',
-            ],
         ], 200);
     }
 
