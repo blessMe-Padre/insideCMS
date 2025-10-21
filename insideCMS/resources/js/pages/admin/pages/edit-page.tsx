@@ -112,6 +112,13 @@ export default function EditPage({ page, components }: { page: Page, components:
         }
     };
 
+    const handleRemoveFile = (e: React.FormEvent, id: number) => {
+        e.preventDefault();
+        const updatedElements = elements.filter((element) => element.id !== id);
+        setElements(updatedElements);
+        setData('components', updatedElements);
+    };
+
     const componentName = (component_type: string) => {
         switch (component_type) {
             case 'text':
@@ -234,12 +241,20 @@ export default function EditPage({ page, components }: { page: Page, components:
                                     return (
                                         <div className="flex flex-wrap gap-2 mt-2 mb-2">
                                             {selectedFiles.map((file, index) => (
-                                                <img 
+                                                <div className="relative">
+                                                    <button
+                                                        key={`remove-${index}`}
+                                                        className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700"
+                                                        onClick={(e) => handleRemoveFile(e, index)}>
+                                                        <TrashIcon className="w-4 h-4" />
+                                                    </button>
+                                                    <img  
                                                     key={`selected-${index}`}
                                                     src={file.path} 
                                                     alt={`Selected ${index + 1}`} 
                                                     className="w-20 h-20 object-cover rounded-md border border-blue-500" 
-                                                />
+                                                    />
+                                                </div>
                                             ))}
                                         </div>
                                     );
@@ -252,12 +267,19 @@ export default function EditPage({ page, components }: { page: Page, components:
                                         return (
                                             <div className="flex flex-wrap gap-2 mt-2 mb-2">
                                                 {images.map((image: string, index: number) => (
+                                                    <div className="relative">
+                                                        <button className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700"
+                                                        key={`remove-${index}`}
+                                                        onClick={(e) => handleRemoveFile(e, index)}>
+                                                            <TrashIcon className="w-4 h-4" />
+                                                        </button>   
                                                     <img 
                                                         key={`preview-${index}`}
                                                         src={image} 
                                                         alt={`Preview ${index + 1}`} 
                                                         className="w-20 h-20 object-cover rounded-md border" 
                                                     />
+                                                    </div>
                                                 ))}
                                             </div>
                                         );
