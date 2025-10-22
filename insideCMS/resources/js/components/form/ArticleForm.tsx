@@ -6,6 +6,7 @@ import Popup from '../popup/Popup';
 import FileManagerComponent from '../editor/fileManager/FileManagerComponent';
 import { Button } from '@/components/ui/button';
 import { FileManagerFile } from '@cubone/react-file-manager';
+import { LoaderCircle, SaveIcon } from 'lucide-react';
 
 /**
  * TODO: добавить редактор для контента
@@ -33,30 +34,9 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
 
     const [preview, setPreview] = useState<string[]>([]);
     const [selectedFiles, setSelectedFiles] = useState<FileManagerFile[]>([]);
-    
-    // const previewUrlsRef = useRef<string[]>([]);
     const [activePopup, setActivePopup] = useState(false);
 
-    // useEffect(() => {
-    //     previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
-    //     previewUrlsRef.current = [];
-
-    //     const images = data.images || [];
-
-    //     if (images.length > 0) {
-    //         const newPreview = images.map((image) => URL.createObjectURL(image));
-    //         previewUrlsRef.current = newPreview;
-    //         setPreview(newPreview);
-    //     } else {
-    //         setPreview([]);
-    //     }
-
-    //     return () => {
-    //         previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
-    //     };
-    // }, [data.images]);
-
-    useEffect(() => {
+     useEffect(() => {
         setPreview(selectedFiles.map((file) => file.path));
         setData('images_urls', selectedFiles.map((file) => file.path));
     }, [selectedFiles, setData]);
@@ -172,23 +152,27 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
                     
                 </div>
 
-                <div className="flex gap-2">
-                    <button
-                        type="submit"
-                        disabled={processing}
-                        className="bg-blue-600 text-white cursor-pointer px-4 p-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                    >
-                        {processing ? 'Создание...' : 'Создать статью'}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => reset()}
-                        disabled={processing}
-                        className="bg-gray-500 text-white cursor-pointer px-4 p-2 rounded-lg hover:bg-gray-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                    >
-                        Очистить
-                    </button>
-                </div>
+                <div className="flex gap-2 mt-4">
+                        <button
+                            type="submit"
+                            disabled={processing}
+                            className="bg-blue-600 text-white cursor-pointer px-4 p-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        >
+                            {processing ? 
+                                (<div className="flex items-center gap-2"><LoaderCircle className="w-4 h-4 animate-spin" /> Сохранение...</div>)
+                                : 
+                                (<div className="flex items-center gap-2"><SaveIcon className="w-4 h-4" /> Сохранить изменения</div>)
+                            }
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => window.location.href = '/pages-admin'}
+                            disabled={processing}
+                            className="bg-gray-500 text-white cursor-pointer px-4 p-2 rounded-lg hover:bg-gray-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        >
+                            Отмена
+                        </button>
+                    </div>
             </form>
         </>
     );
