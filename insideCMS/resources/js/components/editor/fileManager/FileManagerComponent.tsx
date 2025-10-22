@@ -19,6 +19,7 @@ export default function FileManagerComponent({
 }: FileManagerComponentProps) {
     const [files, setFiles] = useState(initialFiles);
     const [loading, setLoading] = useState(false);
+    const [selected, setSelected] = useState<FileManagerFile[]>(initialFiles);
 
     // Загрузка файлов, если initialFiles пустой
     useEffect(() => {
@@ -95,7 +96,7 @@ export default function FileManagerComponent({
     };
 
     const handleSelectionChange = (files: FileManagerFile[]) => {
-        setSelectedFiles(files);
+        setSelected(files);
     };
         
     return (
@@ -135,6 +136,7 @@ export default function FileManagerComponent({
             />
             <Button onClick={(e) => {
                 e.preventDefault();
+                setSelectedFiles(selected);
                 setActivePopup(false);
             }}>Выбрать</Button>
         </>
