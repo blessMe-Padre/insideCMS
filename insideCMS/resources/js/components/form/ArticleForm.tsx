@@ -1,22 +1,19 @@
 import { useForm } from '@inertiajs/react';
 import { toast } from "sonner";
 import TextEditor from '../editor/TextEditor';
-import { useEffect, useState} from 'react';
+import { useState} from 'react';
 import Popup from '../popup/Popup';
 import FileManagerComponent from '../editor/fileManager/FileManagerComponent';
 import { Button } from '@/components/ui/button';
 import { FileManagerFile } from '@cubone/react-file-manager';
-import { LoaderCircle, SaveIcon } from 'lucide-react';
+import { LoaderCircle, SaveIcon, TrashIcon } from 'lucide-react';
 
-/**
- * TODO: добавить редактор для контента
- */
 
 interface ArticleFormData {
     title: string;
     content: string;
     slug: string;
-    images?: File[];
+    images?: string[];
     images_urls?: string[];
 }
 
@@ -32,14 +29,53 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
         images: [],
     });
 
-    const [preview, setPreview] = useState<string[]>([]);
-    const [selectedFiles, setSelectedFiles] = useState<FileManagerFile[]>([]);
     const [activePopup, setActivePopup] = useState(false);
+    const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
+    const [currentImageElementId, setCurrentImageElementId] = useState<number | null>(null);
+    const [elements, setElements] = useState<Array<{ id: number; data: string[] }>>([]);
 
-     useEffect(() => {
-        setPreview(selectedFiles.map((file) => file.path));
-        setData('images_urls', selectedFiles.map((file) => file.path));
-    }, [selectedFiles, setData]);
+    // Обработчик выбора файлов из FileManager
+    const handleFileSelection = (files: FileManagerFile[]) => {
+        const filePaths = files.map(file => file.path);
+        setSelectedFiles(filePaths);
+        setData('images', filePaths);
+        
+        // Затем синхронизируем данные элемента
+        if (currentImageElementId !== null) {
+            const updatedElements = elements.map((element) => 
+                element.id === currentImageElementId ? { ...element, data: filePaths } : element
+            );
+            setElements(updatedElements);
+        }
+    };
+    
+    const handleRemoveFile = (e: React.FormEvent, elementId: number, fileIndex: number) => {
+        e.preventDefault();
+
+        // Если удаляем файл из временно выбранных (предпросмотр), синхронизируем и элементы
+        if (currentImageElementId === elementId && selectedFiles.length > 0) {
+            const updatedSelectedFiles = selectedFiles.filter((_, index) => index !== fileIndex);
+            setSelectedFiles(updatedSelectedFiles);
+            setData('images', updatedSelectedFiles);
+
+            const updatedElements = elements.map((element) =>
+                element.id === elementId ? { ...element, data: updatedSelectedFiles } : element
+            );
+            setElements(updatedElements);
+            return;
+        }
+
+        // Иначе удаляем из уже сохранённых файлов
+        if (data.images && data.images.length > 0) {
+            const updatedImages = data.images.filter((_, index) => index !== fileIndex);
+            setData('images', updatedImages);
+            // Принудительно обновляем selectedFiles
+            setSelectedFiles(updatedImages);
+        } else {
+            // Если data.images пустой, принудительно очищаем selectedFiles
+            setSelectedFiles([]);
+        }
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -48,6 +84,7 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
                 reset();
                 onSuccess?.();
                 toast.success('Статья успешно создана');
+                window.location.href = '/articles-admin';
             },
             onError: () => {
                 toast.error('Ошибка при создании статьи');
@@ -107,50 +144,52 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
                     )}
                 </div>
 
+
                 <div>
-                    <p className="block text-sm font-medium text-foreground mb-1">Изображения</p>
-                    {preview.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                            {preview.map((image, index) => (
-                                <img 
-                                    key={`preview-${index}`}
-                                    src={image} 
-                                    alt={`Preview ${index + 1}`} 
-                                    className="w-20 h-20 object-cover rounded-md border" 
-                                />
-                            ))}
-                        </div>
-                    )}
+                        <label className="block text-sm font-medium text-foreground mb-1">
+                            Изображения
+                        </label>
+                        
+                        {selectedFiles.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                                {selectedFiles.map((file, index) => (
+                                    <div key={`selected-${index}`} className="relative">
+                                        <button
+                                            className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700 z-10"
+                                            onClick={(e) => handleRemoveFile(e, 0, index)}>
+                                            <TrashIcon className="w-4 h-4" />
+                                        </button>
+                                        <img  
+                                            src={file} 
+                                            alt={`Selected ${index + 1}`} 
+                                            className={`w-20 h-20 object-cover rounded-md border ${
+                                                currentImageElementId === 0 ? 'border-blue-500' : ''
+                                            }`}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
 
-                    {/* <label htmlFor="images" className="block mb-3">
-                        <input
-                            id="images"
-                            type="file"
-                            multiple
-                            accept="image/*"
-                            onChange={(e) => setData('images', Array.from(e.target.files || []))}
-                            className="w-full text-white px-3 py-2 px-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                        />
-                    </label> */}
-
-                    <Button variant="outline" onClick={(e) => {
-                        e.preventDefault();
-                        setActivePopup(true);
-                    }}>Файловый менеджер</Button>
-
-                    {errors.images && (
-                        <p className="text-red-500 text-sm mt-1">{errors.images}</p>
-                    )}
-
-                    <Popup activePopup={activePopup} setActivePopup={setActivePopup}>
-                        <FileManagerComponent 
-                            initialFiles={[]}
-                            setActivePopup={setActivePopup}
-                            setSelectedFiles={setSelectedFiles}
-                        />
-                    </Popup>
-                    
-                </div>
+                        <Button 
+                            type="button"
+                            variant="outline" 
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setCurrentImageElementId(0);
+                                setActivePopup(true);
+                            }}>
+                            Выбрать файл
+                        </Button>
+                        
+                        <Popup activePopup={activePopup} setActivePopup={setActivePopup}>
+                            <FileManagerComponent 
+                                initialFiles={[]}
+                                setActivePopup={setActivePopup}
+                                setSelectedFiles={handleFileSelection}
+                            />
+                        </Popup>
+                    </div>
 
                 <div className="flex gap-2 mt-4">
                         <button
@@ -161,7 +200,7 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
                             {processing ? 
                                 (<div className="flex items-center gap-2"><LoaderCircle className="w-4 h-4 animate-spin" /> Сохранение...</div>)
                                 : 
-                                (<div className="flex items-center gap-2"><SaveIcon className="w-4 h-4" /> Сохранить изменения</div>)
+                                (<div className="flex items-center gap-2"><SaveIcon className="w-4 h-4" /> Создать</div>)
                             }
                         </button>
                         <button

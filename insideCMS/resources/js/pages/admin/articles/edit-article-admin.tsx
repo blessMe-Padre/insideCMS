@@ -2,15 +2,21 @@ import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
-import { toast } from "sonner";
 import TextEditor from '@/components/editor/TextEditor';
-import { useEffect, useRef, useState } from 'react';
+import { toast } from "sonner";
+import Popup from '@/components/popup/Popup';
+import FileManagerComponent from '@/components/editor/fileManager/FileManagerComponent';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
+import { FileManagerFile } from '@cubone/react-file-manager';
+import { LoaderCircle, SaveIcon, TrashIcon } from 'lucide-react';
 
 interface Article {
     id: number;
     title: string;
     content: string;
     slug: string;
+    images: string[];
 }
 
 interface EditArticleAdminPageProps {
@@ -21,7 +27,7 @@ interface ArticleFormData {
     title: string;
     content: string;
     slug: string;
-    images: File[];
+    images: string[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -47,27 +53,55 @@ export default function EditArticleAdmin({ article }: EditArticleAdminPageProps)
         images: [],
     });
 
-    const [preview, setPreview] = useState<string[]>([]);
-    const previewUrlsRef = useRef<string[]>([]);
+    const [activePopup, setActivePopup] = useState(false);
+    const [selectedFiles, setSelectedFiles] = useState<string[]>(article?.images || []);
+    const [currentImageElementId, setCurrentImageElementId] = useState<number | null>(null);
+    const [elements, setElements] = useState<Array<{ id: number; data: string[] }>>([]);
 
-    useEffect(() => {
-        // Очищаем старые URL
-        previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
-        previewUrlsRef.current = [];
+    console.log('selectedFiles', selectedFiles);
 
-        if (data.images.length > 0) {
-            const newPreview = data.images.map((image) => URL.createObjectURL(image));
-            previewUrlsRef.current = newPreview;
-            setPreview(newPreview);
-        } else {
-            setPreview([]);
+    // Обработчик выбора файлов из FileManager
+    const handleFileSelection = (files: FileManagerFile[]) => {
+        const filePaths = files.map(file => file.path);
+        setSelectedFiles(filePaths);
+        setData('images', filePaths);
+        
+        // Затем синхронизируем данные элемента
+        if (currentImageElementId) {
+            const updatedElements = elements.map((element) => 
+                element.id === currentImageElementId ? { ...element, data: filePaths } : element
+            );
+            setElements(updatedElements);
+        }
+    };
+    
+    const handleRemoveFile = (e: React.FormEvent, elementId: number, fileIndex: number) => {
+        e.preventDefault();
+
+        // Если удаляем файл из временно выбранных (предпросмотр), синхронизируем и элементы
+        if (currentImageElementId === elementId && selectedFiles.length > 0) {
+            const updatedSelectedFiles = selectedFiles.filter((_, index) => index !== fileIndex);
+            setSelectedFiles(updatedSelectedFiles);
+            setData('images', updatedSelectedFiles);
+
+            const updatedElements = elements.map((element) =>
+                element.id === elementId ? { ...element, data: updatedSelectedFiles } : element
+            );
+            setElements(updatedElements);
+            return;
         }
 
-        // Очистка при размонтировании
-        return () => {
-            previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
-        };
-    }, [data.images]);
+        // Иначе удаляем из уже сохранённых файлов
+        if (data.images && data.images.length > 0) {
+            const updatedImages = data.images.filter((_, index) => index !== fileIndex);
+            setData('images', updatedImages);
+            // Принудительно обновляем selectedFiles
+            setSelectedFiles(updatedImages);
+        } else {
+            // Если data.images пустой, принудительно очищаем selectedFiles
+            setSelectedFiles([]);
+        }
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -142,48 +176,68 @@ export default function EditArticleAdmin({ article }: EditArticleAdminPageProps)
                             <p className="text-red-500 text-sm mt-1">{errors.slug}</p>
                         )}
                     </div>
-
                     <div>
-                    <label htmlFor="images" className="block text-sm font-medium text-foreground mb-1">
-                        Изображения
-                    </label>
-                    <input
-                        id="images"
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        onChange={(e) => setData('images', Array.from(e.target.files || []))}
-                        className="w-full text-whitepx-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                    {errors.images && (
-                        <p className="text-red-500 text-sm mt-1">{errors.images}</p>
-                    )}
-                       {preview.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-2">
-                            {preview.map((image, index) => (
-                                <img 
-                                    key={`preview-${index}`}
-                                    src={image} 
-                                    alt={`Preview ${index + 1}`} 
-                                    className="w-20 h-20 object-cover rounded-md border" 
-                                />
-                            ))}
-                        </div>
-                    )}
-                </div>
+                        <label className="block text-sm font-medium text-foreground mb-1">
+                            Изображения
+                        </label>
+                        
+                        {selectedFiles.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                                {selectedFiles.map((file, index) => (
+                                    <div key={`selected-${index}`} className="relative">
+                                        <button
+                                            className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700 z-10"
+                                            onClick={(e) => handleRemoveFile(e, 0, index)}>
+                                            <TrashIcon className="w-4 h-4" />
+                                        </button>
+                                        <img  
+                                            src={file} 
+                                            alt={`Selected ${index + 1}`} 
+                                            className={`w-20 h-20 object-cover rounded-md border ${
+                                                currentImageElementId === 0 ? 'border-blue-500' : ''
+                                            }`}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
 
-                    <div className="flex gap-2">
+                        <Button 
+                            type="button"
+                            variant="outline" 
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setCurrentImageElementId(0);
+                                setActivePopup(true);
+                            }}>
+                            Выбрать файл
+                        </Button>
+                        
+                        <Popup activePopup={activePopup} setActivePopup={setActivePopup}>
+                            <FileManagerComponent 
+                                initialFiles={[]}
+                                setActivePopup={setActivePopup}
+                                setSelectedFiles={handleFileSelection}
+                            />
+                        </Popup>
+                    </div>
+
+                    <div className="flex gap-2 mt-4">
                         <button
                             type="submit"
                             disabled={processing}
                             className="bg-blue-600 text-white cursor-pointer px-4 p-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                         >
-                            {processing ? 'Сохранение...' : 'Сохранить изменения'}
+                            {processing ? 
+                                (<div className="flex items-center gap-2"><LoaderCircle className="w-4 h-4 animate-spin" /> Сохранение...</div>)
+                                : 
+                                (<div className="flex items-center gap-2"><SaveIcon className="w-4 h-4" /> Сохранить изменения</div>)
+                            }
                         </button>
                         <button
                             type="button"
-                            onClick={() => window.location.href = '/articles-admin'}
-                            disabled={processing}
+                                onClick={() => window.location.href = '/pages-admin'}
+                                disabled={processing}
                             className="bg-gray-500 text-white cursor-pointer px-4 p-2 rounded-lg hover:bg-gray-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                         >
                             Отмена

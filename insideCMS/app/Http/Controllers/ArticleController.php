@@ -47,31 +47,16 @@ class ArticleController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'slug' => 'required|string|max:255|unique:articles,slug',
-            'images.*' => 'nullable|image|max:2048',
+            'images' => 'nullable|array',
+            'images.*' => 'string',
         ]);
 
         $article = Article::create([
             'title' => $validated['title'],
             'content' => $validated['content'],
             'slug' => $validated['slug'],
-
+            'images' => $validated['images'] ?? [],
         ]);
-
-        if ($request->hasFile('images')) {
-
-            $imagePaths = [];
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('', 'public');
-                $imagePaths[] = $path;
-            }
-            $article->images = $imagePaths;
-            $article->save();
-        }
-
-        if ($request->has('images_urls')) {
-            $article->images = $request->images_urls;
-            $article->save();
-        }
 
         return redirect()->back()->with('success', 'Статья успешно создана');
     }
@@ -101,25 +86,18 @@ class ArticleController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'slug' => 'required|string|max:255|unique:articles,slug,' . $article->id,
-            'images.*' => 'nullable|image|max:2048',
+            'images' => 'nullable|array',
+            'images.*' => 'string',
         ]);
 
         $article->update([
             'title' => $validated['title'],
             'content' => $validated['content'],
             'slug' => $validated['slug'],
+            'images' => $validated['images'] ?? [],
         ]);
-        
-        if ($request->hasFile('images')) {
-            $imagePaths = [];
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('', 'public');
-                $imagePaths[] = $path;
-            }
-            $article->images = $imagePaths;
-            $article->save();
-        }
-        return redirect()->route('articles-admin')->with('success', 'Статья успешно обновлена');
+
+       return redirect()->route('articles-admin')->with('success', 'Статья успешно обновлена');
     }
 
     /**
