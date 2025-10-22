@@ -50,15 +50,13 @@ export default function EditArticleAdmin({ article }: EditArticleAdminPageProps)
         title: article.title,
         content: article.content,
         slug: article.slug,
-        images: [],
+        images: article?.images || [],
     });
 
     const [activePopup, setActivePopup] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState<string[]>(article?.images || []);
     const [currentImageElementId, setCurrentImageElementId] = useState<number | null>(null);
     const [elements, setElements] = useState<Array<{ id: number; data: string[] }>>([]);
-
-    console.log('selectedFiles', selectedFiles);
 
     // Обработчик выбора файлов из FileManager
     const handleFileSelection = (files: FileManagerFile[]) => {
@@ -78,28 +76,19 @@ export default function EditArticleAdmin({ article }: EditArticleAdminPageProps)
     const handleRemoveFile = (e: React.FormEvent, elementId: number, fileIndex: number) => {
         e.preventDefault();
 
-        // Если удаляем файл из временно выбранных (предпросмотр), синхронизируем и элементы
-        if (currentImageElementId === elementId && selectedFiles.length > 0) {
+        // Удаляем файл из selectedFiles и синхронизируем с data.images
+        if (selectedFiles.length > 0) {
             const updatedSelectedFiles = selectedFiles.filter((_, index) => index !== fileIndex);
             setSelectedFiles(updatedSelectedFiles);
             setData('images', updatedSelectedFiles);
 
-            const updatedElements = elements.map((element) =>
-                element.id === elementId ? { ...element, data: updatedSelectedFiles } : element
-            );
-            setElements(updatedElements);
-            return;
-        }
-
-        // Иначе удаляем из уже сохранённых файлов
-        if (data.images && data.images.length > 0) {
-            const updatedImages = data.images.filter((_, index) => index !== fileIndex);
-            setData('images', updatedImages);
-            // Принудительно обновляем selectedFiles
-            setSelectedFiles(updatedImages);
-        } else {
-            // Если data.images пустой, принудительно очищаем selectedFiles
-            setSelectedFiles([]);
+            // Синхронизируем с элементами если нужно
+            if (currentImageElementId === elementId) {
+                const updatedElements = elements.map((element) =>
+                    element.id === elementId ? { ...element, data: updatedSelectedFiles } : element
+                );
+                setElements(updatedElements);
+            }
         }
     };
 
