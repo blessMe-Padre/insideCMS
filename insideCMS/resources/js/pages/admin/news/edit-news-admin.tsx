@@ -9,7 +9,7 @@ import FileManagerComponent from '@/components/editor/fileManager/FileManagerCom
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { FileManagerFile } from '@cubone/react-file-manager';
-import { TrashIcon } from 'lucide-react';
+import { LoaderCircle, SaveIcon, TrashIcon } from 'lucide-react';
 
 interface News {
     id: number;
@@ -63,25 +63,18 @@ export default function EditNewsAdmin({ news }: EditNewsAdminPageProps) {
         is_published: news.is_published,
         images: news.images || [],
     });
-
     
     const [activePopup, setActivePopup] = useState(false);
-    const [selectedFiles, setSelectedFiles] = useState<string[]>(news.images || []);
+    const [selectedFiles, setSelectedFiles] = useState<string[]>(news.images);
     const [currentImageElementId, setCurrentImageElementId] = useState<number | null>(null);
     const [elements, setElements] = useState<Array<{ id: number; data: string[] }>>([]);
+    console.log('news', news.images );
+    console.log('selectedFiles', selectedFiles);
 
     // Синхронизация selectedFiles с data.images при изменении data.images
     useEffect(() => {
         setSelectedFiles(data.images || []);
     }, [data.images]);
-
-    // Инициализация при первой загрузке
-    useEffect(() => {
-        if (news.images && news.images.length > 0) {
-            setSelectedFiles(news.images);
-            setData('images', news.images);
-        }
-    }, [setData]); // Зависимости для правильной работы
 
     // Обработчик выбора файлов из FileManager
     const handleFileSelection = (files: FileManagerFile[]) => {
@@ -255,6 +248,16 @@ export default function EditNewsAdmin({ news }: EditNewsAdminPageProps) {
                         <label className="block text-sm font-medium text-foreground mb-1">
                             Изображения
                         </label>
+
+                        {news.images.length > 0 && selectedFiles.length === 0 && (
+                            <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                                {news.images.map((file, index) => (
+                                    <div key={`selected-${index}`} className="relative">
+                                        <img src={file} alt={`Selected ${index + 1}`} className="w-20 h-20 object-cover rounded-md border" />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                         
                         {selectedFiles.length > 0 && (
                             <div className="flex flex-wrap gap-2 mt-2 mb-2">
@@ -297,18 +300,22 @@ export default function EditNewsAdmin({ news }: EditNewsAdminPageProps) {
                         </Popup>
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 mt-4">
                         <button
                             type="submit"
                             disabled={processing}
                             className="bg-blue-600 text-white cursor-pointer px-4 p-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                         >
-                            {processing ? 'Сохранение...' : 'Сохранить изменения'}
+                            {processing ? 
+                                (<div className="flex items-center gap-2"><LoaderCircle className="w-4 h-4 animate-spin" /> Сохранение...</div>)
+                                : 
+                                (<div className="flex items-center gap-2"><SaveIcon className="w-4 h-4" /> Сохранить изменения</div>)
+                            }
                         </button>
                         <button
                             type="button"
-                            onClick={() => window.location.href = '/news-admin'}
-                            disabled={processing}
+                                onClick={() => window.location.href = '/pages-admin'}
+                                disabled={processing}
                             className="bg-gray-500 text-white cursor-pointer px-4 p-2 rounded-lg hover:bg-gray-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                         >
                             Отмена
