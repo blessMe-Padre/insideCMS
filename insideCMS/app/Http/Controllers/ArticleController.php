@@ -20,7 +20,7 @@ class ArticleController extends Controller
     {
         $articles = Article::paginate(6);
 
-        return Inertia::render('admin/articles-admin', [
+        return Inertia::render('admin/articles/articles-admin', [
             'articles' => $articles->items(),
             'links' => $articles->linkCollection()->toArray(),
             'current_page' => $articles->currentPage(),
@@ -35,7 +35,7 @@ class ArticleController extends Controller
      */
     public function create()
     {
-        return Inertia::render('admin/add-article-admin');
+        return Inertia::render('admin/articles/add-article-admin');
     }
 
     /**
@@ -89,7 +89,7 @@ class ArticleController extends Controller
      */
     public function edit(Article $article)
     {
-        return Inertia::render('admin/edit-article-admin', ['article' => $article]);
+        return Inertia::render('admin/articles/edit-article-admin', ['article' => $article]);
     }
 
     /**
