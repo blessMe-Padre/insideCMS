@@ -27,9 +27,18 @@ class NewsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $slug)
     {
-        //
+        $news = News::where('slug', $slug)->first();
+
+        if (!$news) {
+            return response()->json(['message' => 'News not found'], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $news,
+        ], 200);
     }
 
     /**

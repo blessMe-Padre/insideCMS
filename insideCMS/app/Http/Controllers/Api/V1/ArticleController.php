@@ -27,9 +27,18 @@ class ArticleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $slug)
     {
-        //
+        $article = Article::where('slug', $slug)->first();
+
+        if (!$article) {
+            return response()->json(['message' => 'Article not found'], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $article,
+        ], 200);
     }
 
     /**
