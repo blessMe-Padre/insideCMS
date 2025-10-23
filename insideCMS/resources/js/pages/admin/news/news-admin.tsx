@@ -13,7 +13,7 @@ import { Link } from '@inertiajs/react';
 /**
  * TODO: добавить иконку спинера при удалении новости
  * TODO: добавить пагинацию
- * TODO: добавить поиск по названию новости
+ * TODO: добавить поиск по названию новости (доработать )
  * TODO: добавить сортировку по дате создания
  * TODO: добавить API для получения новостей
  * TODO: вынести в оддельый компонент новость для показывания в списке
@@ -48,6 +48,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function NewsAdmin({ news }: NewsAdminPageProps) {
     const deleteForm = useForm();
     const [processingNewsId, setProcessingNewsId] = useState<number | null>(null);
+    const [searchValue, setSearchValue] = useState('');
 
     const handleDelete = (id: number) => {
         setProcessingNewsId(id);
@@ -67,8 +68,6 @@ export default function NewsAdmin({ news }: NewsAdminPageProps) {
         router.visit(`/news/${id}/edit`);
     };
 
-    console.log(news);
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="px-4 py-8">
@@ -79,6 +78,16 @@ export default function NewsAdmin({ news }: NewsAdminPageProps) {
                         rel="stylesheet"
                     />
                 </Head>
+
+                <div className="flex items-center gap-2 mb-5">
+                    <input 
+                        type="text" 
+                        value={searchValue} 
+                        onChange={(e) => setSearchValue(e.target.value)} 
+                        placeholder="Поиск по названию" 
+                        className="w-full text-white px-3 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                    />
+                </div>
 
                 <Alert variant="default" className="mb-4">
                     <Lock />
@@ -103,10 +112,10 @@ export default function NewsAdmin({ news }: NewsAdminPageProps) {
                     </div>
                 ) : (
                     <div className="block">
-                        {news.map((item) => (
+                        {news.filter((item) => item.title.toLowerCase().includes(searchValue.toLowerCase())).map((item) => (
                             <div key={item.id} className="flex justify-between items-center gap-4 bg-gray-700 py-2 px-4 rounded-lg shadow-md border hover:shadow-lg transition-shadow mb-4">
                                 <div className="flex items-center justify-between gap-4">
-                                    <img src={item.images? `${item.images[0]}` : placeholder} alt={item.title} className="w-10 h-10 rounded-full" />
+                                    <img src={item.images && item.images.length > 0 ? item.images[0] : placeholder} alt={item.title} className="w-10 h-10 rounded-full" />
                                     <div className="">
                                         <div className="flex items-center justify-between">
                                             <h3 className="font-semibold text-white">{item.title}</h3>

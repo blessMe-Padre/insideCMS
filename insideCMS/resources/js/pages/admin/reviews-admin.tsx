@@ -15,6 +15,7 @@ import { Lock } from 'lucide-react';
  * TODO: Добавить панинацию
  * TODO: Добавить сортировку
  * TODO: Добавить выбор обображения отзывов (плитка, список, таблица)
+ * TODO: переделать на нормальные ресурсы (update, delete, store, etc.) - по примеру страниц, новостей, статей
  */
 
 const breadcrumbs: BreadcrumbItem[] = [
