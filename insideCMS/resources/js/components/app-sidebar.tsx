@@ -60,11 +60,11 @@ export function AppSidebar() {
             href: '/reviews-admin',
             icon: MessageCircle,
         }] : []),
-        {
+
+        ...(modules?.news?.is_active ? [{
             title: 'Новости',
             href: newsAdmin(),
             icon: Newspaper,
-
             subItems: [
                 {
                     title: 'Все новости',
@@ -77,12 +77,12 @@ export function AppSidebar() {
                     icon: Plus,
                 },
             ],
-        },
-        {
+        }] : []),
+
+        ...(modules?.articles?.is_active ? [{
             title: 'Статьи',
             href: articlesAdmin(),
             icon: Newspaper,
-
             subItems: [
                 {
                     title: 'Все статьи',
@@ -95,7 +95,8 @@ export function AppSidebar() {
                     icon: Plus,
                 },
             ],
-        },
+        }] : []),
+
         {
             title: 'Файловый менеджер',
             href: filesAdmin(),

@@ -36,6 +36,7 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
     }
 
     // Роуты для новостей
+    if ($modules['news'] && $modules['news']['is_active']) {
         Route::controller(NewsController::class)->group(function () {
             Route::post('news', 'store')->name('news.store');
             Route::get('news-admin', 'adminShow')->name('news-admin');
@@ -44,8 +45,9 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
             Route::post('news/{news}', 'update')->name('news.update');
             Route::delete('news/{news}', 'destroy')->name('news.destroy');
         });
-
+    }
     // Роуты для статей
+    if ($modules['articles'] && $modules['articles']['is_active']) {
         Route::controller(ArticleController::class)->group(function () {
             Route::get('articles-admin', 'adminShow')->name('articles-admin');
             Route::get('add-article-admin', 'create')->name('add-article-admin');
@@ -56,7 +58,7 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
             Route::delete('articles/{article}', 'destroy')->name('articles.destroy');
 
         });
-
+    }
 
     // Роуты для настройки модулей
     Route::controller(ModulesController::class)->group(function () {
