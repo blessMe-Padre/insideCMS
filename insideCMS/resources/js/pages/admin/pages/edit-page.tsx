@@ -70,13 +70,6 @@ export default function EditPage({ page, components }: { page: Page, components:
         });
     };
 
-    // const handleRemoveElement = (e: React.FormEvent, id: number) => {
-    //     e.preventDefault();
-    //     const updatedElements = elements.filter((element) => element.id !== id);
-    //     setElements(updatedElements);
-    //     setData('components', updatedElements);
-    // };
-
     const handleUpdateContent = useCallback((id: number, content: string) => {
         const updatedElements = elements.map((element) => {
             if (element.id === id) {

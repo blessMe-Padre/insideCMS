@@ -9,7 +9,8 @@ import FileManagerComponent from '@/components/editor/fileManager/FileManagerCom
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { FileManagerFile } from '@cubone/react-file-manager';
-import { LoaderCircle, SaveIcon, TrashIcon } from 'lucide-react';
+import { LoaderCircle, LockIcon, SaveIcon, TrashIcon } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface Article {
     id: number;
@@ -117,6 +118,13 @@ export default function EditArticleAdmin({ article }: EditArticleAdminPageProps)
                 </Head>
 
                 <h1 className="text-3xl font-bold text-foreground mb-6">Редактирование статьи</h1>
+
+                <Alert variant="default" className="mb-4">
+                    <LockIcon className="w-4 h-4" />
+                    <AlertDescription>
+                      API:  /api/v1/articles/{article.slug}
+                    </AlertDescription>
+                </Alert>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
