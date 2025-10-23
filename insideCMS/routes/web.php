@@ -9,7 +9,7 @@ use App\Http\Controllers\NewsController;
 use App\Http\Controllers\ReviewsController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\PageController;
-
+use App\Http\Controllers\SettingsController;
 $modules = getModules();
 
 Route::get('/', function () {
@@ -82,6 +82,12 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
         Route::post('pages', 'store')->name('pages.store'); // Сохранение созданой страницы (действие создания страницы)
         Route::get('pages/{page}/edit', 'edit')->name('pages.edit'); // Редактирование страницы (страница редактирования)
         Route::post('pages/{page}', 'update')->name('pages.update'); // Обновление страницы (действие обновления страницы)
+    });
+
+    // Роуты для настроек сайта
+    Route::controller(SettingsController::class)->group(function () {
+        Route::get('site-settings', 'index')->name('site-settings');
+
     });
  });
 

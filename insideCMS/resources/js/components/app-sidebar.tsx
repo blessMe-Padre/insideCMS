@@ -9,7 +9,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, newsAdmin, addNewsAdmin, articlesAdmin, addArticleAdmin, modulesAdmin, filesAdmin, pagesAdmin, addPages} from '@/routes';
+import { dashboard, newsAdmin, addNewsAdmin, articlesAdmin, modulesAdmin, filesAdmin, pagesAdmin, addPages, siteSettings} from '@/routes';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { LayoutGrid, List, MessageCircle, Newspaper, Plus, User, Settings, Folder } from 'lucide-react';
@@ -19,6 +19,11 @@ const settingsNavItems: NavItem[] = [
     {
         title: 'Настройка модулей',
         href: modulesAdmin(),
+        icon: Settings,
+    },
+    {
+        title: 'Настройки сайта',
+        href: siteSettings(),
         icon: Settings,
     },
 ];
@@ -88,11 +93,6 @@ export function AppSidebar() {
                     title: 'Все статьи',
                     href: articlesAdmin(),
                     icon: List,
-                },
-                {
-                    title: 'Добавить статью',
-                    href: addArticleAdmin(),
-                    icon: Plus,
                 },
             ],
         }] : []),
