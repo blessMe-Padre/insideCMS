@@ -99,14 +99,16 @@ export default function MenuEditor() {
         setData(items);
     }
 
+    const handlePromoteItem = (itemId: number) => {
+        setData(prevData => 
+            prevData.map(item => 
+                item.id === itemId ? { ...item, parentId: null } : item
+            )
+        );
+    }
+
     return (
         <div className="max-w-2xl">
-            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                <p className="text-sm text-gray-700">
-                    <strong>Как использовать:</strong> Перетащите элемент под меню, чтобы сделать его дочерним. 
-                    Синие элементы - родительские меню, зеленые - дочерние элементы.
-                </p>
-            </div>
             <DragDropContext onDragEnd={handleDragEnd}>
                 <Droppable droppableId="menu">
                     {(provided, snapshot) => (
@@ -128,10 +130,26 @@ export default function MenuEditor() {
                                                     item.parentId ? 'bg-green-100 ml-6 border-green-300' : 
                                                     'bg-gray-200 border-gray-300'
                                                 } text-black`}>
-                                                <div className="font-bold">{item.name}</div>
-                                                {!item.isMenu && item.parentId && (
-                                                    <div className="text-xs text-gray-600">{getParentName(item.parentId)}</div>
-                                                )}
+                                                <div className="flex justify-between items-center">
+                                                    <div>
+                                                        <div className="font-bold">{item.name}</div>
+                                                        {!item.isMenu && item.parentId && (
+                                                            <div className="text-xs text-gray-600">{getParentName(item.parentId)}</div>
+                                                        )}
+                                                    </div>
+                                                    {item.parentId !== null && (
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handlePromoteItem(item.id);
+                                                            }}
+                                                            className="ml-2 px-2 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded transition-colors"
+                                                            title="Убрать дочерность"
+                                                        >
+                                                            ↑
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     )}
