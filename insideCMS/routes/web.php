@@ -10,11 +10,16 @@ use App\Http\Controllers\ReviewsController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\MailController;
 $modules = getModules();
 
 Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
+
+// Роуты для отправки писем
+Route::get('/mail', [MailController::class, 'index'])->name('mail');
+Route::post('/mail/send', [MailController::class, 'send_email'])->name('mail.send');
 
 Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
     Route::get('dashboard', function () {
