@@ -100,23 +100,33 @@ export default function MenuEditor() {
     }
 
     return (
-        <div>
+        <div className="max-w-2xl">
+            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                <p className="text-sm text-gray-700">
+                    <strong>Как использовать:</strong> Перетащите элемент под меню, чтобы сделать его дочерним. 
+                    Синие элементы - родительские меню, зеленые - дочерние элементы.
+                </p>
+            </div>
             <DragDropContext onDragEnd={handleDragEnd}>
                 <Droppable droppableId="menu">
-                    {(provided) => (
-                        <div ref={provided.innerRef} {...provided.droppableProps}>
+                    {(provided, snapshot) => (
+                        <div 
+                            ref={provided.innerRef} 
+                            {...provided.droppableProps}
+                            className={`min-h-[200px] ${snapshot.isDraggingOver ? 'bg-blue-50 border-2 border-blue-300 rounded-md p-2' : ''}`}>
                             {data.map((item, index) => (
                                 <Draggable key={item.id} draggableId={item.id.toString()} index={index}>
-                                    {(provided) => (
+                                    {(provided, snapshot) => (
                                         <div 
-                                            ref={provided.innerRef} {...provided.draggableProps}
-                                            className="mb-2">
+                                            ref={provided.innerRef} 
+                                            {...provided.draggableProps}
+                                            className={`mb-2 ${snapshot.isDragging ? 'opacity-50' : ''}`}>
                                             <div 
                                                 {...provided.dragHandleProps}
-                                                className={`p-2 rounded-md ${
-                                                    item.isMenu ? 'bg-blue-100 font-bold' : 
-                                                    item.parentId ? 'bg-green-100 ml-6' : 
-                                                    'bg-gray-200'
+                                                className={`p-2 rounded-md border-2 transition-all cursor-move hover:shadow-md ${
+                                                    item.isMenu ? 'bg-blue-100 font-bold border-blue-300' : 
+                                                    item.parentId ? 'bg-green-100 ml-6 border-green-300' : 
+                                                    'bg-gray-200 border-gray-300'
                                                 } text-black`}>
                                                 <div className="font-bold">{item.name}</div>
                                                 {!item.isMenu && item.parentId && (
