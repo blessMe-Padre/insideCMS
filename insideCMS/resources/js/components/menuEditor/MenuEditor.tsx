@@ -6,8 +6,7 @@ interface FlatMenuItem {
     id: number;
     name: string;
     href: string;
-    menuId: number | null;
-    menuName: string | null;
+    parentId: number | null;
     isMenu?: boolean;
 }
 
@@ -16,72 +15,87 @@ const menuList = [
         id: 1,
         name: 'Menu-1',
         href: '/menu1',
-        items: [
-            {id: 1, name: 'Menu-1 Item 1', href: '/item1'},
-            {id: 2, name: 'Menu-1 Item 2', href: '/item2'},
-
-        ]
+        parentId: null,
+        isMenu: true
     },
     {
         id: 2,
         name: 'Menu-2',
         href: '/menu2',
-        items: [
-            {id: 2, name: 'Menu-2 Item 1', href: '/item2'},
-        ]
+        parentId: null,
+        isMenu: true
     },
     {
         id: 3,
         name: 'Menu-3',
         href: '/menu3',
-        items: [
-            {id: 3, name: 'Menu-3 Item 1', href: '/item3'},
-        ]
-    }
+        parentId: null,
+        isMenu: true
+    },
+    {
+        id: 4,
+        name: 'Menu-4',
+        href: '/menu4',
+        parentId: null,
+        isMenu: true
+    },
+    {
+        id: 5,
+        name: 'Menu-5',
+        href: '/menu5',
+        parentId: null,
+        isMenu: true
+    },
 ]
 
-// Преобразуем вложенную структуру в плоский список
-const flattenMenuList = (menus: typeof menuList): FlatMenuItem[] => {
-    const flatList: FlatMenuItem[] = [];
-    let itemId = 1;
-    
-    menus.forEach(menu => {
-        // Добавляем само меню
-        flatList.push({
-            id: itemId++,
-            name: menu.name,
-            href: menu.href,
-            menuId: null,
-            menuName: null,
-            isMenu: true
-        });
-        
-        // Добавляем элементы меню
-        menu.items.forEach(item => {
-            flatList.push({
-                id: itemId++,
-                name: item.name,
-                href: item.href,
-                menuId: menu.id,
-                menuName: menu.name,
-                isMenu: false
-            });
-        });
-    });
-    
-    return flatList;
-};
-
 export default function MenuEditor() {
-    const [data, setData] = useState(flattenMenuList(menuList));
+    const [data, setData] = useState<FlatMenuItem[]>(menuList);
 
     console.log('data', data);
 
+    const getParentName = (parentId: number | null): string | undefined => {
+        const parent = data.find(item => item.id === parentId);
+        return parent?.name;
+    }
+
     const handleDragEnd = (result: DropResult) => {
         if (!result.destination) return;
+        
+        const sourceIndex = result.source.index;
+        const destIndex = result.destination.index;
+        
+        // Если элементы на одном месте, ничего не делаем
+        if (sourceIndex === destIndex) return;
+        
         const items = Array.from(data);
-        const [reorderedItem] = items.splice(result.source.index, 1);
-        items.splice(result.destination.index, 0, reorderedItem);
+        const [reorderedItem] = items.splice(sourceIndex, 1);
+        items.splice(destIndex, 0, reorderedItem);
+        
+        // Определяем новую вложенность для элемента
+        // Находим ближайшее меню выше (это может быть как меню, так и обычный элемент с меню-родителем)
+        let menuIndex = destIndex - 1;
+        while (menuIndex >= 0) {
+            // Если это меню (родитель) или элемент с родителем
+            if (items[menuIndex].isMenu || items[menuIndex].parentId !== null) {
+                break;
+            }
+            menuIndex--;
+        }
+        
+        if (menuIndex >= 0 && items[menuIndex].isMenu) {
+            // Элемент стал дочерним меню
+            reorderedItem.parentId = items[menuIndex].id;
+            reorderedItem.isMenu = false;
+        } else {
+            // Элемент стал независимым
+            reorderedItem.parentId = null;
+            if (!reorderedItem.isMenu && destIndex === 0) {
+                reorderedItem.isMenu = true;
+            }
+        }
+        
+        items[destIndex] = reorderedItem;
+        
         setData(items);
     }
 
@@ -92,16 +106,21 @@ export default function MenuEditor() {
                     {(provided) => (
                         <div ref={provided.innerRef} {...provided.droppableProps}>
                             {data.map((item, index) => (
-                           
                                 <Draggable key={item.id} draggableId={item.id.toString()} index={index}>
                                     {(provided) => (
                                         <div 
-                                            ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} 
-                                            className="bg-gray-200 text-black mb-2 p-2 rounded-md">
-                                            <div>
+                                            ref={provided.innerRef} {...provided.draggableProps}
+                                            className="mb-2">
+                                            <div 
+                                                {...provided.dragHandleProps}
+                                                className={`p-2 rounded-md ${
+                                                    item.isMenu ? 'bg-blue-100 font-bold' : 
+                                                    item.parentId ? 'bg-green-100 ml-6' : 
+                                                    'bg-gray-200'
+                                                } text-black`}>
                                                 <div className="font-bold">{item.name}</div>
-                                                {!item.isMenu && item.menuName && (
-                                                    <div className="text-xs text-gray-600">{item.menuName}</div>
+                                                {!item.isMenu && item.parentId && (
+                                                    <div className="text-xs text-gray-600">{getParentName(item.parentId)}</div>
                                                 )}
                                             </div>
                                         </div>
