@@ -2,7 +2,6 @@ import { dashboard, login, reviews, register as registerRoute } from '@/routes';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { useForm } from '@inertiajs/react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
 
 interface PageProps {

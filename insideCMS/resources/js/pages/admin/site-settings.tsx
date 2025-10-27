@@ -2,6 +2,7 @@ import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem} from '@/types';
 import { Head} from '@inertiajs/react';
+import MenuEditor from '@/components/menuEditor/MenuEditor';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -25,6 +26,8 @@ export default function SiteSettings() {
                         <h2 className="mb-4 text-xl font-semibold">Настройки сайта</h2>
                     </div>
                 </div>
+
+                <MenuEditor />
 
             </div>
         </AppLayout>
