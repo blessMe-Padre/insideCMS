@@ -14,6 +14,17 @@ class MailFormRequest extends FormRequest
         return true;
     }
 
+    public function attributes(): array
+    {
+        return [
+            'name'    => 'Имя',
+            'email'   => 'Email',
+            'subject' => 'Тема',
+            'phone'   => 'Телефон',
+            'message' => 'Сообщение',
+        ];
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
