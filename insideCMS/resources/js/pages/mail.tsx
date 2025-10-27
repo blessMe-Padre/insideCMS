@@ -3,6 +3,7 @@ import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { useForm } from '@inertiajs/react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { toast } from 'sonner';
 
 interface PageProps {
     flash?: {
@@ -26,7 +27,11 @@ export default function Mail() {
         e.preventDefault();
         post('/mail/send', {
             onSuccess: () => {
+                toast.success(flash?.success || 'Письмо успешно отправлено');
                 reset();
+            },
+            onError: () => {
+                toast.error(flash?.error || 'Ошибка отправки письма');
             },
         });
     };
@@ -87,16 +92,6 @@ export default function Mail() {
                 </header>
                 <main className="py-6">
                     <div className="container max-w-2xl mx-auto">
-                        {flash?.success && (
-                            <Alert className="mb-4 bg-green-50 border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400">
-                                <AlertDescription>{flash.success}</AlertDescription>
-                            </Alert>
-                        )}
-                        {flash?.error && (
-                            <Alert variant="destructive" className="mb-4">
-                                <AlertDescription>{flash.error}</AlertDescription>
-                            </Alert>
-                        )}
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <label>Имя</label>
