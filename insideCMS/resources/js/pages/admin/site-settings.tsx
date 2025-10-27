@@ -26,9 +26,7 @@ export default function SiteSettings() {
                         <h2 className="mb-4 text-xl font-semibold">Настройки сайта</h2>
                     </div>
                 </div>
-
                 <MenuEditor />
-
             </div>
         </AppLayout>
     );

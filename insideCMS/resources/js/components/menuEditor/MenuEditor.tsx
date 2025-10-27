@@ -51,8 +51,6 @@ const menuList = [
 export default function MenuEditor() {
     const [data, setData] = useState<FlatMenuItem[]>(menuList);
 
-    console.log('data', data);
-
     const getParentName = (parentId: number | null): string | undefined => {
         const parent = data.find(item => item.id === parentId);
         return parent?.name;

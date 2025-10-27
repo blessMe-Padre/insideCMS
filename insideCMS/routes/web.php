@@ -11,6 +11,7 @@ use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\MailController;
+use App\Http\Controllers\MenuController;
 $modules = getModules();
 
 Route::get('/', function () {
@@ -92,7 +93,11 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
     // Роуты для настроек сайта
     Route::controller(SettingsController::class)->group(function () {
         Route::get('site-settings', 'index')->name('site-settings');
+    });
 
+    // Роуты для меню
+    Route::controller(MenuController::class)->group(function () {
+        Route::get('menu-admin', 'index')->name('menu-admin');
     });
  });
 

@@ -9,10 +9,10 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, newsAdmin, addNewsAdmin, articlesAdmin, modulesAdmin, filesAdmin, pagesAdmin, addPages, siteSettings} from '@/routes';
+import { dashboard, newsAdmin, addNewsAdmin, articlesAdmin, modulesAdmin, filesAdmin, pagesAdmin, addPages, siteSettings, menuAdmin} from '@/routes';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { LayoutGrid, List, MessageCircle, Newspaper, Plus, User, Settings, Folder } from 'lucide-react';
+import { LayoutGrid, List, MessageCircle, Newspaper, Plus, User, Settings, Folder, Menu } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const settingsNavItems: NavItem[] = [
@@ -25,6 +25,11 @@ const settingsNavItems: NavItem[] = [
         title: 'Настройки сайта',
         href: siteSettings(),
         icon: Settings,
+    },
+    {
+        title: 'Меню',
+        href: menuAdmin(),
+        icon: Menu,
     },
 ];
 
