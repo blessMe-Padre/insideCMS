@@ -71,51 +71,51 @@ export default function MenuEditor() {
         const [reorderedItem] = items.splice(sourceIndex, 1);
         items.splice(destIndex, 0, reorderedItem);
         
-        // Определяем новую вложенность для элемента
-        // Находим ближайшее меню выше (это может быть как меню, так и обычный элемент с меню-родителем)
-        let menuIndex = destIndex - 1;
-        while (menuIndex >= 0) {
-            // Если это меню (родитель) или элемент с родителем
-            if (items[menuIndex].isMenu || items[menuIndex].parentId !== null) {
-                break;
-            }
-            menuIndex--;
-        }
-        
-        if (menuIndex >= 0 && items[menuIndex].isMenu) {
-            // Элемент стал дочерним меню
-            reorderedItem.parentId = items[menuIndex].id;
-            reorderedItem.isMenu = false;
-        } else {
-            // Элемент стал независимым
-            reorderedItem.parentId = null;
-            if (!reorderedItem.isMenu && destIndex === 0) {
-                reorderedItem.isMenu = true;
-            }
-        }
-        
-        items[destIndex] = reorderedItem;
-        
         setData(items);
     }
 
     const handlePromoteItem = (itemId: number) => {
         setData(prevData => 
             prevData.map(item => 
-                item.id === itemId ? { ...item, parentId: null } : item
+                item.id === itemId ? { ...item, parentId: null, isMenu: true } : item
             )
         );
+    }
+
+    const handleMakeChild = (itemId: number) => {
+        setData(prevData => {
+            const itemIndex = prevData.findIndex(item => item.id === itemId);
+            if (itemIndex === -1 || itemIndex === 0) return prevData;
+            
+            // Ищем ближайшее меню выше
+            let parentIndex = itemIndex - 1;
+            while (parentIndex >= 0) {
+                if (prevData[parentIndex].isMenu && prevData[parentIndex].parentId === null) {
+                    break;
+                }
+                parentIndex--;
+            }
+            
+            if (parentIndex >= 0) {
+                // Нашли родительское меню
+                return prevData.map(item => 
+                    item.id === itemId ? { ...item, parentId: prevData[parentIndex].id, isMenu: false } : item
+                );
+            }
+            
+            return prevData;
+        });
     }
 
     return (
         <div className="max-w-2xl">
             <DragDropContext onDragEnd={handleDragEnd}>
                 <Droppable droppableId="menu">
-                    {(provided, snapshot) => (
+                    {(provided) => (
                         <div 
                             ref={provided.innerRef} 
                             {...provided.droppableProps}
-                            className={`min-h-[200px] ${snapshot.isDraggingOver ? 'bg-blue-50 border-2 border-blue-300 rounded-md p-2' : ''}`}>
+                            className={`min-h-[200px]`}>
                             {data.map((item, index) => (
                                 <Draggable key={item.id} draggableId={item.id.toString()} index={index}>
                                     {(provided, snapshot) => (
@@ -134,21 +134,35 @@ export default function MenuEditor() {
                                                     <div>
                                                         <div className="font-bold">{item.name}</div>
                                                         {!item.isMenu && item.parentId && (
-                                                            <div className="text-xs text-gray-600">{getParentName(item.parentId)}</div>
+                                                            <div className="text-xs text-gray-600">Родитель: {getParentName(item.parentId)}</div>
                                                         )}
                                                     </div>
-                                                    {item.parentId !== null && (
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                handlePromoteItem(item.id);
-                                                            }}
-                                                            className="ml-2 px-2 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded transition-colors"
-                                                            title="Убрать дочерность"
-                                                        >
-                                                            ↑
-                                                        </button>
-                                                    )}
+                                                    <div className="flex gap-1">
+                                                        {item.parentId !== null && (
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handlePromoteItem(item.id);
+                                                                }}
+                                                                className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded transition-colors"
+                                                                title="Убрать дочерность"
+                                                            >
+                                                                ↑
+                                                            </button>
+                                                        )}
+                                                        {item.parentId === null && (
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleMakeChild(item.id);
+                                                                }}
+                                                                className="px-2 py-1 bg-green-500 hover:bg-green-600 text-white text-xs rounded transition-colors"
+                                                                title="Сделать дочерним"
+                                                            >
+                                                                ↓
+                                                            </button>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
