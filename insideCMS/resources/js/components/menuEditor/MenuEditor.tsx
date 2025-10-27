@@ -7,7 +7,7 @@ interface FlatMenuItem {
     name: string;
     href: string;
     parentId: number | null;
-    isMenu?: boolean;
+    isParent?: boolean;
 }
 
 const menuList = [
@@ -16,35 +16,35 @@ const menuList = [
         name: 'Menu-1',
         href: '/menu1',
         parentId: null,
-        isMenu: true
+        isParent: true
     },
     {
         id: 2,
         name: 'Menu-2',
         href: '/menu2',
         parentId: null,
-        isMenu: true
+        isParent: true
     },
     {
         id: 3,
         name: 'Menu-3',
         href: '/menu3',
         parentId: null,
-        isMenu: true
+        isParent: true
     },
     {
         id: 4,
         name: 'Menu-4',
         href: '/menu4',
         parentId: null,
-        isMenu: true
+        isParent: true
     },
     {
         id: 5,
         name: 'Menu-5',
         href: '/menu5',
         parentId: null,
-        isMenu: true
+        isParent: true
     },
 ]
 
@@ -77,7 +77,7 @@ export default function MenuEditor() {
     const handlePromoteItem = (itemId: number) => {
         setData(prevData => 
             prevData.map(item => 
-                item.id === itemId ? { ...item, parentId: null, isMenu: true } : item
+                item.id === itemId ? { ...item, parentId: null, isParent: true } : item
             )
         );
     }
@@ -90,7 +90,7 @@ export default function MenuEditor() {
             // Ищем ближайшее меню выше
             let parentIndex = itemIndex - 1;
             while (parentIndex >= 0) {
-                if (prevData[parentIndex].isMenu && prevData[parentIndex].parentId === null) {
+                if (prevData[parentIndex].isParent && prevData[parentIndex].parentId === null) {
                     break;
                 }
                 parentIndex--;
@@ -99,7 +99,7 @@ export default function MenuEditor() {
             if (parentIndex >= 0) {
                 // Нашли родительское меню
                 return prevData.map(item => 
-                    item.id === itemId ? { ...item, parentId: prevData[parentIndex].id, isMenu: false } : item
+                    item.id === itemId ? { ...item, parentId: prevData[parentIndex].id, isParent: false } : item
                 );
             }
             
@@ -126,14 +126,14 @@ export default function MenuEditor() {
                                             <div 
                                                 {...provided.dragHandleProps}
                                                 className={`p-2 rounded-md border-2 transition-all cursor-move hover:shadow-md ${
-                                                    item.isMenu ? 'bg-blue-100 font-bold border-blue-300' : 
+                                                    item.isParent ? 'bg-blue-100 font-bold border-blue-300' : 
                                                     item.parentId ? 'bg-green-100 ml-6 border-green-300' : 
                                                     'bg-gray-200 border-gray-300'
                                                 } text-black`}>
                                                 <div className="flex justify-between items-center">
                                                     <div>
                                                         <div className="font-bold">{item.name}</div>
-                                                        {!item.isMenu && item.parentId && (
+                                                        {!item.isParent && item.parentId && (
                                                             <div className="text-xs text-gray-600">Родитель: {getParentName(item.parentId)}</div>
                                                         )}
                                                     </div>
