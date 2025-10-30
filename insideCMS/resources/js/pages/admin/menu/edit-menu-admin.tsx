@@ -17,62 +17,48 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: menuAdmin().url,
     },
     {
-        title: 'Добавить меню',
+        title: 'Редактировать меню',
         href: '#',
     },
 ];
 
-interface MenuItem {
+interface MenuNode {
     id: string;
     name: string;
     href: string;
-    children: MenuItem[];
+    children: MenuNode[];
 }
 
-const initialFormData: MenuItem = {
-    id: '',
-    name: '',
-    href: '',
-    children: [],
-};
+interface MenuEntity {
+    id: number;
+    title: string;
+    slug: string;
+    description: string;
+    data: MenuNode[];
+}
 
-const initialMenus: MenuItem[] = [
-    {
-        id: 'Home',
-        name: 'Главная',
-        href: '/home',
-        children: [],
-    },
-    {
-        id: 'Collections',
-        name: 'Коллекции',
-        href: '/collections',
-        children: [],
-    },
-];
-  
-export default function AddMenuAdmin() {
+export default function EditMenuAdmin({ menu }: { menu: MenuEntity }) {
     const { data, setData, post, processing, errors, reset, transform } = useForm({
-        title: '',
-        slug: '',
-        description: '',
+        title: menu.title,
+        slug: menu.slug,
+        description: menu.description,
     });
 
-    const [menus, setMenus] = useState<MenuItem[]>(initialMenus as MenuItem[]);
-    const [formData, setFormData] = useState(initialFormData);
+    const [menus, setMenus] = useState<MenuNode[]>(menu.data as MenuNode[] ?? []);
+    const [formData, setFormData] = useState<MenuNode>({ id: '', name: '', href: '', children: [] });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         transform((values) => ({ ...(values as Record<string, unknown>), data: menus } as unknown as typeof values));
-        post('/menus', {
+        post(`/menus/${menu.id}`, {
             onSuccess: () => {
                 reset();
-                toast.success('Меню успешно создано');
+                toast.success('Меню успешно обновлено');
                 router.visit(menuAdmin().url);
             },
             onError: () => {
                 console.log(errors);
-                toast.error('Ошибка при создании меню');
+                toast.error('Ошибка при обновлении меню');
             },
         });
     };
@@ -81,7 +67,7 @@ export default function AddMenuAdmin() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="px-4 py-8">
-                <Head title="Добавить меню">
+                <Head title="Редактировать меню">
                     <link rel="preconnect" href="https://fonts.bunny.net" />
                     <link
                         href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
@@ -89,7 +75,7 @@ export default function AddMenuAdmin() {
                     />
                 </Head>
 
-                <h1 className="text-3xl font-bold text-foreground mb-4">Создайте новое меню</h1>
+                <h1 className="text-3xl font-bold text-foreground mb-4">Редактировать меню</h1>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
@@ -109,7 +95,7 @@ export default function AddMenuAdmin() {
                         )}
                     </div>
                     <div>
-                        <label htmlFor="title" className="block text-foreground text-sm font-medium mb-1">
+                        <label htmlFor="slug" className="block text-foreground text-sm font-medium mb-1">
                             Slug меню *
                         </label>
                         <input
@@ -159,7 +145,7 @@ export default function AddMenuAdmin() {
                             {processing ? 
                                 (<div className="flex items-center gap-2"><LoaderCircle className="w-4 h-4 animate-spin" /> Сохранение...</div>)
                                 : 
-                                (<div className="flex items-center gap-2"><SaveIcon className="w-4 h-4" /> Создать</div>)
+                                (<div className="flex items-center gap-2"><SaveIcon className="w-4 h-4" /> Сохранить</div>)
                             }
                         </button>
                         <button

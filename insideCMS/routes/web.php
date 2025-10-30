@@ -99,7 +99,10 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
     Route::controller(MenuController::class)->group(function () {
         Route::get('menu-admin', 'index')->name('menu-admin');
         Route::get('add-menu-admin', 'create')->name('add-menu-admin');
-        Route::post('menus/add', 'store')->name('menus.store');
+        Route::get('edit-menu-admin/{menu}', 'edit')->name('edit-menu-admin');
+        Route::post('menus', 'store')->name('menus.store');
+        Route::post('menus/{menu}', 'update')->name('menus.update');
+        Route::delete('menus/{menu}', 'destroy')->name('menus.destroy');
     });
  });
 

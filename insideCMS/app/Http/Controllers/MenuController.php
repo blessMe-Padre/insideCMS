@@ -13,7 +13,9 @@ class MenuController extends Controller
      */
     public function index()
     {
-        return Inertia::render('admin/menu/menu-admin');
+        return Inertia::render('admin/menu/menu-admin', [
+            'menus' => Menu::all(),
+        ]);
     }
 
     /**
@@ -59,7 +61,9 @@ class MenuController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        return Inertia::render('admin/menu/edit-menu-admin', [
+            'menu' => Menu::find($id),
+        ]);
     }
 
     /**
@@ -67,14 +71,30 @@ class MenuController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'slug' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'data' => 'required|array',
+        ]);
+
+        $menu = Menu::find($id);
+        $menu->update([
+            'title' => $validated['title'],
+            'slug' => $validated['slug'],
+            'description' => $validated['description'],
+            'data' => $validated['data'],
+        ]);
+
+        return redirect()->back()->with('success', 'Меню успешно обновлено');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Menu $menu)
     {
-        //
+        $menu->delete();
+        return redirect()->route('menu-admin')->with('success', 'Меню удалено');
     }
 }
