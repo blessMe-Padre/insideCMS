@@ -272,7 +272,7 @@ export default function PageBuilderForm({ components }: { components: Component[
             </Popover>
 
             <Button 
-                className="bg-blue-600 flex items-center gap-2 cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                className="bg-blue-600 flex items-center gap-2 cursor-pointer text-white px-4 py-2 rounded-sm hover:bg-blue-700 transition-colors"
                 onClick={handleSubmit}
                 disabled={processing}
             >

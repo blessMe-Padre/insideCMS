@@ -18,7 +18,7 @@ export default function AppearanceToggleTab({
     return (
         <div
             className={cn(
-                'inline-flex gap-1 rounded-lg bg-neutral-100 p-1 dark:bg-neutral-800',
+                'inline-flex gap-1 rounded-sm bg-neutral-100 p-1 dark:bg-neutral-800',
                 className,
             )}
             {...props}

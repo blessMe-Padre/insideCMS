@@ -60,7 +60,7 @@ export default function ModulesAdmin({ modules }: { modules: ModulesSetting[] })
                 <ul className="space-y-4">
 
                     {modulesArray.map((module, index) => (
-                        <li key={index}  className="flex items-center justify-between max-w-md p-4 border rounded-lg">
+                        <li key={index}  className="flex items-center justify-between max-w-md p-4 border rounded-sm">
                             <div>
                                 <h2 className="text-lg font-bold text-foreground mb-2">{module.module_name}</h2>
                                 <p className="mb-2 text-sm text-gray-500">{module.module_description}</p>

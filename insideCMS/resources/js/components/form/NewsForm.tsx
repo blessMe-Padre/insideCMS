@@ -247,7 +247,7 @@ export default function NewsForm({ onSuccess }: NewsFormProps) {
                     <Button
                         type="submit"
                         disabled={processing}
-                        className="bg-blue-600 text-white cursor-pointer px-4 p-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        className="bg-blue-600 text-white cursor-pointer px-4 p-2 rounded-sm hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                     >
                         {processing ? <LoaderCircle className="w-4 h-4 animate-spin" /> : <SaveIcon className="w-4 h-4" />} Создать новость
                     </Button>
@@ -255,7 +255,7 @@ export default function NewsForm({ onSuccess }: NewsFormProps) {
                         type="button"
                         onClick={handleReset}
                         disabled={processing}
-                        className="bg-gray-500 text-white cursor-pointer px-4 p-2 rounded-lg hover:bg-gray-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        className="bg-gray-500 text-white cursor-pointer px-4 p-2 rounded-sm hover:bg-gray-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                     >
                         Очистить
                     </Button>

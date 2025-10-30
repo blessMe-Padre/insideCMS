@@ -136,7 +136,7 @@ export default function TextEditor({ value = '', onChange }: TextEditorProps) {
   const renderLeaf = useCallback((props: RenderLeafProps) => <Leaf {...props} />, [])
 
   return (
-    <div className="border border-border rounded-lg overflow-hidden bg-background">
+    <div className="border border-border rounded-sm overflow-hidden bg-background">
       <Slate editor={editor} initialValue={editorValue} onChange={handleChange}>
         <Toolbar />
         <div className="p-4 min-h-[100px] overflow-y-auto">

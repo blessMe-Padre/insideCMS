@@ -35,7 +35,7 @@ export default function ReviewForm({ onSuccess }: ReviewFormProps) {
         return (
             <button
                 onClick={() => setShowForm(true)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                className="bg-blue-600 text-white px-4 py-2 rounded-sm hover:bg-blue-700 transition-colors"
             >
                 Добавить отзыв
             </button>
@@ -43,7 +43,7 @@ export default function ReviewForm({ onSuccess }: ReviewFormProps) {
     }
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow-md border">
+        <div className="bg-white p-6 rounded-sm shadow-md border">
             <h2 className="text-xl font-semibold mb-4">Добавить отзыв</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>

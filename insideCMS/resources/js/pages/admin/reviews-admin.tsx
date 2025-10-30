@@ -106,7 +106,7 @@ export default function Reviews({ reviews }: { reviews: Review[] }) {
                 ) : (
                     <div className="block">
                         {reviews.map((review) => (
-                            <div key={review.id} className="bg-gray-700 p-6 rounded-lg shadow-md border hover:shadow-lg transition-shadow mb-4">
+                            <div key={review.id} className="bg-gray-700 p-6 rounded-sm shadow-md border hover:shadow-lg transition-shadow mb-4">
                                 <div className="flex items-center justify-between">
                                     <h3 className="font-semibold text-white">{review.author_name}</h3>
                                     <div className="flex items-center">

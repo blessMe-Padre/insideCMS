@@ -73,28 +73,30 @@ export default function MenuAdmin({ menus }: { menus: MenuItem[] }) {
                 </div>
             ) : (
                 menus.map((menu) => (
-                <div className="flex items-center gap-2" key={menu.id}>
-                    <div className="flex items-center gap-2">
-                        <p>{menu.title}</p>
-                        <p>{menu.slug}</p>
-                        <p>{menu.description}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => handleEdit(menu.id)}
-                            title="редактировать" 
-                            className="bg-blue-600 text-white px-2 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer">
-                            <Edit className="w-5 h-5" />
-                        </button>
+                    <div className="flex justify-between items-center gap-4 bg-gray-700 py-2 px-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow mb-4" 
+                    key={menu.id}
+                    >
+                        <div>
+                            <div className="text-sm">Название: {menu.title}</div>
+                            <div className="text-sm text-gray-500">Slug: {menu.slug}</div>
+                            <div className="text-sm text-gray-500">Описание: {menu.description}</div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => handleEdit(menu.id)}
+                                title="редактировать" 
+                                className="bg-blue-600 text-white px-2 py-2 rounded-sm hover:bg-blue-700 transition-colors cursor-pointer">
+                                <Edit className="w-5 h-5" />
+                            </button>
 
-                        <button
-                            title="удалить"
-                            className="bg-red-600 text-white px-2 py-2 rounded-sm hover:bg-red-700 transition-colors cursor-pointer"
-                                onClick={() => handleDelete(menu.id)}
-                            >
-                            {processingNewsId === menu.id ? (<Spinner />) : (<Trash className="w-5 h-5" />)}
-                        </button>
-                     </div>
+                            <button
+                                title="удалить"
+                                className="bg-red-600 text-white px-2 py-2 rounded-sm hover:bg-red-700 transition-colors cursor-pointer"
+                                    onClick={() => handleDelete(menu.id)}
+                                >
+                                {processingNewsId === menu.id ? (<Spinner />) : (<Trash className="w-5 h-5" />)}
+                            </button>
+                        </div>
                     </div>
                 ))
             )}

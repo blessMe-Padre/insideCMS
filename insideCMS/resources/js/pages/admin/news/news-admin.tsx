@@ -100,7 +100,7 @@ export default function NewsAdmin({ news }: NewsAdminPageProps) {
                     <p className="text-gray-500 text-lg">Всего новостей: {news.length}</p>
                     <Link
                         href={addNewsAdmin()}
-                        className="bg-blue-600 flex items-center gap-2 cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                        className="bg-blue-600 flex items-center gap-2 cursor-pointer text-white px-4 py-2 rounded-sm hover:bg-blue-700 transition-colors"
                     >
                         <Plus className="w-5 h-5" />
                         Создать новость 
@@ -113,7 +113,7 @@ export default function NewsAdmin({ news }: NewsAdminPageProps) {
                 ) : (
                     <div className="block">
                         {news.filter((item) => item.title.toLowerCase().includes(searchValue.toLowerCase())).map((item) => (
-                            <div key={item.id} className="flex justify-between items-center gap-4 bg-gray-700 py-2 px-4 rounded-lg shadow-md border hover:shadow-lg transition-shadow mb-4">
+                            <div key={item.id} className="flex justify-between items-center gap-4 bg-gray-700 py-2 px-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow mb-4">
                                 <div className="flex items-center justify-between gap-4">
                                     <img src={item.images && item.images.length > 0 ? item.images[0] : placeholder} alt={item.title} className="w-10 h-10 rounded-full" />
                                     <div className="">
@@ -131,13 +131,13 @@ export default function NewsAdmin({ news }: NewsAdminPageProps) {
                                     <button
                                      onClick={() => handleEdit(item.id)}
                                      title="редактировать" 
-                                     className="bg-blue-600 text-white px-2 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer">
+                                     className="bg-blue-600 text-white px-2 py-2 rounded-sm hover:bg-blue-700 transition-colors cursor-pointer">
                                         <Edit className="w-5 h-5" />
                                     </button>
 
                                     <button
                                      title="удалить"
-                                     className="bg-red-600 text-white px-2 py-2 rounded-lg hover:bg-red-700 transition-colors cursor-pointer"
+                                     className="bg-red-600 text-white px-2 py-2 rounded-sm hover:bg-red-700 transition-colors cursor-pointer"
                                      onClick={() => handleDelete(item.id)}
                                      >
                                         {processingNewsId === item.id ? (<LoaderCircle className="w-5 h-5 animate-spin" />) : (<Trash className="w-5 h-5" />)}

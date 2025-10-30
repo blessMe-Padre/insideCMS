@@ -195,7 +195,7 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
                         <button
                             type="submit"
                             disabled={processing}
-                            className="bg-blue-600 text-white cursor-pointer px-4 p-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                            className="bg-blue-600 text-white cursor-pointer px-4 p-2 rounded-sm hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                         >
                             {processing ? 
                                 (<div className="flex items-center gap-2"><LoaderCircle className="w-4 h-4 animate-spin" /> Сохранение...</div>)
@@ -207,7 +207,7 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
                             type="button"
                             onClick={() => window.location.href = '/pages-admin'}
                             disabled={processing}
-                            className="bg-gray-500 text-white cursor-pointer px-4 p-2 rounded-lg hover:bg-gray-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                            className="bg-gray-500 text-white cursor-pointer px-4 p-2 rounded-sm hover:bg-gray-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                         >
                             Отмена
                         </button>

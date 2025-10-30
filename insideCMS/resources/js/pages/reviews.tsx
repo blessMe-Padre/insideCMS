@@ -32,7 +32,7 @@ export default function Reviews({ reviews }: { reviews: Review[] }) {
             ) : (
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {reviews.map((review) => (
-                        <div key={review.id} className="bg-white p-6 rounded-lg shadow-md border hover:shadow-lg transition-shadow">
+                        <div key={review.id} className="bg-white p-6 rounded-sm shadow-md border hover:shadow-lg transition-shadow">
                             <div className="flex items-center justify-between mb-3">
                                 <h3 className="font-semibold text-gray-900">{review.author_name}</h3>
                                 <div className="flex items-center">
