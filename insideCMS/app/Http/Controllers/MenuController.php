@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\Menu;
 
 class MenuController extends Controller
 {
@@ -20,7 +21,7 @@ class MenuController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('admin/menu/add-menu-admin');
     }
 
     /**
@@ -28,7 +29,21 @@ class MenuController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'slug' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'data' => 'required|array',
+        ]);
+
+        $menu = Menu::create([
+            'title' => $validated['title'],
+            'slug' => $validated['slug'],
+            'description' => $validated['description'],
+            'data' => $validated['data'],
+        ]);
+
+        return redirect()->back()->with('success', 'Меню успешно создано');
     }
 
     /**

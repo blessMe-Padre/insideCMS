@@ -98,6 +98,8 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
     // Роуты для меню
     Route::controller(MenuController::class)->group(function () {
         Route::get('menu-admin', 'index')->name('menu-admin');
+        Route::get('add-menu-admin', 'create')->name('add-menu-admin');
+        Route::post('menus/add', 'store')->name('menus.store');
     });
  });
 

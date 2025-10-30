@@ -1,9 +1,9 @@
 import AppLayout from '@/layouts/app-layout';
-import { dashboard } from '@/routes';
+import { addMenuAdmin, dashboard } from '@/routes';
 import { type BreadcrumbItem} from '@/types';
 import { Head} from '@inertiajs/react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import MenuBuilder from '@/components/menuEditor/MenuBuilder';
+import { Link } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -17,10 +17,13 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function MenuAdmin() {
+
+
         return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Меню" />
                 <h2 className="mb-4 text-xl font-semibold">Меню</h2>
+                <Link href={addMenuAdmin().url} className="btn btn-primary">Добавить меню</Link>
  
                 {/* <MenuBuilder /> */}
 
@@ -33,14 +36,7 @@ export default function MenuAdmin() {
                     <AccordionItem value="item-1">
                         <AccordionTrigger>Главное меню</AccordionTrigger>
                         <AccordionContent className="flex flex-col gap-4 text-balance">
-                            <MenuBuilder />
-                        </AccordionContent>
-                    </AccordionItem>
-
-                    <AccordionItem value="item-2">
-                        <AccordionTrigger>Дополнительное меню</AccordionTrigger>
-                        <AccordionContent className="flex flex-col gap-4 text-balance">
-                            <MenuBuilder />
+                                2323232
                         </AccordionContent>
                     </AccordionItem>
                  </Accordion>
