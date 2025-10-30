@@ -6,6 +6,7 @@ import { LoaderCircle, SaveIcon } from 'lucide-react';
 import { toast } from "sonner";
 import MenuBuilder from '@/components/menuEditor/MenuBuilder';
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -22,6 +23,13 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+interface Page {
+    id: string;
+    name: string;
+    slug: string;
+    description: string;
+}
+
 interface MenuNode {
     id: string;
     name: string;
@@ -37,15 +45,39 @@ interface MenuEntity {
     data: MenuNode[];
 }
 
-export default function EditMenuAdmin({ menu }: { menu: MenuEntity }) {
+export default function EditMenuAdmin({ menu, pages }: { menu: MenuEntity, pages: Page[] }) {
     const { data, setData, post, processing, errors, reset, transform } = useForm({
         title: menu.title,
         slug: menu.slug,
         description: menu.description,
+        pages: [],
     });
 
     const [menus, setMenus] = useState<MenuNode[]>(menu.data as MenuNode[] ?? []);
     const [formData, setFormData] = useState<MenuNode>({ id: '', name: '', href: '', children: [] });
+
+    const [selectedPageIds, setSelectedPageIds] = useState<string[]>([]);
+
+    const togglePageSelection = (pageId: string) => {
+        setSelectedPageIds((prev) =>
+            prev.includes(pageId) ? prev.filter((id) => id !== pageId) : [...prev, pageId]
+        );
+    };
+
+    const addSelectedPagesToMenu = () => {
+        const selectedPages = pages.filter((p) => selectedPageIds.includes(p.id));
+        if (selectedPages.length === 0) return;
+
+        const newItems: MenuNode[] = selectedPages.map((p) => ({
+            id: Math.random().toString(36).substring(7),
+            name: p.name,
+            href: `/${p.slug}`,
+            children: [],
+        }));
+
+        setMenus([...menus, ...newItems]);
+        setSelectedPageIds([]);
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -126,7 +158,34 @@ export default function EditMenuAdmin({ menu }: { menu: MenuEntity }) {
                             <p className="text-red-500 text-sm mt-1">{errors.description}</p>
                         )}
                     </div>
-                    <div>
+
+                     <div className="flex gap-4">
+                        <div className="">
+                            <h3 className="text-foreground text-sm font-medium mb-1">Выбрать из существующих страниц</h3>
+                            {pages.map((page) => (
+                                <div className="flex items-center" key={page.id}>
+                                    <label htmlFor={page.id} className="flex items-center gap-2">
+                                    <input
+                                        id={page.id}
+                                        type="checkbox"
+                                        value={page.id}
+                                        className=""
+                                        checked={selectedPageIds.includes(page.id)}
+                                        onChange={() => togglePageSelection(page.id)}
+                                    />
+                                        {page.name}
+                                    </label>
+                                </div>
+                            ))}
+                            <Button
+                                type="button"
+                                onClick={addSelectedPagesToMenu}
+                                className="bg-gray-500 text-white mt-2 cursor-pointer px-4 p-2 rounded-sm hover:bg-gray-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                disabled={selectedPageIds.length === 0}
+                            >
+                                Добавить выбранные страницы
+                            </Button>
+                        </div>
                         <MenuBuilder 
                             menus={menus} 
                             setMenus={setMenus} 
@@ -134,7 +193,6 @@ export default function EditMenuAdmin({ menu }: { menu: MenuEntity }) {
                             setFormData={setFormData} 
                         />
                     </div>
-
 
                     <div className="flex gap-2 mt-4">
                         <button

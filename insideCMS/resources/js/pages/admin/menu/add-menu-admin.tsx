@@ -6,6 +6,7 @@ import { LoaderCircle, SaveIcon } from 'lucide-react';
 import { toast } from "sonner";
 import MenuBuilder from '@/components/menuEditor/MenuBuilder';
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -31,8 +32,8 @@ interface MenuItem {
 
 const initialFormData: MenuItem = {
     id: '',
-    name: '',
-    href: '',
+    name: 'Новая Страница',
+    href: 'new-page',
     children: [],
 };
 
@@ -44,8 +45,14 @@ const initialMenus: MenuItem[] = [
         children: [],
     },
 ];
+interface Page {
+    id: string;
+    name: string;
+    slug: string;
+    description: string;
+}
   
-export default function AddMenuAdmin() {
+export default function AddMenuAdmin({ pages }: { pages: Page[] }) {
     const { data, setData, post, processing, errors, reset, transform } = useForm({
         title: '',
         slug: '',
@@ -54,6 +61,28 @@ export default function AddMenuAdmin() {
 
     const [menus, setMenus] = useState<MenuItem[]>(initialMenus as MenuItem[]);
     const [formData, setFormData] = useState(initialFormData);
+    const [selectedPageIds, setSelectedPageIds] = useState<string[]>([]);
+
+    const togglePageSelection = (pageId: string) => {
+        setSelectedPageIds((prev) =>
+            prev.includes(pageId) ? prev.filter((id) => id !== pageId) : [...prev, pageId]
+        );
+    };
+
+    const addSelectedPagesToMenu = () => {
+        const selectedPages = pages.filter((p) => selectedPageIds.includes(p.id));
+        if (selectedPages.length === 0) return;
+
+        const newItems: MenuItem[] = selectedPages.map((p) => ({
+            id: Math.random().toString(36).substring(7),
+            name: p.name,
+            href: `/${p.slug}`,
+            children: [],
+        }));
+
+        setMenus([...menus, ...newItems]);
+        setSelectedPageIds([]);
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -134,7 +163,35 @@ export default function AddMenuAdmin() {
                             <p className="text-red-500 text-sm mt-1">{errors.description}</p>
                         )}
                     </div>
-                    <div>
+
+                    <div className="flex gap-4 ">
+                        <div>
+                            <h3 className="text-foreground text-sm font-medium mb-1">Выбрать из существующих страниц</h3>
+                            {pages.map((page) => (
+                                <div className="flex items-center" key={page.id}>
+                                    <label htmlFor={page.id} className="flex items-center gap-2">
+                                    <input
+                                        id={page.id}
+                                        type="checkbox"
+                                        value={page.id}
+                                        className=""
+                                        checked={selectedPageIds.includes(page.id)}
+                                        onChange={() => togglePageSelection(page.id)}
+                                    />
+                                        {page.name}
+                                    </label>
+                                </div>
+                            ))}
+                            <Button
+                                type="button"
+                                onClick={addSelectedPagesToMenu}
+                                className="bg-gray-500 text-white mt-2 cursor-pointer px-4 p-2 rounded-sm hover:bg-gray-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                disabled={selectedPageIds.length === 0}
+                            >
+                                Добавить выбранные страницы
+                            </Button>
+                        </div>
+
                         <MenuBuilder 
                             menus={menus} 
                             setMenus={setMenus} 
@@ -166,10 +223,6 @@ export default function AddMenuAdmin() {
                         </button>
                     </div>
                 </form>
-
-               
-
-
             </div>
 
        </AppLayout>

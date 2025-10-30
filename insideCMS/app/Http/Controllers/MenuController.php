@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Menu;
+use App\Models\Page;
 
 class MenuController extends Controller
 {
@@ -23,7 +24,9 @@ class MenuController extends Controller
      */
     public function create()
     {
-        return Inertia::render('admin/menu/add-menu-admin');
+        return Inertia::render('admin/menu/add-menu-admin', [
+            'pages' => Page::all(),
+        ]);
     }
 
     /**
@@ -63,6 +66,7 @@ class MenuController extends Controller
     {
         return Inertia::render('admin/menu/edit-menu-admin', [
             'menu' => Menu::find($id),
+            'pages' => Page::all(),
         ]);
     }
 
