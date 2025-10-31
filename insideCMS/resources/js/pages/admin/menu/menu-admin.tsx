@@ -73,7 +73,7 @@ export default function MenuAdmin({ menus }: { menus: MenuItem[] }) {
                 </div>
             ) : (
                 menus.map((menu) => (
-                    <div className="flex justify-between items-center gap-4 bg-gray-700 py-2 px-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow mb-4" 
+                    <div className="flex mb-4 justify-between items-center gap-4 py-2 px-4 rounded-sm border border-gray-200" 
                     key={menu.id}
                     >
                         <div>
