@@ -53,23 +53,22 @@ interface SiteSettingsItem {
 }
 
 export default function SiteSettings({ settings }: { settings: SiteSettingsItem[] }) {
-    const { data, setData, post, processing, reset } = useForm<SiteSettingsFormData>({
+    const { data, setData, post, processing, reset, errors } = useForm<SiteSettingsFormData>({
         cookie_text: settings?.[0]?.content ?? [],
         cookie_link: settings?.[1]?.content ?? [],
         emails: settings?.[2]?.content ?? [],
         ym_code: settings?.[3]?.content ?? [],
     });
-  
+ 
     const [selectedButton, setSelectedButton] = useState<number | null>(1);
     const [emails, setEmails] = useState<string[]>(settings?.[2]?.content ?? []);
-
-    console.log('emails', emails);
 
     useEffect(() => {
         setData('emails', emails);
     }, [emails, setData]);
 
     const handleSubmit = () => {
+        
         post('site-settings', {
             onSuccess: () => {
                 reset();
@@ -162,6 +161,7 @@ export default function SiteSettings({ settings }: { settings: SiteSettingsItem[
                                 <Label className="text-sm text-gray-500" htmlFor="email-0">Почтовые ящики</Label>
                                 {emails.map((email, index) => (
                                     <div key={index} className="flex items-center gap-2 mb-2">
+                                        <div>
                                         <Input
                                             key={index}
                                             type="email"
@@ -171,6 +171,10 @@ export default function SiteSettings({ settings }: { settings: SiteSettingsItem[
                                             value={email}
                                             onChange={(e) => handleEmailChange(index, e.target.value)}
                                         />
+
+                                                <p className="text-red-500">{errors[`emails.${index}`]}</p>
+
+                                        </div>
                                         <Button variant="destructive"
                                             onClick={() => handleDeleteEmail(index)}
                                             className="cursor-pointer"
