@@ -93,6 +93,7 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
     // Роуты для настроек сайта
     Route::controller(SettingsController::class)->group(function () {
         Route::get('site-settings', 'index')->name('site-settings');
+        Route::post('site-settings', 'update')->name('site-settings.update');
     });
 
     // Роуты для меню

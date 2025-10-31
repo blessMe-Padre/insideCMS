@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\Site_settings;
 
 class SettingsController extends Controller
 {
@@ -51,10 +52,25 @@ class SettingsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
-        //
-    }
+        $validated = $request->validate([
+            'cookie_text' => 'array',
+            'cookie_link' => 'array',
+            'emails' => 'array',
+            'ym_code' => 'array',
+        ]);
+        
+        foreach ($validated as $slug => $value) {
+            $setting = Site_settings::where('slug', $slug)->first();
+            $setting->update([
+                'content' => $value,
+            ]);
+            
+        }
+
+            return redirect()->route('site-settings');
+        }
 
     /**
      * Remove the specified resource from storage.

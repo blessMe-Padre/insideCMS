@@ -7,7 +7,7 @@ import { dashboard } from '@/routes';
 import { type BreadcrumbItem} from '@/types';
 import { Head, useForm} from '@inertiajs/react';
 import { ChartLine, Cookie, LoaderCircle, Mail, PlusIcon, SaveIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -40,26 +40,31 @@ const buttons = [
 ]
 
 interface SiteSettingsFormData {
-    ym_code: string;
-    cookie_text: string;
-    cookie_link: string;
-    emails: string[];
+    cookie_text : string[];
+    cookie_link : string[];
+    emails : string[];
+    ym_code : string[];
 }
 
 export default function SiteSettings() {
     const { data, setData, post, processing, reset } = useForm<SiteSettingsFormData>({
-        ym_code: '',
-        cookie_text: '',
-        cookie_link: '',
-        emails: [],
+        cookie_text : [],
+        cookie_link : [],
+        emails : [],
+        ym_code : [],
     });
-    console.log('data', data);
   
     const [selectedButton, setSelectedButton] = useState<number | null>(1);
-    const [emails, setEmails] = useState<string[]>(data?.emails || []);
+    const [emails, setEmails] = useState<string[]>([]);
+
+    console.log('data', data);
+
+    useEffect(() => {
+        setData('emails', emails);
+    }, [emails, setData]);
 
     const handleSubmit = () => {
-        post('/', {
+        post('site-settings', {
             onSuccess: () => {
                 reset();
                 toast.success('Настройки сайта успешно сохранены');
@@ -71,11 +76,19 @@ export default function SiteSettings() {
     }
 
     const handleUpdateContent = (value: string) => {
-        setData('cookie_text', value);
+        setData('cookie_text', JSON.parse(value));
     }
 
-    const handleAddEmail = () => {
-        setEmails([...emails, '']);
+    const handleAddEmail = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+            setEmails([...emails, '']);
+    }
+
+    const handleEmailChange = (index: number, value: string) => {
+        const updatedEmails = [...emails];
+        updatedEmails[index] = value;
+        setEmails(updatedEmails);
+        setData('emails', updatedEmails);
     }
     
         return (
@@ -105,7 +118,7 @@ export default function SiteSettings() {
                                     id="ym-code" 
                                     placeholder="104070000" 
                                     value={data?.ym_code} 
-                                    onChange={(e) => setData('ym_code', e.target.value)} 
+                                    onChange={(e) => setData('ym_code', [e.target.value])} 
                                 />
                         </div>
 
@@ -117,15 +130,27 @@ export default function SiteSettings() {
                                 </div>
                                 <div className="mb-2">
                                     <Label className="text-sm text-gray-500" htmlFor="ym-code">ссылка на страницу Cookie</Label>
-                                    <Input className="mt-1 block w-full" id="cookie-link" placeholder="https://example.com/cookie" />
+                                    <Input 
+                                        type="email" 
+                                        className="mt-1 block w-full" id="cookie-link" 
+                                        placeholder="https://example.com/cookie" 
+                                        value={data?.cookie_link[0]} 
+                                        onChange={(e) => setData('cookie_link', [e.target.value])} />
                                 </div>
                         </div>
 
                         <div className={selectedButton === 3 ? 'block' : 'hidden'}>
-                                <Label className="text-sm text-gray-500" htmlFor="ym-code">Почтовые ящики</Label>
-                                <Input className="mt-1 block w-full" id="ym-code" placeholder="example@example.com" />
+                                <Label className="text-sm text-gray-500" htmlFor="email-0">Почтовые ящики</Label>
                                 {emails.map((email, index) => (
-                                    <Input key={index} className="mt-1 block w-full" id="ym-code" placeholder="example@example.com" />
+                                    <Input
+                                        key={index}
+                                        type="email"
+                                        className="mt-1 block w-full"
+                                        id={`email-${index}`}
+                                        placeholder="example@example.com"
+                                        value={email}
+                                        onChange={(e) => handleEmailChange(index, e.target.value)}
+                                    />
                                 ))}
                                 <Button className="mt-2" onClick={handleAddEmail}><PlusIcon /> Добавить почтовый ящик</Button>
                         </div>
