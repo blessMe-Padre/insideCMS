@@ -14,7 +14,10 @@ class SettingsController extends Controller
      */
     public function index()
     {
-        return Inertia::render('admin/site-settings');
+        $settings = Site_settings::all();
+        return Inertia::render('admin/site-settings', [
+            'settings' => $settings,
+        ]);
     }
 
     /**

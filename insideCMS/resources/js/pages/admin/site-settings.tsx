@@ -46,18 +46,22 @@ interface SiteSettingsFormData {
     ym_code : string[];
 }
 
-export default function SiteSettings() {
+interface SiteSettingsItem {
+    slug: string;
+    type: string;
+    content: string[];
+}
+
+export default function SiteSettings({ settings }: { settings: SiteSettingsItem[] }) {
     const { data, setData, post, processing, reset } = useForm<SiteSettingsFormData>({
-        cookie_text : [],
-        cookie_link : [],
-        emails : [],
-        ym_code : [],
+        cookie_text: settings?.[0]?.content ?? [],
+        cookie_link: settings?.[1]?.content ?? [],
+        emails: settings?.[2]?.content ?? [],
+        ym_code: settings?.[3]?.content ?? [],
     });
   
     const [selectedButton, setSelectedButton] = useState<number | null>(1);
-    const [emails, setEmails] = useState<string[]>([]);
-
-    console.log('data', data);
+    const [emails, setEmails] = useState<string[]>(settings?.[2]?.content ?? []);
 
     useEffect(() => {
         setData('emails', emails);
@@ -117,7 +121,7 @@ export default function SiteSettings() {
                                     className="mt-1 block w-full" 
                                     id="ym-code" 
                                     placeholder="104070000" 
-                                    value={data?.ym_code} 
+                                    defaultValue={data?.ym_code?.[0] ?? ''} 
                                     onChange={(e) => setData('ym_code', [e.target.value])} 
                                 />
                         </div>
@@ -126,7 +130,14 @@ export default function SiteSettings() {
                                 <h2 className="text-lg font-bold mb-2">Текст Cookie</h2>
                                 <div className="mb-2">
                                     <Label className="text-sm text-gray-500" htmlFor="cookie-text">Текст Cookie</Label>
-                                    <TextEditor value={''} onChange={(value) => handleUpdateContent(value)} />
+                                    <TextEditor
+                                        value={
+                                            Array.isArray(data.cookie_text)
+                                                ? JSON.stringify(data.cookie_text)
+                                                : (typeof data.cookie_text === 'string' ? data.cookie_text : JSON.stringify(data.cookie_text ?? ''))
+                                        } 
+                                        onChange={(value) => handleUpdateContent(value)} 
+                                     />
                                 </div>
                                 <div className="mb-2">
                                     <Label className="text-sm text-gray-500" htmlFor="ym-code">ссылка на страницу Cookie</Label>
@@ -134,7 +145,7 @@ export default function SiteSettings() {
                                         type="email" 
                                         className="mt-1 block w-full" id="cookie-link" 
                                         placeholder="https://example.com/cookie" 
-                                        value={data?.cookie_link[0]} 
+                                        defaultValue={data?.cookie_link?.[0] ?? ''} 
                                         onChange={(e) => setData('cookie_link', [e.target.value])} />
                                 </div>
                         </div>
