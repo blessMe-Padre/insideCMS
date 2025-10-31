@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\ArticleController;
 use App\Http\Controllers\Api\V1\PageController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\Api\V1\MenusController;
+use App\Http\Controllers\Api\V1\SettingsController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -24,4 +25,5 @@ Route::prefix('v1')->group(function () {
     Route::get('/files', [FileController::class, 'index']);
     Route::apiResource('menus', MenusController::class);
     Route::get('menus/{slug}', [MenusController::class, 'show']);
+    Route::apiResource('settings', SettingsController::class);
 });
