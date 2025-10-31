@@ -8,9 +8,6 @@ use Inertia\Response;
 
 class InfoController extends Controller
 {
-    /**
-     * Show the user info page.
-     */
     public function show(Request $request): Response
     {
         return Inertia::render('admin/info', [

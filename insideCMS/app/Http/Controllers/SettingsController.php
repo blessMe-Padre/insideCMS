@@ -17,6 +17,16 @@ class SettingsController extends Controller
         ]);
     }
 
+    public function attributes(): array
+    {
+        return [
+            'cookie_text' => 'Текст куки',
+            'cookie_link' => 'Ссылка куки',
+            'emails.*' => 'Почта',
+            'ym_code' => 'Код Яндекс Метрики',
+        ];
+    }
+
     public function update(Request $request)
     {
         $validated = $request->validate([
@@ -31,7 +41,7 @@ class SettingsController extends Controller
         ]);
 
         
-        foreach ($validated as $key => $value) {
+        foreach ($validated as $slug => $value) {
             
             $setting = Site_settings::where('slug', $slug)->first();
     
@@ -40,6 +50,6 @@ class SettingsController extends Controller
             ]);
         }
 
-        return redirect()->route('site-settings.index');
+        return redirect()->route('site-settings');
     }
 }
