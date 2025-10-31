@@ -16,17 +16,6 @@ class SettingsController extends Controller
             'settings' => $settings,
         ]);
     }
-
-    public function attributes(): array
-    {
-        return [
-            'cookie_text' => 'Текст куки',
-            'cookie_link' => 'Ссылка куки',
-            'emails.*' => 'Почта',
-            'ym_code' => 'Код Яндекс Метрики',
-        ];
-    }
-
     public function update(Request $request)
     {
         $validated = $request->validate([
@@ -35,8 +24,10 @@ class SettingsController extends Controller
             'emails.*' => 'required|email',
             'ym_code' => 'array',
         ], [
+            //$messages (опционально)
             // кастомные сообщения не требуются
         ], [
+            // кастомные атрибуты (опционально)
             'emails.*' => 'почта',
         ]);
 
