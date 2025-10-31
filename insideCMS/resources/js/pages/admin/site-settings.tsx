@@ -6,7 +6,7 @@ import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem} from '@/types';
 import { Head, useForm} from '@inertiajs/react';
-import { ChartLine, Cookie, LoaderCircle, Mail, PlusIcon, SaveIcon } from 'lucide-react';
+import { ChartLine, Cookie, LoaderCircle, Mail, PlusIcon, SaveIcon, TrashIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -63,6 +63,8 @@ export default function SiteSettings({ settings }: { settings: SiteSettingsItem[
     const [selectedButton, setSelectedButton] = useState<number | null>(1);
     const [emails, setEmails] = useState<string[]>(settings?.[2]?.content ?? []);
 
+    console.log('emails', emails);
+
     useEffect(() => {
         setData('emails', emails);
     }, [emails, setData]);
@@ -91,6 +93,12 @@ export default function SiteSettings({ settings }: { settings: SiteSettingsItem[
     const handleEmailChange = (index: number, value: string) => {
         const updatedEmails = [...emails];
         updatedEmails[index] = value;
+        setEmails(updatedEmails);
+        setData('emails', updatedEmails);
+    }
+    const handleDeleteEmail = (index: number) => {
+        const updatedEmails = [...emails];
+        updatedEmails.splice(index, 1);
         setEmails(updatedEmails);
         setData('emails', updatedEmails);
     }
@@ -153,15 +161,23 @@ export default function SiteSettings({ settings }: { settings: SiteSettingsItem[
                         <div className={selectedButton === 3 ? 'block' : 'hidden'}>
                                 <Label className="text-sm text-gray-500" htmlFor="email-0">Почтовые ящики</Label>
                                 {emails.map((email, index) => (
-                                    <Input
-                                        key={index}
-                                        type="email"
-                                        className="mt-1 block w-full"
-                                        id={`email-${index}`}
-                                        placeholder="example@example.com"
-                                        value={email}
-                                        onChange={(e) => handleEmailChange(index, e.target.value)}
-                                    />
+                                    <div key={index} className="flex items-center gap-2 mb-2">
+                                        <Input
+                                            key={index}
+                                            type="email"
+                                            className="mt-1 block w-full"
+                                            id={`email-${index}`}
+                                            placeholder="example@example.com"
+                                            value={email}
+                                            onChange={(e) => handleEmailChange(index, e.target.value)}
+                                        />
+                                        <Button variant="destructive"
+                                            onClick={() => handleDeleteEmail(index)}
+                                            className="cursor-pointer"
+                                            title="Удалить почтовый ящик"
+                                        >
+                                        <TrashIcon /></Button>
+                                    </div>
                                 ))}
                                 <Button className="mt-2" onClick={handleAddEmail}><PlusIcon /> Добавить почтовый ящик</Button>
                         </div>
