@@ -112,6 +112,7 @@ export default function FileManagerComponent({
                 onRefresh={handleRefresh}
                 isLoading={loading}
                 onSelectionChange={handleSelectionChange}
+                className="h-full text-toggle-color"
 
                 permissions={{
                     create: false, // Disable "Create Folder"

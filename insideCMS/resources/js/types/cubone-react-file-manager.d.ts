@@ -28,6 +28,7 @@ declare module '@cubone/react-file-manager' {
         isLoading?: boolean;
         filePreviewPath?: string;
         onSelectionChange?: (files: FileManagerFile[]) => void;
+        className?: string;
         permissions?: {
             create?: boolean;
             delete?: boolean;
