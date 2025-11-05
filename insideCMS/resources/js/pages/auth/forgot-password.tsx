@@ -14,10 +14,10 @@ import AuthLayout from '@/layouts/auth-layout';
 export default function ForgotPassword({ status }: { status?: string }) {
     return (
         <AuthLayout
-            title="Forgot password"
-            description="Enter your email to receive a password reset link"
+            title="Забыли пароль?"
+            description="Введите ваш адрес электронной почты, чтобы получить ссылку для сброса пароля"
         >
-            <Head title="Forgot password" />
+            <Head title="Забыли пароль?" />
 
             {status && (
                 <div className="mb-4 text-center text-sm font-medium text-green-600">
@@ -52,7 +52,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                                     {processing && (
                                         <LoaderCircle className="h-4 w-4 animate-spin" />
                                     )}
-                                    Email password reset link
+                                    Ссылка для сброса пароля
                                 </Button>
                             </div>
                         </>
