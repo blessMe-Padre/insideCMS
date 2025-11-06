@@ -12,6 +12,8 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\SectionController;
+use App\Http\Controllers\PersonaController;
+
 $modules = getModules();
 
 Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
@@ -106,5 +108,15 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
         Route::post('menus', 'store')->name('menus.store');
         Route::post('menus/{menu}', 'update')->name('menus.update');
         Route::delete('menus/{menu}', 'destroy')->name('menus.destroy');
+    });
+
+    // Роуты для персон 
+    Route::controller(PersonaController::class)->group(function () {
+        Route::get('persons-admin', 'index')->name('persona-admin');
+        Route::get('add-person', 'create')->name('add-person');
+        // Route::get('persons/{person}/edit', 'edit')->name('persons.edit');
+        // Route::post('persons/{person}', 'update')->name('persons.update');
+        // Route::post('persons', 'store')->name('persons.store');
+        // Route::delete('persons/{person}', 'destroy')->name('persons.destroy');
     });
  });

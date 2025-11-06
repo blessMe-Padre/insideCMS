@@ -9,7 +9,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, newsAdmin, addNewsAdmin, articlesAdmin, addArticleAdmin, modulesAdmin, filesAdmin, pagesAdmin, addPages, siteSettings, menuAdmin, sectionsAdmin, addSection} from '@/routes';
+import { dashboard, newsAdmin, addNewsAdmin, articlesAdmin, addArticleAdmin, modulesAdmin, filesAdmin, pagesAdmin, addPages, siteSettings, menuAdmin, sectionsAdmin, addSection, personaAdmin, addPerson} from '@/routes';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { LayoutGrid, List, MessageCircle, Newspaper, Plus, User, Settings, Folder, Menu } from 'lucide-react';
@@ -124,6 +124,25 @@ export function AppSidebar() {
                 },
             ],
         }] : []),
+        
+        {
+            title: 'Персоны',
+            href: personaAdmin(),
+            icon: Newspaper,
+
+            subItems: [
+                {
+                    title: 'Все персоны',
+                    href: personaAdmin(),
+                    icon: List,
+                },
+                {
+                    title: 'Добавить персону',
+                    href: addPerson(),
+                    icon: Plus,
+                },
+            ],
+        },
 
         {
             title: 'Файловый менеджер',
