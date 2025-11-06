@@ -15,4 +15,11 @@ class Component extends Model
             ->withPivot('data')
             ->withTimestamps();
     }
+
+    public function sections(): BelongsToMany
+    {
+        return $this->belongsToMany(Section::class, 'section_components')
+            ->withPivot('data')
+            ->withTimestamps();
+    }
 }

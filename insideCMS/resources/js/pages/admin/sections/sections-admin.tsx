@@ -1,5 +1,5 @@
 import AppLayout from '@/layouts/app-layout';
-import { addPages, dashboard } from '@/routes';
+import { addSection, dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, useForm} from '@inertiajs/react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -73,7 +73,7 @@ export default function SectionsAdmin({ sections}: { sections: Section[] }) {
                 <div className="mb-5 flex justify-between items-center">
                     <p className="text-gray-500 text-lg">Всего разделов: {sections.length}</p>
                     <Link
-                        href={addPages()}
+                        href={addSection()}
                         className="bg-blue-600 flex items-center gap-2 cursor-pointer text-white px-4 py-2 rounded-sm hover:bg-blue-700 transition-colors"
                     >
                         <Plus className="w-5 h-5" />

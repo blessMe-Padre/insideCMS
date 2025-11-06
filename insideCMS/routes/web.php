@@ -94,6 +94,10 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
     // Роуты для разделов
     Route::controller(SectionController::class)->group(function () {
         Route::get('sections-admin', 'index')->name('sections-admin');
+        Route::get('add-section', 'create')->name('add-section');
+        Route::get('sections/{section}/edit', 'edit')->name('sections.edit');
+        Route::post('sections/{section}', 'update')->name('sections.update');
+        Route::post('sections', 'store')->name('sections.store');
         Route::delete('sections/{section}', 'destroy')->name('sections.destroy');
     });
 

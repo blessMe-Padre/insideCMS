@@ -3,9 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Page_component extends Model
+class Section_component extends Model
 {
     protected $table = 'section_components';
     
