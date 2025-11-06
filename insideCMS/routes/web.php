@@ -12,6 +12,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\SectionController;
 $modules = getModules();
 
 Route::get('/', function () {
@@ -88,6 +89,12 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
         Route::post('pages', 'store')->name('pages.store'); // Сохранение созданой страницы (действие создания страницы)
         Route::get('pages/{page}/edit', 'edit')->name('pages.edit'); // Редактирование страницы (страница редактирования)
         Route::post('pages/{page}', 'update')->name('pages.update'); // Обновление страницы (действие обновления страницы)
+    });
+
+    // Роуты для разделов
+    Route::controller(SectionController::class)->group(function () {
+        Route::get('sections-admin', 'index')->name('sections-admin');
+        Route::delete('sections/{section}', 'destroy')->name('sections.destroy');
     });
 
     // Роуты для настроек сайта

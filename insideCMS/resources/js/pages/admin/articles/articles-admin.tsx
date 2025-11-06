@@ -76,6 +76,7 @@ export default function ArticlesAdmin({ articles, links, total_pages, total }: A
                         rel="stylesheet"
                     />
                 </Head>
+
                 <h1 className="text-3xl font-bold text-foreground mb-4">Cтатьи</h1>
                 <Alert variant="default" className="mb-4">
                     <Lock />
@@ -139,17 +140,19 @@ export default function ArticlesAdmin({ articles, links, total_pages, total }: A
                 )}
 
                 {total_pages > 1 && (
+                    console.log(links),
+            
                     <Pagination className="mt-6">
                         <PaginationContent>
-                            {links.find(link => link.label === '&laquo; Previous')?.url && (
+                            {links.find(link => link.label === 'Предыдущая')?.url && (
                                 <PaginationItem>
                                     <PaginationPrevious 
-                                        href={links.find(link => link.label === '&laquo; Previous')?.url || ''}
+                                        href={links.find(link => link.label === 'Предыдущая')?.url || ''}
                                     />
                                 </PaginationItem>
                             )}
                             {links
-                                .filter(link => link.label !== '&laquo; Previous' && link.label !== 'Next &raquo;')
+                                .filter(link => link.label !== 'Предыдущая' && link.label !== 'Следующая')
                                 .map((link, index) => (
                                     <PaginationItem key={index}>
                                         {link.label === '...' ? (
@@ -165,10 +168,10 @@ export default function ArticlesAdmin({ articles, links, total_pages, total }: A
                                     </PaginationItem>
                                 ))
                             }
-                            {links.find(link => link.label === 'Next &raquo;')?.url && (
+                            {links.find(link => link.label === 'Следующая')?.url && (
                                 <PaginationItem>
                                     <PaginationNext 
-                                        href={links.find(link => link.label === 'Next &raquo;')?.url || ''}
+                                        href={links.find(link => link.label === 'Следующая')?.url || ''}
                                     />
                                 </PaginationItem>
                             )}

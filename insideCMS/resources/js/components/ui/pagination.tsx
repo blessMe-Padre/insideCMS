@@ -51,7 +51,7 @@ type PaginationLinkProps = {
 function PaginationLink({
   className,
   isActive,
-  size = "icon",
+  // size = "icon",
   href,
   ...props
 }: PaginationLinkProps) {
@@ -64,7 +64,7 @@ function PaginationLink({
       className={cn(
         buttonVariants({
           variant: isActive ? "outline" : "ghost",
-          size,
+          // size,
         }),
         className
       )}
@@ -115,7 +115,7 @@ function PaginationEllipsis({
     <span
       aria-hidden
       data-slot="pagination-ellipsis"
-      className={cn("flex size-9 items-center justify-center", className)}
+      className={cn("flex items-center justify-center", className)}
       {...props}
     >
       <MoreHorizontalIcon className="size-4" />
