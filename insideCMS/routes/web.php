@@ -6,8 +6,6 @@ use Inertia\Inertia;
 use App\Http\Controllers\ReviewsController;
 use App\Http\Controllers\MailController;
 
-
-
 Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
