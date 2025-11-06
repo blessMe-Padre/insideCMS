@@ -23,6 +23,9 @@ Route::get('/', function () {
 Route::get('/mail', [MailController::class, 'index'])->name('mail');
 Route::post('/mail/send', [MailController::class, 'send_email'])->name('mail.send');
 
+Route::get('reviews', [App\Http\Controllers\ReviewsController::class, 'show'])->name('reviews');
+Route::post('reviews', [App\Http\Controllers\ReviewsController::class, 'store'])->name('reviews.store');
+
 Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
@@ -117,10 +120,6 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
         Route::delete('menus/{menu}', 'destroy')->name('menus.destroy');
     });
  });
-
-
-Route::get('reviews', [App\Http\Controllers\ReviewsController::class, 'show'])->name('reviews');
-Route::post('reviews', [App\Http\Controllers\ReviewsController::class, 'store'])->name('reviews.store');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
