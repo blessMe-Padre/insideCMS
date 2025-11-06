@@ -3,13 +3,20 @@ import { addPerson, dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm, router, Link } from '@inertiajs/react';
 import placeholder from '/public/placeholder.svg';
-import { Edit, Plus, Trash } from 'lucide-react';
+import { Edit, Info, Plus, Trash } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from "sonner";
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Lock } from 'lucide-react';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Spinner } from '@/components/ui/spinner';
+
+
+/**
+ * TODO: 
+ * - сделать поповер в виде иконки восклицательного знака чтобы в нем скрыть алерт с информацией о таксономии
+ * - убрать ненужные пропсы из компонента
+ */
 
 interface PersonaAdminPageProps {
     persons: Persons[];
@@ -78,6 +85,14 @@ export default function PersonaAdmin({ persons, links, total_pages, total }: Per
                 </Head>
 
                 <h1 className="text-3xl font-bold text-foreground mb-4">Персоны</h1>
+                <Alert variant="destructive" className="mb-4">
+                    <Info />
+                    <AlertDescription>
+                      <p>Все записи этой таксономии хранятся в таблице personas.</p>
+                      <p>Персоны связаны с таблицей services через промежуточную таблицу services_personas.</p>
+                      <p>Компоненты  из таблицы components связаны с таблицей personas через промежуточную таблицу personas_components.</p>
+                    </AlertDescription>
+                </Alert>
                 <Alert variant="default" className="mb-4">
                     <Lock />
                     <AlertDescription>
@@ -98,7 +113,7 @@ export default function PersonaAdmin({ persons, links, total_pages, total }: Per
 
                 {persons.length === 0 ? (
                     <div className="text-center py-12">
-                        <p className="text-gray-500 text-lg">Пока нет опубликованных новостей.</p>
+                        <p className="text-gray-500 text-lg">Пока нет опубликованных записей.</p>
                     </div>
                 ) : (
                     <div className="block">

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Persona;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-
+use App\Models\Component;
 class PersonaController extends Controller
 {
     public function index()
@@ -24,6 +24,7 @@ class PersonaController extends Controller
 
     public function create()
     {
-        return Inertia::render('admin/pensona/add-person');
+        $components = Component::all();
+        return Inertia::render('admin/pensona/add-person', ['components' => $components]);
     }
 }

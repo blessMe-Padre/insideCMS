@@ -3,6 +3,8 @@ import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head} from '@inertiajs/react';
 import PageBuilderForm from '@/components/form/PageBuilderForm';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Info } from 'lucide-react';
 
 
 interface Component {
@@ -38,6 +40,12 @@ export default function AddPages({ components }: { components: Component[] }) {
                     />
                 </Head>
                 <h1 className="text-3xl font-bold text-foreground mb-4">Создать страницу</h1>
+                <Alert variant="default" className="mb-4">
+                    <Info />
+                    <AlertDescription>
+                        <p>Для транслита используйте <a className="text-blue-500 hover:text-blue-700" href="https://www.itranslit.com/" target="_blank">этот сервис</a></p>
+                    </AlertDescription>
+                 </Alert>
                 <PageBuilderForm components={components}/>
             </div>
        </AppLayout>

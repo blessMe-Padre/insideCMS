@@ -22,4 +22,11 @@ class Component extends Model
             ->withPivot('data')
             ->withTimestamps();
     }
+
+    public function personas(): BelongsToMany
+    {
+        return $this->belongsToMany(Persona::class, 'personas_components')
+            ->withPivot('data')
+            ->withTimestamps();
+    }
 }
