@@ -17,7 +17,7 @@ use App\Http\Controllers\ServicesController;
 
 $modules = getModules();
 
-Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
+Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () use ($modules) {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
