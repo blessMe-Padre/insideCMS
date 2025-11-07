@@ -12,14 +12,6 @@ import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, Pagi
 import { Spinner } from '@/components/ui/spinner';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
-
-/**
- * TODO: 
- * - сделать поповер в виде иконки восклицательного знака чтобы в нем скрыть алерт с информацией о таксономии
- * - убрать ненужные пропсы из компонента
- */
-
-
 interface Persona {
     id: number;
     name: string;
@@ -59,7 +51,7 @@ export default function PersonaAdmin({ persons, links, total_pages, total}: Pers
     const handleDelete = (id: number) => {
         setProcessingNewsId(id);
 
-        deleteForm.delete(`/persons/${id}`, {
+        deleteForm.delete(`persons/${id}`, {
             onSuccess: () => {
                 setProcessingNewsId(null);
                 toast.success('Персона удалена');
@@ -71,7 +63,7 @@ export default function PersonaAdmin({ persons, links, total_pages, total}: Pers
     };
 
     const handleEdit = (id: number) => {
-        router.visit(`/persons/${id}/edit`);
+        router.visit(`persons/${id}/edit`);
     };
 
     return (

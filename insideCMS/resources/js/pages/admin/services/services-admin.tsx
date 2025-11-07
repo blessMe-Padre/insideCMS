@@ -54,7 +54,7 @@ export default function ServicesAdmin({ services, links, total_pages, total}: Se
     const handleDelete = (id: number) => {
         setProcessingNewsId(id);
 
-        deleteForm.delete(`/services/${id}`, {
+        deleteForm.delete(`services/${id}`, {
             onSuccess: () => {
                 setProcessingNewsId(null);
                 toast.success('Услуга удалена');

@@ -51,7 +51,7 @@ export default function ArticlesAdmin({ articles, links, total_pages, total }: A
     const handleDelete = (id: number) => {
         setProcessingNewsId(id);
 
-        deleteForm.delete(`/articles/${id}`, {
+        deleteForm.delete(`articles/${id}`, {
             onSuccess: () => {
                 setProcessingNewsId(null);
                 toast.success('Статья удалена');
@@ -63,7 +63,7 @@ export default function ArticlesAdmin({ articles, links, total_pages, total }: A
     };
 
     const handleEdit = (id: number) => {
-        router.visit(`/articles/${id}/edit`);
+        router.visit(`articles/${id}/edit`);
     };
 
     return (
