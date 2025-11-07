@@ -10,6 +10,7 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\Api\V1\MenusController;
 use App\Http\Controllers\Api\V1\SettingsController;
 use App\Http\Controllers\Api\V1\SectionController;
+use App\Http\Controllers\Api\V1\PersonaController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -29,4 +30,6 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('settings', SettingsController::class);
     Route::apiResource('sections', SectionController::class);
     Route::get('sections/{slug}', [SectionController::class, 'show']);
+    Route::apiResource('persons', PersonaController::class);
+    Route::get('persons/{slug}', [PersonaController::class, 'show']);
 });
