@@ -102,7 +102,7 @@ export default function NewsAdmin({ news }: NewsAdminPageProps) {
                 ) : (
                     <div className="block">
                         {news.map((item) => (
-                            <div key={item.id} className="flex justify-between items-center gap-4 bg-gray-700 py-2 px-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow mb-4">
+                            <div key={item.id} className="flex justify-between items-center gap-4 py-2 px-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow mb-4" style={{ borderColor: 'var(--foreground)' }}>
                                 <div className="flex items-center justify-between gap-4">
                                     <img src={item.images && item.images.length > 0 ? item.images[0] : placeholder} alt={item.title} className="w-10 h-10 rounded-full" />
                                     <div className="">

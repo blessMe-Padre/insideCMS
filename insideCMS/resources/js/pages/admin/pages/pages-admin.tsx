@@ -78,11 +78,10 @@ export default function PagesAdmin({ pages}: { pages: Page[] }) {
                 ) : (
                     <div className="block">
                         {pages.map((item) => (
-                            <div key={item.id} className="flex justify-between items-center gap-4 bg-gray-700 py-2 px-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow mb-4">
+                            <div key={item.id} className="flex justify-between items-center gap-4 py-2 px-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow mb-4" style={{ borderColor: 'var(--foreground)' }}>
                                 <div className="flex items-center justify-between gap-4">
-                                    {/* <img src={item.images ? `${item.images[0]}` : placeholder} alt={item.title} className="w-10 h-10 rounded-full" /> */}
-                                    <div className="">
-                                        <div className="">
+                                    <div>
+                                        <div>
                                             <h3 className="text-white text-lg font-bold">{item.name}</h3>
                                             <p className="text-sm text-gray-500">slug: <span className="text-white">{item.slug}</span></p>
                                         </div>
