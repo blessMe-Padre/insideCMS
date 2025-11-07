@@ -19,8 +19,17 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
  * - убрать ненужные пропсы из компонента
  */
 
+
+interface Persona {
+    id: number;
+    name: string;
+    content: string;
+    slug: string;
+    created_at: string;
+}
+
 interface PersonaAdminPageProps {
-    persons: Persons[];
+    persons: Persona[];
     links: Array<{
         url: string | null;
         label: string | null;
@@ -30,15 +39,6 @@ interface PersonaAdminPageProps {
     total_pages: number;
     per_page: number;
     total: number;
-}
-
-interface Persons {
-    id: number;
-    title: string;
-    content: string;
-    slug: string;
-    created_at: string;
-    images: string[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -52,7 +52,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function PersonaAdmin({ persons, links, total_pages, total }: PersonaAdminPageProps) {
+export default function PersonaAdmin({ persons, links, total_pages, total}: PersonaAdminPageProps) {
     const deleteForm = useForm();
     const [processingNewsId, setProcessingNewsId] = useState<number | null>(null);
 
@@ -126,10 +126,10 @@ export default function PersonaAdmin({ persons, links, total_pages, total }: Per
                         {persons.map((item) => (
                             <div key={item.id} className="flex justify-between items-center gap-4 py-2 px-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow mb-4" style={{ borderColor: 'var(--foreground)' }}>
                                 <div className="flex items-center justify-between gap-4">
-                                    <img src={item.images && item.images.length > 0 ? `${item.images[0]}` : placeholder} alt={item.title} className="w-10 h-10 rounded-full" />
+                                    <img src={item.content && item.content.length > 0 ? `${item.content[0]}` : placeholder} alt={item.name} className="w-10 h-10 rounded-full object-cover" />
                                     <div className="">
                                         <div className="flex items-center justify-between">
-                                            <h3 className="font-semibold text-white">{item.title}</h3>
+                                            <h3 className="font-semibold text-white">{item.name}</h3>
                                         </div>
                                         <div className="mb-2">
                                             <p className="text-sm text-gray-500">

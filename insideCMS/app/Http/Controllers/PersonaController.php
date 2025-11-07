@@ -12,7 +12,7 @@ class PersonaController extends Controller
 {
     public function index()
     {
-        $persons = Persona::paginate(6);
+        $persons = Persona::paginate(10);
 
         return Inertia::render('admin/pensona/persona-admin', [
             'persons' => $persons->items(),
