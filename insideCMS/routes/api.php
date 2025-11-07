@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\MenusController;
 use App\Http\Controllers\Api\V1\SettingsController;
 use App\Http\Controllers\Api\V1\SectionController;
 use App\Http\Controllers\Api\V1\PersonaController;
+use App\Http\Controllers\Api\V1\ServicesController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -32,4 +33,6 @@ Route::prefix('v1')->group(function () {
     Route::get('sections/{slug}', [SectionController::class, 'show']);
     Route::apiResource('persons', PersonaController::class);
     Route::get('persons/{slug}', [PersonaController::class, 'show']);
+    Route::apiResource('services', ServicesController::class);
+    Route::get('services/{slug}', [ServicesController::class, 'show']);
 });

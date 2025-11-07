@@ -11,13 +11,27 @@ class PersonaController extends Controller
 {
     public function index()
     {
-        $persons = Persona::all();
+        $persons = Persona::with('components')->get();
         $persons = $persons->map(function ($persona) {
             return [
                 'id' => $persona->id,
                 'name' => $persona->name,
                 'slug' => $persona->slug,
-                'images' => $persona->content,
+                'content' => $persona->content,
+                'components' => $persona->components->map(function ($component) {
+                    $data = json_decode($component->pivot->data ?? 'null', true);
+                    if ($component->type === 'text') {
+                        $data = is_array($data) ? ($data[0] ?? null) : $data;
+                    }
+
+                    return [
+                        'id' => $component->id,
+                        'name' => $component->name,
+                        'type' => $component->type,
+                        'description' => $component->description,
+                        'content' => $data,
+                    ];
+                }),
             ];
         });
 
@@ -33,15 +47,36 @@ class PersonaController extends Controller
      */
     public function show(string $slug)
     {
-        $persona = Persona::where('slug', $slug)->first();
+        $persona = Persona::with('components')->where('slug', $slug)->first();
 
         if (!$persona) {
             return response()->json(['message' => 'Persona not found'], 404);
         }
 
+        $personaParsed = [
+            'id' => $persona->id,
+            'name' => $persona->name,
+            'slug' => $persona->slug,
+            'content' => $persona->content,
+            'components' => $persona->components->map(function ($component) {
+                $data = json_decode($component->pivot->data ?? 'null', true);
+                if ($component->type === 'text') {
+                    $data = is_array($data) ? ($data[0] ?? null) : $data;
+                }
+
+                return [
+                    'id' => $component->id,
+                    'name' => $component->name,
+                    'type' => $component->type,
+                    'description' => $component->description,
+                    'content' => $data,
+                ];
+            }),
+        ];
+
         return response()->json([
             'status' => 'success',
-            'data' => $persona,
+            'data' => $personaParsed,
         ], 200);
     }
 }
