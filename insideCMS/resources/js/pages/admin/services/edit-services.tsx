@@ -6,7 +6,7 @@ import { dashboard, personaAdmin } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { LoaderCircle, LockIcon, SaveIcon, TrashIcon } from 'lucide-react';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
 import TextEditor from '@/components/editor/TextEditor';
 import FileManagerComponent from '@/components/editor/fileManager/FileManagerComponent';
@@ -62,7 +62,7 @@ export default function EditPage({ service, components, services, personas, pers
         components: components,
     });
 
-   const [elements, setElements] = useState<Component[]>(components);
+    const [elements, setElements] = useState<Component[]>(components);
     
     const [activePopup, setActivePopup] = useState<boolean>(false);
     const [selectedFiles, setSelectedFiles] = useState<FileManagerFile[]>([]);
@@ -120,6 +120,23 @@ export default function EditPage({ service, components, services, personas, pers
         setElements(updatedElements);
         setData('components', updatedElements);
     }, [elements, setData]);
+
+    // Собираем множество ID всех потомков текущей услуги, чтобы запретить их как родителя
+    const descendantIds = useMemo(() => {
+        const result = new Set<number>();
+        const queue: number[] = [service.id];
+        while (queue.length > 0) {
+            const current = queue.shift()!;
+            for (const s of services) {
+                const p = (s.parentId ?? 0);
+                if (p === current && !result.has(s.id)) {
+                    result.add(s.id);
+                    queue.push(s.id);
+                }
+            }
+        }
+        return result;
+    }, [service.id, services]);
 
     // Обработчик выбора файлов из FileManager
     const handleFileSelection = (files: FileManagerFile[]) => {
@@ -210,7 +227,7 @@ export default function EditPage({ service, components, services, personas, pers
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label htmlFor="content" className="block text-foreground text-sm font-medium mb-1">
-                           Фотография
+                           Изображения
                         </label>
 
                         {(() => {
@@ -304,7 +321,14 @@ export default function EditPage({ service, components, services, personas, pers
                         </label>
                         <Select 
                             value={data.parentId && data.parentId > 0 ? data.parentId.toString() : '0'} 
-                            onValueChange={(value) => setData('parentId', value === '0' ? 0 : parseInt(value))}
+                            onValueChange={(value) => {
+                                const newId = value === '0' ? 0 : parseInt(value);
+                                if (newId !== 0 && descendantIds.has(newId)) {
+                                    toast.error('Нельзя выбирать потомка как родителя');
+                                    return;
+                                }
+                                setData('parentId', newId);
+                            }}
                         >
                             <SelectTrigger className="w-[320px]">
                                 <SelectValue placeholder="Выберите родителя" />
@@ -312,7 +336,9 @@ export default function EditPage({ service, components, services, personas, pers
                             <SelectContent>
                                 <SelectItem value="0">Нет родителя</SelectItem>
                                 {services.map((s) => (
-                                    <SelectItem key={s.id} value={s.id.toString()}>{s.title}</SelectItem>
+                                    <SelectItem key={s.id} value={s.id.toString()} disabled={descendantIds.has(s.id)}>
+                                        {s.title}
+                                    </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>

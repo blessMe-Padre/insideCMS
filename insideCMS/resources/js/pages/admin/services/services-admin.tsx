@@ -66,7 +66,7 @@ export default function ServicesAdmin({ services, links, total_pages, total}: Se
     };
 
     const handleEdit = (id: number) => {
-        router.visit(`/services/${id}/edit`);
+        router.visit(`services/${id}/edit`);
     };
 
     return (

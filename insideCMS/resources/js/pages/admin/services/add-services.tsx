@@ -44,7 +44,6 @@ interface Persona {
 }
 
 export default function AddServices({ components, services, personas }: { components: Component[], services: Service[], personas: Persona[] }) {
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
         <div className="px-4 py-8">

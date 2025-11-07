@@ -147,6 +147,25 @@ class ServicesController extends Controller
             'components.*.data' => 'nullable',
         ]);
 
+        // Защита от циклических ссылок: нельзя выбрать потомка как родителя
+        $newParentId = $validated['parentId'] ?? null;
+        if (!is_null($newParentId)) {
+            // Нельзя выбрать саму услугу
+            if ((int) $newParentId === (int) $service->id) {
+                return back()->withErrors(['parentId' => 'Нельзя выбрать текущую услугу в качестве родителя'])->withInput();
+            }
+
+            // Поднимаемся по цепочке родителей и проверяем наличие текущей услуги
+            $currentId = (int) $newParentId;
+            while (!is_null($currentId)) {
+                if ($currentId === (int) $service->id) {
+                    return back()->withErrors(['parentId' => 'Нельзя выбирать потомка в качестве родителя (цикл)'])->withInput();
+                }
+                $currentId = Service::where('id', $currentId)->value('parentId');
+                $currentId = is_null($currentId) ? null : (int) $currentId;
+            }
+        }
+
         DB::transaction(function () use ($validated, $service) {
             $service->update([
                 'title' => $validated['title'],
