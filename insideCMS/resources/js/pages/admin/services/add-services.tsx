@@ -38,7 +38,12 @@ interface Service {
     parentId: number;
 }
 
-export default function AddServices({ components, services }: { components: Component[], services: Service[] }) {
+interface Persona {
+    id: number;
+    name: string;
+}
+
+export default function AddServices({ components, services, personas }: { components: Component[], services: Service[], personas: Persona[] }) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -57,7 +62,7 @@ export default function AddServices({ components, services }: { components: Comp
                     <p>Для транслита slug используйте <a className="text-blue-500 hover:text-blue-700" href="https://www.itranslit.com/" target="_blank">этот сервис</a></p>
                 </AlertDescription>
             </Alert>
-            <ServicesBuilderForm components={components} services={services}/>
+            <ServicesBuilderForm components={components} services={services} personas={personas}/>
             </div>
    </AppLayout>
     );

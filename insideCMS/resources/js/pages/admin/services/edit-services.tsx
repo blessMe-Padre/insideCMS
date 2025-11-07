@@ -45,12 +45,18 @@ interface Service {
     content?: string[];
 }
 
-export default function EditPage({ service, components, services }: { service: Service, components: Component[], services: Service[] }) {
+interface Persona {
+    id: number;
+    name: string;
+}
+
+export default function EditPage({ service, components, services, personas, personaIds }: { service: Service, components: Component[], services: Service[], personas: Persona[], personaIds?: number[] }) {
     const { data, setData, post, processing, errors } = useForm({
         title: service.title,
         slug: service.slug,
         description: service.description,
         parentId: service.parentId,
+        personaIds: personaIds || [],
         images: service.images || [],
         content: service.content || [],
         components: components,
@@ -166,6 +172,19 @@ export default function EditPage({ service, components, services }: { service: S
             default:
                 return component_type;
         }
+    }
+
+    const addPersona = (value: string) => {
+        const id = parseInt(value);
+        const current: number[] = Array.isArray(data.personaIds) ? data.personaIds : [];
+        if (!current.includes(id)) {
+            setData('personaIds', [...current, id]);
+        }
+    }
+
+    const removePersona = (id: number) => {
+        const current: number[] = Array.isArray(data.personaIds) ? data.personaIds : [];
+        setData('personaIds', current.filter((x) => x !== id));
     }
 
     return (
@@ -300,6 +319,37 @@ export default function EditPage({ service, components, services }: { service: S
                         {errors.parentId && (
                             <p className="text-red-500 text-sm mt-1">{errors.parentId}</p>
                         )}
+                    </div>
+
+                    <div className="mb-4">
+                        <label htmlFor="personaIds" className="block text-foreground text-sm font-medium mb-1">
+                            Персоны
+                        </label>
+                        <div className="flex flex-wrap gap-2 mb-2">
+                            {(data.personaIds ?? []).map((id: number) => {
+                                const p = personas.find(pp => pp.id === id);
+                                return (
+                                    <div key={id} className="flex items-center gap-2 border rounded px-2 py-1">
+                                        <span>{p?.name ?? id}</span>
+                                        <button onClick={(e) => { e.preventDefault(); removePersona(id); }}>
+                                            <TrashIcon className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        <Select 
+                            onValueChange={(value) => addPersona(value)}
+                        >
+                            <SelectTrigger className="w-[320px]">
+                                <SelectValue placeholder="Добавить персону" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {personas.map((p) => (
+                                    <SelectItem key={p.id} value={p.id.toString()}>{p.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     

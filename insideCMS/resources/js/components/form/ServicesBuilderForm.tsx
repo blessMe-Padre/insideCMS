@@ -19,6 +19,7 @@ interface ServicesFormData {
     content?: string[];
     images?: string[];
     parentId?: number;
+    personaIds?: number[];
     elements?: Element[];
 }
 
@@ -38,6 +39,11 @@ interface Service {
     parentId: number;
 }
 
+interface Persona {
+    id: number;
+    name: string;
+}
+
 interface Element {
     id: string;
     type: string;
@@ -46,14 +52,15 @@ interface Element {
     component_id: string;
 }
 
-export default function ServicesBuilderForm({ components, services }: { components: Component[], services: Service[] }) {
-       const { setData, post, processing, reset, transform } = useForm<ServicesFormData>({
+export default function ServicesBuilderForm({ components, services, personas }: { components: Component[], services: Service[], personas: Persona[] }) {
+       const { data, setData, post, processing, reset, transform } = useForm<ServicesFormData>({
         title: '',
         description: '',
         slug: '',
         content: [],
         images: [],
         parentId: 0,
+        personaIds: [],
         elements: [],
     });
 
@@ -163,6 +170,7 @@ export default function ServicesBuilderForm({ components, services }: { componen
         transform((form) => ({
             ...form,
             parentId: form.parentId && form.parentId > 0 ? form.parentId : undefined,
+            personaIds: form.personaIds && form.personaIds.length > 0 ? form.personaIds : undefined,
         }));
 
         post('services', {
@@ -178,6 +186,20 @@ export default function ServicesBuilderForm({ components, services }: { componen
 
     const handleSelectParent = (value: string) => {
         setData('parentId', parseInt(value));
+    }
+
+    const handleAddPersona = (value: string) => {
+        const id = parseInt(value);
+        const current = Array.isArray(data.personaIds) ? data.personaIds : [];
+        if (!current.includes(id)) {
+            setData('personaIds', [...current, id]);
+        }
+    }
+
+    const handleRemovePersona = (id: number) => {
+        const current = Array.isArray(data.personaIds) ? data.personaIds : [];
+        const next = current.filter((x) => x !== id);
+        setData('personaIds', next);
     }
 
     return (
@@ -227,6 +249,35 @@ export default function ServicesBuilderForm({ components, services }: { componen
                         ))}
                     </SelectContent>
                 </Select>
+           </div>
+           <div className="mb-4">
+                <label htmlFor="persona" className="block text-sm font-medium text-gray-700 mb-1">
+                    Персона
+                </label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                    {(data.personaIds ?? []).map((id) => {
+                        const p = personas.find((pp) => pp.id === id);
+                        return (
+                            <div key={id} className="flex items-center gap-2 border rounded px-2 py-1">
+                                <span>{p?.name ?? id}</span>
+                                <button onClick={(e) => { e.preventDefault(); handleRemovePersona(id); }}>
+                                    <TrashIcon className="w-4 h-4" />
+                                </button>
+                            </div>
+                        );
+                    })}
+                </div>
+                <Select onValueChange={handleAddPersona}>
+                    <SelectTrigger className="w-[320px]">
+                        <SelectValue placeholder="Добавить персону" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {personas.map((p) => (
+                            <SelectItem key={p.id} value={p.id.toString()}>{p.name}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+                <div className="flex flex-wrap gap-2 mt-2" />
            </div>
            <div className="mb-4">
                 <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">

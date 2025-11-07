@@ -88,6 +88,8 @@ export default function ServicesAdmin({ services, links, total_pages, total}: Se
                         </PopoverTrigger>
                         <PopoverContent className="background-lab w-full max-w-[450px]">
                             <p>Все записи этой таксономии хранятся в таблице services.</p>
+                            <p>services_components - компоненты услуг</p>
+                            <p>services_personas - персоны услуг</p>
                         </PopoverContent>
                     </Popover>
                 </div>

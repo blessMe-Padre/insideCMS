@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Service;
+use App\Models\Persona;
+use App\Models\Service_persona;
 use App\Models\Component;
 use App\Models\Services_components;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +32,7 @@ class ServicesController extends Controller
         return Inertia::render('admin/services/add-services', [
             'components' => Component::all(),
             'services' => Service::all(),
+            'personas' => Persona::all(),
         ]);
     }
 
@@ -40,6 +43,8 @@ class ServicesController extends Controller
             'slug' => 'required|string|max:255|unique:services,slug',
             'description' => 'nullable|string|max:255',
             'parentId' => 'nullable|integer|exists:services,id',
+            'personaIds' => 'nullable|array',
+            'personaIds.*' => 'integer|exists:personas,id',
             'images' => 'nullable|array',
             'images.*' => 'string',
             'content' => 'nullable|array',
@@ -59,6 +64,16 @@ class ServicesController extends Controller
                 'images' => $validated['images'] ?? [],
                 'content' => $validated['content'] ?? [],
             ]);
+
+            $personaIds = $validated['personaIds'] ?? [];
+            if (!empty($personaIds)) {
+                foreach ($personaIds as $pid) {
+                    Service_persona::create([
+                        'service_id' => $service->id,
+                        'persona_id' => (int) $pid,
+                    ]);
+                }
+            }
 
             $elements = $validated['elements'] ?? [];
             foreach ($elements as $element) {
@@ -103,6 +118,8 @@ class ServicesController extends Controller
              'service' => $service,
              'components' => $service_components->toArray(),
              'services' => Service::where('id', '!=', $service->id)->get(),
+             'personas' => Persona::all(),
+             'personaIds' => Service_persona::where('service_id', $service->id)->pluck('persona_id')->toArray(),
          ];
  
          return Inertia::render('admin/services/edit-services', $data);
@@ -118,6 +135,8 @@ class ServicesController extends Controller
             'slug' => 'required|string|max:255|unique:services,slug,' . $service->id,
             'description' => 'nullable|string|max:255',
             'parentId' => 'nullable|integer|exists:services,id',
+            'personaIds' => 'nullable|array',
+            'personaIds.*' => 'integer|exists:personas,id',
             'images' => 'nullable|array',
             'images.*' => 'string',
             'content' => 'nullable|array',
@@ -137,6 +156,17 @@ class ServicesController extends Controller
                 'images' => $validated['images'] ?? [],
                 'content' => $validated['content'] ?? [],
             ]);
+
+            Service_persona::where('service_id', $service->id)->delete();
+            $personaIds = $validated['personaIds'] ?? [];
+            if (!empty($personaIds)) {
+                foreach ($personaIds as $pid) {
+                    Service_persona::create([
+                        'service_id' => $service->id,
+                        'persona_id' => (int) $pid,
+                    ]);
+                }
+            }
 
             // Удаляем все существующие компоненты
             Services_components::where('service_id', $service->id)->delete();
