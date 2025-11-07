@@ -62,6 +62,55 @@ class PersonaController extends Controller
         return redirect()->route('persona-admin')->with('success', 'Персона создана');
     }
 
+    public function edit(Persona $persona)
+    {
+        $persona_components = Persona_component::query()
+            ->select('pc.id', 'pc.data', 'pc.component_id', 'c.type as component_type')
+            ->from('personas_components as pc')
+            ->join('components as c', 'pc.component_id', '=', 'c.id')
+            ->where('pc.persona_id', $persona->id)
+            ->get();
+
+        $data = [
+            'persona' => $persona,
+            'components' => $persona_components->toArray(),
+        ];
+
+        return Inertia::render('admin/pensona/edit-person', $data);
+    }
+
+    public function update(Request $request, Persona $persona)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255',
+            'content' => 'array',
+            'content.*' => 'string',
+        ]);
+
+        $persona->update([
+            'name' => $request->name,
+            'slug' => $request->slug,
+            'content' => $request->content,
+        ]);
+
+        // Пересобираем компоненты персоны
+        Persona_component::where('persona_id', $persona->id)->delete();
+
+        if ($request->components && is_array($request->components)) {
+            foreach ($request->components as $component) {
+                $elementData = [
+                    'persona_id' => $persona->id,
+                    'component_id' => $component['component_id'],
+                    'data' => $component['data'],
+                ];
+                Persona_component::create($elementData);
+            }
+        }
+
+        return redirect()->route('persona-admin')->with('success', 'Персона обновлена');
+    }
+
     public function destroy(Persona $persona)
     {
             $persona->delete();
