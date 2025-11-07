@@ -117,6 +117,6 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
         Route::post('persons', 'store')->name('persons.store');
         // Route::get('persons/{person}/edit', 'edit')->name('persons.edit');
         // Route::post('persons/{person}', 'update')->name('persons.update');
-        // Route::delete('persons/{person}', 'destroy')->name('persons.destroy');
+        Route::delete('persons/{persona}', 'destroy')->name('persons.destroy');
     });
  });

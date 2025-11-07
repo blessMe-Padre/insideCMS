@@ -14,10 +14,8 @@ import Popup from '../popup/Popup';
 
 interface ArticleFormData {
     name: string;
-    description: string;
     slug: string;
-    images?: File[];
-    images_urls?: string[];
+    content?: string[];
     elements?: Element[];
 }
 
@@ -40,9 +38,9 @@ interface Component {
 export default function SectionsBuilderForm({ components }: { components: Component[] }) {
        const { setData, post, processing, reset } = useForm<ArticleFormData>({
         name: '',
-        description: '',
         slug: '',
         elements: [],
+        content: [],
     });
 
     const [elements, setElements] = useState<Element[]>([]);
@@ -52,6 +50,7 @@ export default function SectionsBuilderForm({ components }: { components: Compon
     // File manager
     const [activePopup, setActivePopup] = useState<boolean>(false);
     const [selectedFiles, setSelectedFiles] = useState<FileManagerFile[]>([]);
+    const [selectedImage, setSelectedImage] = useState<FileManagerFile[]>([]);
     const [currentImageElementId, setCurrentImageElementId] = useState<string>('');
 
     const handleUpdateContent = useCallback((id: string, content: string) => {
@@ -120,16 +119,22 @@ export default function SectionsBuilderForm({ components }: { components: Compon
         setSelectedElement(value);
     }
 
+    useEffect(() => {
+        if (selectedImage.length > 0) {
+            setData('content', selectedImage.map((image) => image.path));
+        }
+    }, [selectedImage, setData]);
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        post('sections', {
+        post('persons', {
                 onSuccess: () => {
                     reset();
-                    toast.success('Раздел создан успешно');
+                    toast.success('Персона создана успешно');
             },
             onError: () => {
-                toast.error('Ошибка при создании раздела');
+                toast.error('Ошибка при создании персоны');
             },
         });
     }
@@ -156,6 +161,29 @@ export default function SectionsBuilderForm({ components }: { components: Compon
                     className="w-full p-2 border rounded"
                 />
            </div>
+           <div className="mb-4">
+                <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
+                   Фотография
+                </label>
+
+                {selectedImage.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                        {selectedImage.map((image, index) => (
+                            <img key={index} src={image.path} alt={image.name} className="w-20 h-20 object-cover rounded-md border" />
+                        ))}
+                    </div>
+                )}
+
+                <Button 
+                    variant="outline" 
+                    onClick={(e) => {
+                        e.preventDefault();
+                        setActivePopup(true);
+                    }}>Выбрать файл</Button>
+                <Popup activePopup={activePopup} setActivePopup={setActivePopup}>
+                    <FileManagerComponent initialFiles={[]} setActivePopup={setActivePopup} setSelectedFiles={setSelectedImage} />
+                </Popup>
+             </div>
 
             {elements.map((element) => (
                 <div key={element.id} className="mb-4 p-4 border rounded">
