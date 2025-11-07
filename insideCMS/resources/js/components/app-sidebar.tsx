@@ -124,30 +124,11 @@ export function AppSidebar() {
                 },
             ],
         }] : []),
-        
-        {
-            title: 'Персоны',
-            href: personaAdmin(),
-            icon: Newspaper,
 
-            subItems: [
-                {
-                    title: 'Все персоны',
-                    href: personaAdmin(),
-                    icon: List,
-                },
-                {
-                    title: 'Добавить персону',
-                    href: addPerson(),
-                    icon: Plus,
-                },
-            ],
-        },
-        {
+        ...(modules?.services?.is_active ? [{
             title: 'Услуги',
             href: servicesAdmin(),
             icon: Newspaper,
-
             subItems: [
                 {
                     title: 'Все услуги',
@@ -160,7 +141,25 @@ export function AppSidebar() {
                     icon: Plus,
                 },
             ],
-        },
+        }] : []),
+
+        ...(modules?.person?.is_active ? [{
+            title: 'Персоны',
+            href: personaAdmin(),
+            icon: Newspaper,
+            subItems: [
+                {
+                    title: 'Все персоны',
+                    href: personaAdmin(),
+                    icon: List,
+                },
+                {
+                    title: 'Добавить персону',
+                    href: addPerson(),
+                    icon: Plus,
+                },
+            ],
+        }] : []),
 
         {
             title: 'Файловый менеджер',
