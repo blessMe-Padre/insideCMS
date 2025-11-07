@@ -2,16 +2,9 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, type ModulesSetting } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
-
-interface ModulesSetting {
-    id: number;
-    module_name: string;
-    module_description: string;
-    is_active: boolean;
-}
 
 const breadcrumbs: BreadcrumbItem[] = [
     {

@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
 import { addPages, dashboard } from '@/routes';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, type Page } from '@/types';
 import { Head, router, useForm} from '@inertiajs/react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {  Lock, Plus, Trash, Edit } from 'lucide-react';
@@ -8,16 +8,6 @@ import { Spinner } from '@/components/ui/spinner';
 import { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { toast } from 'sonner';
-
-
-interface Page {
-    id: number;
-    name: string;
-    slug: string;
-    description: string;
-    created_at: string;
-    title: string;
-}
 
 const breadcrumbs: BreadcrumbItem[] = [
     {

@@ -2,7 +2,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard, sectionsAdmin } from '@/routes';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, type Section, type Section_component } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { LoaderCircle, LockIcon, SaveIcon, TrashIcon } from 'lucide-react';
 import { useState, useCallback } from 'react';
@@ -26,21 +26,6 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '#',
     },
 ];
-
-interface Section {
-    id: number;
-    name: string;
-    slug: string;
-    description: string;
-}
-
-interface Section_component {
-    id: number;
-    page_id?: number;
-    component_id?: number;
-    data: string | string[];
-    component_type: string;
-}
 
 export default function EditSection({ section, components }: { section: Section, components: Section_component[] }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -220,9 +205,6 @@ export default function EditSection({ section, components }: { section: Section,
                     <div key={index} className="mb-4 p-4 border rounded">
                         <div className="flex items-center justify-between mb-2">
                             <h2 className="font-medium">{componentName(element.component_type)}</h2>
-                            {/* <button className="cursor-pointer text-red-500 hover:text-red-700" onClick={(e) => handleRemoveElement(e, element.id)}>
-                                <TrashIcon className="size-4"/>
-                            </button> */}
                         </div>
                     
                     {element.component_type === 'text' && (

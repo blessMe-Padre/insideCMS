@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard, personaAdmin } from '@/routes';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, type Service, type Component, type Persona } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { LoaderCircle, LockIcon, SaveIcon, TrashIcon } from 'lucide-react';
 import { useState, useCallback, useMemo } from 'react';
@@ -27,28 +27,6 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '#',
     },
 ];
-
-interface Component {
-    id: number;
-    component_id: number;
-    data: string | string[];
-    component_type: string;
-}
-
-interface Service {
-    id: number;
-    title: string;
-    slug: string;
-    description: string;
-    parentId: number;
-    images?: string[];
-    content?: string[];
-}
-
-interface Persona {
-    id: number;
-    name: string;
-}
 
 export default function EditPage({ service, components, services, personas, personaIds }: { service: Service, components: Component[], services: Service[], personas: Persona[], personaIds?: number[] }) {
     const { data, setData, post, processing, errors } = useForm({

@@ -2,7 +2,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard, pagesAdmin } from '@/routes';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, type Page, type Page_component } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { LoaderCircle, LockIcon, SaveIcon, TrashIcon } from 'lucide-react';
 import { useState, useCallback } from 'react';
@@ -26,21 +26,6 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '#',
     },
 ];
-
-interface Page {
-    id: number;
-    name: string;
-    slug: string;
-    description: string;
-}
-
-interface Page_component {
-    id: number;
-    page_id?: number;
-    component_id?: number;
-    data: string | string[];
-    component_type: string;
-}
 
 export default function EditPage({ page, components }: { page: Page, components: Page_component[] }) {
     const { data, setData, post, processing, errors } = useForm({

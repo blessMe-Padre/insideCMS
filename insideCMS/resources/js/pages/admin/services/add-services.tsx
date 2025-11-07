@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
 import { dashboard, servicesAdmin, addServices } from '@/routes';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, type ComponentAdmin, type Service, type Persona } from '@/types';
 import { Head } from '@inertiajs/react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Info } from 'lucide-react';
@@ -21,29 +21,7 @@ const breadcrumbs: BreadcrumbItem[] = [
         },
     ];
 
-interface Component {
-    id: string;
-    name: string;
-    description: string;
-    type: string;
-    content?: string;
-    component_id: string;
-}
-
-interface Service {
-    id: number;
-    title: string;
-    slug: string;
-    description: string;
-    parentId: number;
-}
-
-interface Persona {
-    id: number;
-    name: string;
-}
-
-export default function AddServices({ components, services, personas }: { components: Component[], services: Service[], personas: Persona[] }) {
+export default function AddServices({ components, services, personas }: { components: ComponentAdmin[], services: Service[], personas: Persona[] }) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
         <div className="px-4 py-8">

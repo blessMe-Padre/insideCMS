@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
 import { addPerson, dashboard } from '@/routes';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, type PersonaAdminPageProps } from '@/types';
 import { Head, useForm, router, Link } from '@inertiajs/react';
 import placeholder from '/public/placeholder.svg';
 import { Edit, Info, Plus, Trash } from 'lucide-react';
@@ -11,27 +11,6 @@ import { Lock } from 'lucide-react';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Spinner } from '@/components/ui/spinner';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-
-interface Persona {
-    id: number;
-    name: string;
-    content: string;
-    slug: string;
-    created_at: string;
-}
-
-interface PersonaAdminPageProps {
-    persons: Persona[];
-    links: Array<{
-        url: string | null;
-        label: string | null;
-        active: boolean | null;
-    }>;
-    current_page: number;
-    total_pages: number;
-    per_page: number;
-    total: number;
-}
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
