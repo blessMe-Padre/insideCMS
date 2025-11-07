@@ -46,7 +46,7 @@ export default function AddPerson({ components }: { components: Component[] }) {
             <Alert variant="default" className="mb-4">
                 <Info />
                 <AlertDescription>
-                    <p>Для транслита используйте <a className="text-blue-500 hover:text-blue-700" href="https://www.itranslit.com/" target="_blank">этот сервис</a></p>
+                    <p>Для транслита slug используйте <a className="text-blue-500 hover:text-blue-700" href="https://www.itranslit.com/" target="_blank">этот сервис</a></p>
                 </AlertDescription>
             </Alert>
             <PersonBuilderForm components={components}/>

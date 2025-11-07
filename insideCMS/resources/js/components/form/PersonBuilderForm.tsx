@@ -53,6 +53,9 @@ export default function SectionsBuilderForm({ components }: { components: Compon
     const [selectedImage, setSelectedImage] = useState<FileManagerFile[]>([]);
     const [currentImageElementId, setCurrentImageElementId] = useState<string>('');
 
+    console.log(selectedFiles);
+   
+
     const handleUpdateContent = useCallback((id: string, content: string) => {
         const updatedElements = elements.map(element => 
             element.id === id ? { ...element, content: content } : element);
@@ -124,6 +127,20 @@ export default function SectionsBuilderForm({ components }: { components: Compon
             setData('content', selectedImage.map((image) => image.path));
         }
     }, [selectedImage, setData]);
+
+    const handleRemoveFile = (e: React.MouseEvent, elementId: string, fileIndex: number) => {
+        e.preventDefault();
+
+        const updatedElements = elements.map((element) => {
+            if (element.id !== elementId) return element;
+            const existingUrls: string[] = element.content ? JSON.parse(element.content) : [];
+            const nextUrls = existingUrls.filter((_, index) => index !== fileIndex);
+            return { ...element, content: JSON.stringify(nextUrls) };
+        });
+
+        setElements(updatedElements);
+        setData('elements', updatedElements);
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -209,31 +226,28 @@ export default function SectionsBuilderForm({ components }: { components: Compon
 
                     {element.type === 'image-block' && (
                         <>
-                           {element.content && (() => {
-                                try {
-                                    const images = JSON.parse(element.content);
-                                    return Array.isArray(images) && images.length > 0;
-                                } catch {
-                                    return false;
-                                }
-                            })() && (
-                                <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                                    {(() => {
-                                        try {
-                                            return JSON.parse(element.content).map((image: string, index: number) => (
-                                                <img 
-                                                    key={`preview-${index}`}
-                                                    src={image} 
-                                                    alt={`Preview ${index + 1}`} 
-                                                    className="w-20 h-20 object-cover rounded-md border" 
+                            {(() => {
+                                const imageUrls: string[] = element.content ? JSON.parse(element.content) : [];
+                                return imageUrls.length > 0 ? (
+                                    <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                                        {imageUrls.map((url, index) => (
+                                            <div key={`selected-${index}`} className="relative">
+                                                <button
+                                                    className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700 z-10"
+                                                    onClick={(e) => handleRemoveFile(e, element.id, index)}>
+                                                    <TrashIcon className="w-4 h-4" />
+                                                </button>
+                                                <img
+                                                    src={url}
+                                                    alt={`Selected ${index + 1}`}
+                                                    className={`w-20 h-20 object-cover rounded-md border ${currentImageElementId === element.id ? 'border-blue-500' : ''}`}
                                                 />
-                                            ));
-                                        } catch {
-                                            return null;
-                                        }
-                                    })()}
-                                </div>
-                            )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : null;
+                            })()}
+
 
                           <Button 
                               variant="outline" 
