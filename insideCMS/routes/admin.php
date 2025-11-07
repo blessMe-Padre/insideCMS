@@ -126,8 +126,8 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
         Route::get('services-admin', 'index')->name('services-admin');
         Route::get('add-services', 'create')->name('add-services');
         Route::post('services', 'store')->name('services.store');
-        Route::get('services/{services}/edit', 'edit')->name('services.edit');
-        Route::post('services/{services}', 'update')->name('services.update');
+        Route::get('services/{service}/edit', 'edit')->name('services.edit');
+        Route::post('services/{service}', 'update')->name('services.update');
         Route::delete('services/{service}', 'destroy')->name('services.destroy');
 
     });
