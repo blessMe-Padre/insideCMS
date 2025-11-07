@@ -9,7 +9,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, newsAdmin, addNewsAdmin, articlesAdmin, addArticleAdmin, modulesAdmin, filesAdmin, pagesAdmin, addPages, siteSettings, menuAdmin, sectionsAdmin, addSection, personaAdmin, addPerson} from '@/routes';
+import { dashboard, newsAdmin, addNewsAdmin, articlesAdmin, addArticleAdmin, modulesAdmin, filesAdmin, pagesAdmin, addPages, siteSettings, menuAdmin, sectionsAdmin, addSection, personaAdmin, addPerson, servicesAdmin, addServices} from '@/routes';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { LayoutGrid, List, MessageCircle, Newspaper, Plus, User, Settings, Folder, Menu } from 'lucide-react';
@@ -139,6 +139,24 @@ export function AppSidebar() {
                 {
                     title: 'Добавить персону',
                     href: addPerson(),
+                    icon: Plus,
+                },
+            ],
+        },
+        {
+            title: 'Услуги',
+            href: servicesAdmin(),
+            icon: Newspaper,
+
+            subItems: [
+                {
+                    title: 'Все услуги',
+                    href: servicesAdmin(),
+                    icon: List,
+                },
+                {
+                    title: 'Добавить услугу',
+                    href: addServices(),
                     icon: Plus,
                 },
             ],

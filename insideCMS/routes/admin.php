@@ -13,6 +13,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\PersonaController;
+use App\Http\Controllers\ServicesController;
 
 $modules = getModules();
 
@@ -119,4 +120,16 @@ Route::middleware(['auth', 'verified'])->group(function () use ($modules) {
         Route::post('persons/{persona}', 'update')->name('persons.update');
         Route::delete('persons/{persona}', 'destroy')->name('persons.destroy');
     });
+
+    // Роуты для услуг
+    Route::controller(ServicesController::class)->group(function () {
+        Route::get('services-admin', 'index')->name('services-admin');
+        Route::get('add-services', 'create')->name('add-services');
+        Route::post('services', 'store')->name('services.store');
+        Route::get('services/{services}/edit', 'edit')->name('services.edit');
+        Route::post('services/{services}', 'update')->name('services.update');
+        Route::delete('services/{service}', 'destroy')->name('services.destroy');
+
+    });
+
  });

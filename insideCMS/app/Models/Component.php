@@ -29,4 +29,11 @@ class Component extends Model
             ->withPivot('data')
             ->withTimestamps();
     }
+
+    public function services(): BelongsToMany
+    {
+        return $this->belongsToMany(Service::class, 'services_components')
+            ->withPivot('data')
+            ->withTimestamps();
+    }
 }
