@@ -52,10 +52,7 @@ export default function SectionsBuilderForm({ components }: { components: Compon
     const [selectedFiles, setSelectedFiles] = useState<FileManagerFile[]>([]);
     const [selectedImage, setSelectedImage] = useState<FileManagerFile[]>([]);
     const [currentImageElementId, setCurrentImageElementId] = useState<string>('');
-
-    console.log(selectedFiles);
-   
-
+ 
     const handleUpdateContent = useCallback((id: string, content: string) => {
         const updatedElements = elements.map(element => 
             element.id === id ? { ...element, content: content } : element);

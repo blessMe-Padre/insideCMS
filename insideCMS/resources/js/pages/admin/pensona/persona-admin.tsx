@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Lock } from 'lucide-react';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Spinner } from '@/components/ui/spinner';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 
 /**
@@ -84,15 +85,20 @@ export default function PersonaAdmin({ persons, links, total_pages, total }: Per
                     />
                 </Head>
 
-                <h1 className="text-3xl font-bold text-foreground mb-4">Персоны</h1>
-                <Alert variant="destructive" className="mb-4">
-                    <Info />
-                    <AlertDescription>
-                      <p>Все записи этой таксономии хранятся в таблице personas.</p>
-                      <p>Персоны связаны с таблицей services через промежуточную таблицу services_personas.</p>
-                      <p>Компоненты  из таблицы components связаны с таблицей personas через промежуточную таблицу personas_components.</p>
-                    </AlertDescription>
-                </Alert>
+                <div className="flex items-center gap-2 mb-4">
+                    <h1 className="text-3xl font-bold text-foreground">Персоны</h1>
+                    <Popover>
+                        <PopoverTrigger>
+                            <Info />
+                        </PopoverTrigger>
+                        <PopoverContent className="background-lab w-full max-w-[450px]">
+                            <p>Все записи этой таксономии хранятся в таблице personas.</p>
+                            <p>Персоны связаны с таблицей services через промежуточную таблицу services_personas.</p>
+                            <p>Компоненты  из таблицы components связаны с таблицей personas через промежуточную таблицу personas_components.</p>
+                        </PopoverContent>
+                    </Popover>
+                </div>
+
                 <Alert variant="default" className="mb-4">
                     <Lock />
                     <AlertDescription>
@@ -118,7 +124,7 @@ export default function PersonaAdmin({ persons, links, total_pages, total }: Per
                 ) : (
                     <div className="block">
                         {persons.map((item) => (
-                            <div key={item.id} className="flex justify-between items-center gap-4 bg-gray-700 py-2 px-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow mb-4">
+                            <div key={item.id} className="flex justify-between items-center gap-4 py-2 px-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow mb-4" style={{ borderColor: 'var(--foreground)' }}>
                                 <div className="flex items-center justify-between gap-4">
                                     <img src={item.images && item.images.length > 0 ? `${item.images[0]}` : placeholder} alt={item.title} className="w-10 h-10 rounded-full" />
                                     <div className="">

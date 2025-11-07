@@ -150,3 +150,7 @@
 .text-toggle-color {
     color: var(--toggle-color);
 }
+
+.background-lab {
+    background-color: #2D2D2D;
+}
