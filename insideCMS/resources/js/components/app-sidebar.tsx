@@ -9,7 +9,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, newsAdmin, addNewsAdmin, articlesAdmin, addArticleAdmin, modulesAdmin, filesAdmin, pagesAdmin, addPages, siteSettings, menuAdmin, sectionsAdmin, addSection, personaAdmin, addPerson, servicesAdmin, addServices} from '@/routes';
+import { dashboard, newsAdmin, addNewsAdmin, articlesAdmin, addArticleAdmin, modulesAdmin, filesAdmin, pagesAdmin, addPages, siteSettings, menuAdmin, sectionsAdmin, addSection, personaAdmin, addPerson, servicesAdmin, addServices, info, reviewsAdmin} from '@/routes';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { LayoutGrid, List, MessageCircle, Newspaper, Plus, User, Settings, Folder, Menu } from 'lucide-react';
@@ -80,12 +80,12 @@ export function AppSidebar() {
         },
         ...(modules?.info?.is_active ? [{
             title: 'Информация о пользователе',
-            href: '/info',
+            href: info(),
             icon: User,
         }] : []),
         ...(modules?.reviews?.is_active ? [{
             title: 'Отзывы',
-            href: '/reviews-admin',
+            href: reviewsAdmin(),
             icon: MessageCircle,
         }] : []),
 
