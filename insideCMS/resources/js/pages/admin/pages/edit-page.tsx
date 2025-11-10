@@ -45,10 +45,10 @@ export default function EditPage({ page, components }: { page: Page, components:
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(`/pages/${page.id}`, {
+        post(`/admin/pages/${page.id}`, {
             onSuccess: () => {
                 toast.success('Страница успешно обновлена');
-                window.location.href = '/pages-admin';
+                window.location.href = '/admin/pages-admin';
             },
             onError: () => {
                 toast.error('Ошибка при обновлении страницы');
