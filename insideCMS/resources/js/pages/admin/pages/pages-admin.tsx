@@ -25,13 +25,13 @@ export default function PagesAdmin({ pages}: { pages: Page[] }) {
     const [processingNewsId, setProcessingNewsId] = useState<number | null>(null);
 
     const handleEdit = (id: number) => {
-        router.visit(`/pages/${id}/edit`);
+        router.visit(`pages/${id}/edit`);
     };
 
     const handleDelete = (id: number) => {
         setProcessingNewsId(id);
 
-        deleteForm.delete(`/pages/${id}`, {
+        deleteForm.delete(`pages/${id}`, {
             onSuccess: () => {
                 setProcessingNewsId(null);
                 toast.success('Страница удалена');

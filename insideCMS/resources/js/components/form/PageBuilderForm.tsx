@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import TextEditor from '../editor/TextEditor';
 import FileManagerComponent from '../editor/fileManager/FileManagerComponent';
 import Popup from '../popup/Popup';
+import AccordionComponent from '../AccordionComponent/AccordionComponent';
 
 interface ArticleFormData {
     name: string;
@@ -103,17 +104,30 @@ export default function PageBuilderForm({ components }: { components: Component[
                     component_id: components.find((component) => component.name === 'text-editor-block')?.id || '',
                 };
                 break;
+            case 'accordion-block':
+                newElement = {
+                    id: `element-${Date.now()}`,
+                    type: 'accordion-block',
+                    description: 'Аккордион',
+                    content: '[]',
+                    component_id: components.find((component) => component.name === 'accordion-block')?.id || '',
+                };
+                break;
             default:
                 return;
         }
 
-        setElements([...elements, newElement]);
+        const nextElements = [...elements, newElement];
+        setElements(nextElements);
+        setData('elements', nextElements);
         setSelectedElement('');
         setIsPopoverOpen(false);
       }
 
     const handleRemoveElement = (id: string) => {
-        setElements(elements.filter((element) => element.id !== id));
+        const nextElements = elements.filter((element) => element.id !== id);
+        setElements(nextElements);
+        setData('elements', nextElements);
     }
 
     const handleSelectElement = (value: string) => {
@@ -234,9 +248,12 @@ export default function PageBuilderForm({ components }: { components: Component[
                             </Popup>
                         </>
                     )}
+
+                    {element.type === 'accordion-block' && (
+                        <AccordionComponent content={element.content || ''} onChange={(value) => handleUpdateContent(element.id, value)} />
+                    )}
                 </div>
             ))}
-         
 
             <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                 <PopoverTrigger className="flex items-center w-full justify-center gap-2 cursor-pointer transition-all mb-2">

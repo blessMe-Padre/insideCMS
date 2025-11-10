@@ -11,6 +11,7 @@ import TextEditor from '@/components/editor/TextEditor';
 import FileManagerComponent from '@/components/editor/fileManager/FileManagerComponent';
 import Popup from '@/components/popup/Popup';
 import { FileManagerFile } from '@cubone/react-file-manager';
+import AccordionComponent from '@/components/AccordionComponent/AccordionComponent';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -62,6 +63,9 @@ export default function EditPage({ page, components }: { page: Page, components:
                     return { ...element, data: [content] };
                 }
                 if (element.component_type === 'text-editor') {
+                    return { ...element, data: content };
+                }
+                if (element.component_type === 'accordion-block') {
                     return { ...element, data: content };
                 }
                 return { ...element, data: content };
@@ -126,6 +130,8 @@ export default function EditPage({ page, components }: { page: Page, components:
                 return 'Текстовый редактор';
             case 'file':
                 return 'Файлы / Изображения';
+            case 'accordion-block':
+                return 'Аккордион';
             default:
                 return component_type;
         }
@@ -205,9 +211,6 @@ export default function EditPage({ page, components }: { page: Page, components:
                     <div key={index} className="mb-4 p-4 border rounded">
                         <div className="flex items-center justify-between mb-2">
                             <h2 className="font-medium">{componentName(element.component_type)}</h2>
-                            {/* <button className="cursor-pointer text-red-500 hover:text-red-700" onClick={(e) => handleRemoveElement(e, element.id)}>
-                                <TrashIcon className="size-4"/>
-                            </button> */}
                         </div>
                     
                     {element.component_type === 'text' && (
@@ -304,6 +307,10 @@ export default function EditPage({ page, components }: { page: Page, components:
                                 />
                             </Popup>
                         </>
+                    )}
+
+                    {element.component_type === 'accordion-block' && (
+                        <AccordionComponent content={element.data} onChange={(value) => handleUpdateContent(element.id, value)} />
                     )}
 
                     </div>
