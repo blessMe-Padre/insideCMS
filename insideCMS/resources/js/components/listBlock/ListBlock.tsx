@@ -20,8 +20,9 @@ export default function ListBlock() {
 
     // File manager
     const [activePopup, setActivePopup] = useState<boolean>(false);
-    const [selectedFiles, setSelectedFiles] = useState<FileManagerFile[]>([]);
     const [currentImageElementId, setCurrentImageElementId] = useState<string>('');
+    
+    console.log('listItems', listItems);
 
     const handleAddListBlockItem = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
@@ -60,27 +61,6 @@ export default function ListBlock() {
     const handleRemoveFile = (e: React.MouseEvent, elementId: string, fileIndex: number) => {
         e.preventDefault();
 
-        // Если удаляем файл из временно выбранных (предпросмотр) для активного элемента
-        if (currentImageElementId === elementId && selectedFiles.length > 0) {
-            const fileToRemove = selectedFiles[fileIndex];
-            const updatedSelectedFiles = selectedFiles.filter((_, index) => index !== fileIndex);
-            setSelectedFiles(updatedSelectedFiles);
-
-            // Синхронизируем изображения у соответствующего элемента списка
-            setListItems((prev) =>
-                prev.map((item) => {
-                    if (item.title !== elementId) return item;
-                    const pathToRemove = fileToRemove?.path || '';
-                    if (pathToRemove) {
-                        return { ...item, images: (item.images || []).filter((p) => p !== pathToRemove) };
-                    }
-                    return { ...item, images: (item.images || []).filter((_, i) => i !== fileIndex) };
-                })
-            );
-            return;
-        }
-
-        // Иначе удаляем по индексу из сохранённых изображений элемента
         setListItems((prev) =>
             prev.map((item) =>
                 item.title === elementId
@@ -89,6 +69,27 @@ export default function ListBlock() {
             )
         );
     };
+
+	const handleFilesSelected = (files: FileManagerFile[]) => {
+		if (!currentImageElementId) {
+			setActivePopup(false);
+			return;
+		}
+
+		const newPaths = files.map((f) => f.path).filter(Boolean) as string[];
+
+		setListItems((prev) =>
+			prev.map((item) => {
+				if (item.title !== currentImageElementId) return item;
+				const existing = item.images || [];
+				const merged = Array.from(new Set([...existing, ...newPaths]));
+				return { ...item, images: merged };
+			})
+		);
+
+		setActivePopup(false);
+		setCurrentImageElementId('');
+	};
 
     return (
         <>
@@ -126,31 +127,29 @@ export default function ListBlock() {
                             />
 
    
-                    <div>
+					<div>
                         <label className="block text-sm font-medium text-foreground mb-1">
                             Изображения
                         </label>
                         
-                        {selectedFiles.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                                {selectedFiles.map((file, index) => (
-                                    <div key={`selected-${index}`} className="relative">
-                                        <button
-                                            className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700 z-10"
-                                            onClick={(e) => handleRemoveFile(e, item.title, index)}>
-                                            <TrashIcon className="w-4 h-4" />
-                                        </button>
-                                        <img  
-                                            src={file.path} 
-                                            alt={`Selected ${index + 1}`} 
-                                            className={`w-20 h-20 object-cover rounded-md border ${
-                                                currentImageElementId === item.title ? 'border-blue-500' : ''
-                                            }`}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+						{(item.images && item.images.length > 0) && (
+							<div className="flex flex-wrap gap-2 mt-2 mb-2">
+								{item.images.map((src, index) => (
+									<div key={`img-${index}`} className="relative">
+										<button
+											className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700 z-10"
+											onClick={(e) => handleRemoveFile(e, item.title, index)}>
+											<TrashIcon className="w-4 h-4" />
+										</button>
+										<img
+											src={src}
+											alt={`Image ${index + 1}`}
+											className="w-20 h-20 object-cover rounded-md border"
+										/>
+									</div>
+								))}
+							</div>
+						)}
 
                         <Button 
                             type="button"
@@ -168,7 +167,7 @@ export default function ListBlock() {
                             <FileManagerComponent 
                                 initialFiles={[]}
                                 setActivePopup={setActivePopup}
-                                setSelectedFiles={setSelectedFiles}
+								setSelectedFiles={handleFilesSelected}
                             />
                         </Popup>
                     </div>
