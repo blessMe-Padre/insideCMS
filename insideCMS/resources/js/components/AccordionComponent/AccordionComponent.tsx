@@ -13,7 +13,20 @@ interface AccordionItemProps {
 }
 
 export default function AccordionComponent({ content = '[]', onChange }: { content?: unknown, onChange: (value: string) => void }) {
-    const [accordionItems, setAccordionItems] = useState<AccordionItemProps[]>(content as AccordionItemProps[]);
+    let initialItems: AccordionItemProps[] = [];
+    if (typeof content === 'string') {
+        try {
+            const parsed = JSON.parse(content as string);
+            if (Array.isArray(parsed)) {
+                initialItems = parsed as AccordionItemProps[];
+            }
+        } catch {
+            initialItems = [];
+        }
+    } else if (Array.isArray(content)) {
+        initialItems = content as AccordionItemProps[];
+    }
+    const [accordionItems, setAccordionItems] = useState<AccordionItemProps[]>(initialItems);
     console.log('content', content);
     console.log('accordionItems', accordionItems);
 
@@ -44,10 +57,10 @@ export default function AccordionComponent({ content = '[]', onChange }: { conte
         type="single"
         collapsible
         className="w-full max-w-2xl"
-        defaultValue="item-1"
+        defaultValue={accordionItems[0]?.value}
       >
-        {accordionItems.map((item, index) => (
-          <AccordionItem key={index} value={index.toString()}>
+        {accordionItems.map((item) => (
+          <AccordionItem key={item.value} value={item.value}>
             <AccordionTrigger>
                 <Input value={item.title}
                     onChange={(e) => handleUpdateTitle(item.value, e.target.value)}
