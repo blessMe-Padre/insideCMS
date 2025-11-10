@@ -12,6 +12,7 @@ import FileManagerComponent from '@/components/editor/fileManager/FileManagerCom
 import Popup from '@/components/popup/Popup';
 import { FileManagerFile } from '@cubone/react-file-manager';
 import AccordionComponent from '@/components/AccordionComponent/AccordionComponent';
+import ListBlock from '@/components/listBlock/ListBlock';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -68,6 +69,9 @@ export default function EditPage({ page, components }: { page: Page, components:
                 if (element.component_type === 'accordion-block') {
                     return { ...element, data: content };
                 }
+                if (element.component_type === 'list-block') {
+                    return { ...element, data: content };
+                }
                 return { ...element, data: content };
             }
             return element;
@@ -76,8 +80,6 @@ export default function EditPage({ page, components }: { page: Page, components:
         setElements(updatedElements);
         setData('components', updatedElements);
     }, [elements, setData]);
-
-    // Обработка выбранных файлов выполняется непосредственно в handleFileSelection
 
     // Обработчик выбора файлов из FileManager
     const handleFileSelection = (files: FileManagerFile[]) => {
@@ -132,6 +134,8 @@ export default function EditPage({ page, components }: { page: Page, components:
                 return 'Файлы / Изображения';
             case 'accordion-block':
                 return 'Аккордион';
+            case 'list-block':
+                return 'Список';
             default:
                 return component_type;
         }
@@ -311,6 +315,10 @@ export default function EditPage({ page, components }: { page: Page, components:
 
                     {element.component_type === 'accordion-block' && (
                         <AccordionComponent content={element.data} onChange={(value) => handleUpdateContent(element.id, value)} />
+                    )}
+
+                    {element.component_type === 'list-block' && (
+                        <ListBlock content={element.data} onChange={(value) => handleUpdateContent(element.id, value)} />
                     )}
 
                     </div>

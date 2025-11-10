@@ -15,8 +15,21 @@ interface ListBlockItem {
     images: string[];
 }
 
-export default function ListBlock({ onChange }: { onChange: (value: string) => void }) {
-    const [listItems, setListItems] = useState<ListBlockItem[]>([]);
+export default function ListBlock({ content, onChange }: { content?: unknown, onChange: (value: string) => void }) {
+    let initialItems: ListBlockItem[] = [];
+    if (typeof content === 'string') {
+        try {
+            const parsed = JSON.parse(content as string);
+            if (Array.isArray(parsed)) {
+                initialItems = parsed as ListBlockItem[];
+            }
+        } catch {
+            initialItems = [];
+        }
+    } else if (Array.isArray(content)) {
+        initialItems = content as ListBlockItem[];
+    }
+    const [listItems, setListItems] = useState<ListBlockItem[]>(initialItems);
 
     // File manager
     const [activePopup, setActivePopup] = useState<boolean>(false);

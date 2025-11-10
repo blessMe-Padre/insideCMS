@@ -295,7 +295,7 @@ export default function PageBuilderForm({ components }: { components: Component[
                         onClick={handleAddElement}
                         disabled={!selectedElement}
                         >
-                        <PlusIcon className="size-4 text-gray-500"/>
+                        <SaveIcon className="size-4 text-gray-500"/>
                         <span>Сохранить</span>
                     </Button>
                 </PopoverContent>
