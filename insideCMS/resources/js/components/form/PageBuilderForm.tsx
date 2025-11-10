@@ -50,7 +50,6 @@ export default function PageBuilderForm({ components }: { components: Component[
     const [selectedElement, setSelectedElement] = useState<string>('');
     const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
 
-    // File manager
     const [activePopup, setActivePopup] = useState<boolean>(false);
     const [selectedFiles, setSelectedFiles] = useState<FileManagerFile[]>([]);
     const [currentImageElementId, setCurrentImageElementId] = useState<string>('');
