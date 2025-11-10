@@ -12,6 +12,7 @@ import FileManagerComponent from '@/components/editor/fileManager/FileManagerCom
 import Popup from '@/components/popup/Popup';
 import { FileManagerFile } from '@cubone/react-file-manager';
 import AccordionComponent from '@/components/AccordionComponent/AccordionComponent';
+import ListBlock from '@/components/listBlock/ListBlock';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -130,6 +131,8 @@ export default function EditSection({ section, components }: { section: Section,
                 return 'Файлы / Изображения';
             case 'accordion-block':
                 return 'Аккордеон';
+            case 'list-block':
+                return 'Список блоков';
             default:
                 return component_type;
         }
@@ -308,6 +311,10 @@ export default function EditSection({ section, components }: { section: Section,
                     )}
                     {element.component_type === 'accordion-block' && (
                         <AccordionComponent content={element.data || ''} onChange={(value) => handleUpdateContent(element.id, value)} />
+                    )}
+
+                    {element.component_type === 'list-block' && (
+                        <ListBlock content={element.data || ''} onChange={(value) => handleUpdateContent(element.id, value)} />
                     )}
 
                     </div>
