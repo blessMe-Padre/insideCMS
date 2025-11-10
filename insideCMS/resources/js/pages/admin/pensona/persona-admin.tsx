@@ -19,7 +19,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: 'Персоны',
-        href: '/persons-admin',
+        href: '/admin/persons-admin',
     },
 ];
 
@@ -30,7 +30,7 @@ export default function PersonaAdmin({ persons, links, total_pages, total}: Pers
     const handleDelete = (id: number) => {
         setProcessingNewsId(id);
 
-        deleteForm.delete(`persons/${id}`, {
+        deleteForm.delete(`/admin/persons/${id}`, {
             onSuccess: () => {
                 setProcessingNewsId(null);
                 toast.success('Персона удалена');
@@ -42,7 +42,7 @@ export default function PersonaAdmin({ persons, links, total_pages, total}: Pers
     };
 
     const handleEdit = (id: number) => {
-        router.visit(`persons/${id}/edit`);
+        router.visit(`/admin/persons/${id}/edit`);
     };
 
     return (

@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import TextEditor from '../editor/TextEditor';
 import FileManagerComponent from '../editor/fileManager/FileManagerComponent';
 import Popup from '../popup/Popup';
+import AccordionComponent from '../AccordionComponent/AccordionComponent';
 
 interface ArticleFormData {
     name: string;
@@ -100,6 +101,15 @@ export default function SectionsBuilderForm({ components }: { components: Compon
                     description: 'Текстовый редактор',
                     content: '',
                     component_id: components.find((component) => component.name === 'text-editor-block')?.id || '',
+                };
+                break;
+            case 'accordion-block':
+                newElement = {
+                    id: `element-${Date.now()}`,
+                    type: 'accordion-block',
+                    description: 'Аккордеон',
+                    content: '',
+                    component_id: components.find((component) => component.name === 'accordion-block')?.id || '',
                 };
                 break;
             default:
@@ -262,6 +272,10 @@ export default function SectionsBuilderForm({ components }: { components: Compon
                                 />
                             </Popup>
                         </>
+                    )}
+
+                    {element.type === 'accordion-block' && (
+                        <AccordionComponent content={element.content || ''} onChange={(value) => handleUpdateContent(element.id, value)} />
                     )}
                 </div>
             ))}

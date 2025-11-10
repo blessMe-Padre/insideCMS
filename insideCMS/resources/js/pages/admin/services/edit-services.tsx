@@ -12,6 +12,7 @@ import TextEditor from '@/components/editor/TextEditor';
 import FileManagerComponent from '@/components/editor/fileManager/FileManagerComponent';
 import Popup from '@/components/popup/Popup';
 import { FileManagerFile } from '@cubone/react-file-manager';
+import AccordionComponent from '@/components/AccordionComponent/AccordionComponent';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -53,10 +54,10 @@ export default function EditPage({ service, components, services, personas, pers
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(`/services/${service.id}`, {
+        post(`/admin/services/${service.id}`, {
             onSuccess: () => {
                 toast.success('Услуга успешно обновлена');
-                window.location.href = '/services-admin';
+                window.location.href = '/admin/services-admin';
             },
             onError: () => {
                 toast.error('Ошибка при обновлении услуги');
@@ -88,6 +89,9 @@ export default function EditPage({ service, components, services, personas, pers
                     return { ...element, data: [content] };
                 }
                 if (element.component_type === 'text-editor') {
+                    return { ...element, data: content };
+                }
+                if (element.component_type === 'accordion-block') {
                     return { ...element, data: content };
                 }
                 return { ...element, data: content };
@@ -164,6 +168,8 @@ export default function EditPage({ service, components, services, personas, pers
                 return 'Текстовый редактор';
             case 'file':
                 return 'Файлы / Изображения';
+            case 'accordion-block':
+                return 'Аккордеон';
             default:
                 return component_type;
         }
@@ -455,6 +461,9 @@ export default function EditPage({ service, components, services, personas, pers
                         </>
                     )}
 
+                    {element.component_type === 'accordion-block' && (
+                        <AccordionComponent content={element.data || ''} onChange={(value) => handleUpdateContent(element.id, value)} />
+                    )}
                     </div>
                      ))}
 
@@ -472,7 +481,7 @@ export default function EditPage({ service, components, services, personas, pers
                         </button>
                         <button
                             type="button"
-                            onClick={() => window.location.href = '/persons-admin'}
+                            onClick={() => window.location.href = '/admin/persons-admin'}
                             disabled={processing}
                             className="bg-gray-500 text-white cursor-pointer px-4 p-2 rounded-sm hover:bg-gray-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                         >

@@ -11,6 +11,7 @@ import TextEditor from '@/components/editor/TextEditor';
 import FileManagerComponent from '@/components/editor/fileManager/FileManagerComponent';
 import Popup from '@/components/popup/Popup';
 import { FileManagerFile } from '@cubone/react-file-manager';
+import AccordionComponent from '@/components/AccordionComponent/AccordionComponent';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -62,10 +63,10 @@ export default function EditPage({ persona, components }: { persona: Persona, co
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(`/persons/${persona.id}`, {
+        post(`/admin/persons/${persona.id}`, {
             onSuccess: () => {
                 toast.success('Персона успешно обновлена');
-                window.location.href = '/persons-admin';
+                window.location.href = '/admin/persons-admin';
             },
             onError: () => {
                 toast.error('Ошибка при обновлении персоны');
@@ -98,6 +99,9 @@ export default function EditPage({ persona, components }: { persona: Persona, co
                     return { ...element, data: [content] };
                 }
                 if (element.component_type === 'text-editor') {
+                    return { ...element, data: content };
+                }
+                if (element.component_type === 'accordion-block') {
                     return { ...element, data: content };
                 }
                 return { ...element, data: content };
@@ -162,6 +166,8 @@ export default function EditPage({ persona, components }: { persona: Persona, co
                 return 'Текстовый редактор';
             case 'file':
                 return 'Файлы / Изображения';
+            case 'accordion-block':
+                return 'Аккордеон';
             default:
                 return component_type;
         }
@@ -368,6 +374,9 @@ export default function EditPage({ persona, components }: { persona: Persona, co
                         </>
                     )}
 
+                    {element.component_type === 'accordion-block' && (
+                        <AccordionComponent content={element.data || ''} onChange={(value) => handleUpdateContent(element.id, value)} />
+                    )}
                     </div>
                      ))}
 
