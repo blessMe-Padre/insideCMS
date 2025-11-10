@@ -130,7 +130,7 @@ export default function ListBlock({ content, onChange }: { content?: unknown, on
                             </label>
                             <Input
                                 placeholder="Введите ссылку"
-                                value={item.link} 
+                                defaultValue={item.link} 
                                 onChange={(e) => handleUpdateLink(item.title, e.target.value)}
                                 className="mb-2" 
                             />
