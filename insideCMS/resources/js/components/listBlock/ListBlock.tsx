@@ -33,7 +33,7 @@ export default function ListBlock({ content, onChange }: { content?: unknown, on
 
     // File manager
     const [activePopup, setActivePopup] = useState<boolean>(false);
-    const [currentImageElementId, setCurrentImageElementId] = useState<string>('');
+    const [currentImageElementId, setCurrentImageElementId] = useState<number | null>(null);
 
     const handleAddListBlockItem = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
@@ -50,35 +50,35 @@ export default function ListBlock({ content, onChange }: { content?: unknown, on
         onChange(JSON.stringify(nextItems));
     };
 
-    const handleRemoveListBlockItem = (e: React.MouseEvent<HTMLButtonElement>, value: string) => {
+    const handleRemoveListBlockItem = (e: React.MouseEvent<HTMLButtonElement>, index: number) => {
         e.preventDefault();
-        const nextItems = listItems.filter((item) => item.title !== value);
+        const nextItems = listItems.filter((_, i) => i !== index);
         setListItems(nextItems);
         onChange(JSON.stringify(nextItems));
     }
 
-    const handleUpdateTitle = (value: string, title: string) => {
-        const nextItems = listItems.map((item) => item.title === value ? { ...item, title } : item);
+    const handleUpdateTitle = (index: number, title: string) => {
+        const nextItems = listItems.map((item, i) => i === index ? { ...item, title } : item);
         setListItems(nextItems);
         onChange(JSON.stringify(nextItems));
     }
 
-    const handleUpdateLink = (value: string, link: string) => {
-        const nextItems = listItems.map((item) => item.link === value ? { ...item, link } : item);
+    const handleUpdateLink = (index: number, link: string) => {
+        const nextItems = listItems.map((item, i) => i === index ? { ...item, link } : item);
         setListItems(nextItems);
         onChange(JSON.stringify(nextItems));
     }
 
-    const handleUpdateContent = (value: string, content: string) => {
-        const nextItems = listItems.map((item) => item.title === value ? { ...item, content } : item);
+    const handleUpdateContent = (index: number, content: string) => {
+        const nextItems = listItems.map((item, i) => i === index ? { ...item, content } : item);
         setListItems(nextItems);
         onChange(JSON.stringify(nextItems));
     }
 
-    const handleRemoveFile = (e: React.MouseEvent, elementId: string, fileIndex: number) => {
+    const handleRemoveFile = (e: React.MouseEvent, elementIndex: number, fileIndex: number) => {
         e.preventDefault();
-        const nextItems = listItems.map((item) =>
-            item.title === elementId
+        const nextItems = listItems.map((item, i) =>
+            i === elementIndex
                 ? { ...item, images: (item.images || []).filter((_, index) => index !== fileIndex) }
                 : item
         );
@@ -87,15 +87,15 @@ export default function ListBlock({ content, onChange }: { content?: unknown, on
     };
 
 	const handleFilesSelected = (files: FileManagerFile[]) => {
-		if (!currentImageElementId) {
+		if (currentImageElementId === null) {
 			setActivePopup(false);
 			return;
 		}
 
 		const newPaths = files.map((f) => f.path).filter(Boolean) as string[];
 
-        const nextItems = listItems.map((item) => {
-            if (item.title !== currentImageElementId) return item;
+        const nextItems = listItems.map((item, i) => {
+            if (i !== currentImageElementId) return item;
             const existing = item.images || [];
             const merged = Array.from(new Set([...existing, ...newPaths]));
             return { ...item, images: merged };
@@ -104,7 +104,7 @@ export default function ListBlock({ content, onChange }: { content?: unknown, on
         onChange(JSON.stringify(nextItems));
 
 		setActivePopup(false);
-		setCurrentImageElementId('');
+		setCurrentImageElementId(null);
 	};
 
     return (
@@ -114,14 +114,14 @@ export default function ListBlock({ content, onChange }: { content?: unknown, on
             collapsible
             className="w-full max-w-2xl"
         >   
-            {listItems.map((item) => (
-                <div key={item.title} className="flex justify-between gap-2">
-                    <AccordionItem key={item.title} value={item.title}>
+            {listItems.map((item, index) => (
+                <div key={index} className="flex justify-between gap-2">
+                    <AccordionItem key={index} value={String(index)}>
                         <AccordionTrigger>
                             <Input
                                 placeholder="Заголовок"
                                 value={item.title}
-                                onChange={(e) => handleUpdateTitle(item.title, e.target.value)}
+                                onChange={(e) => handleUpdateTitle(index, e.target.value)}
                             />
                         </AccordionTrigger>
                         <AccordionContent>
@@ -130,8 +130,8 @@ export default function ListBlock({ content, onChange }: { content?: unknown, on
                             </label>
                             <Input
                                 placeholder="Введите ссылку"
-                                defaultValue={item.link} 
-                                onChange={(e) => handleUpdateLink(item.title, e.target.value)}
+                                value={item.link} 
+                                onChange={(e) => handleUpdateLink(index, e.target.value)}
                                 className="mb-2" 
                             />
                             <label className="block text-sm font-medium text-foreground mb-1">
@@ -139,7 +139,7 @@ export default function ListBlock({ content, onChange }: { content?: unknown, on
                             </label>
                             <TextEditor
                                 value={item.content}
-                                onChange={(value) => handleUpdateContent(item.title, value)}
+                                onChange={(value) => handleUpdateContent(index, value)}
                             />
 
    
@@ -150,16 +150,16 @@ export default function ListBlock({ content, onChange }: { content?: unknown, on
                         
 						{(item.images && item.images.length > 0) && (
 							<div className="flex flex-wrap gap-2 mt-2 mb-2">
-								{item.images.map((src, index) => (
-									<div key={`img-${index}`} className="relative">
+								{item.images.map((src, imgIndex) => (
+									<div key={`img-${imgIndex}`} className="relative">
 										<button
 											className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700 z-10"
-											onClick={(e) => handleRemoveFile(e, item.title, index)}>
+											onClick={(e) => handleRemoveFile(e, index, imgIndex)}>
 											<TrashIcon className="w-4 h-4" />
 										</button>
 										<img
 											src={src}
-											alt={`Image ${index + 1}`}
+											alt={`Image ${imgIndex + 1}`}
 											className="w-20 h-20 object-cover rounded-md border"
 										/>
 									</div>
@@ -172,7 +172,7 @@ export default function ListBlock({ content, onChange }: { content?: unknown, on
                             variant="outline" 
                             onClick={(e) => {
                                 e.preventDefault();
-                                setCurrentImageElementId(item.title);
+                                setCurrentImageElementId(index);
                                 setActivePopup(true);
                             }}>
                                 <ImageIcon className="size-4 text-gray-500"/>
@@ -187,13 +187,11 @@ export default function ListBlock({ content, onChange }: { content?: unknown, on
                             />
                         </Popup>
                     </div>
-
-                            
                          </AccordionContent>
                     </AccordionItem>
                     <Button 
                     variant="outline" 
-                    onClick={(e) => handleRemoveListBlockItem(e, item.title)}
+                    onClick={(e) => handleRemoveListBlockItem(e, index)}
                     className="cursor-pointer"
                     >
                         <TrashIcon className="size-4 text-red-500"/>
