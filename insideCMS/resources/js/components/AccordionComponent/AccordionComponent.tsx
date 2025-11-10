@@ -6,31 +6,37 @@ import { PlusIcon } from "lucide-react";
 import { Input } from "../ui/input";
 import TextEditor from "../editor/TextEditor";
 
+
 interface AccordionItemProps {
     value: string;
     title: string;
-    content: string;
+	content: string;
 }
 
-export default function AccordionComponent({ content = '[]', onChange }: { content: string, onChange: (value: string) => void }) {
+export default function AccordionComponent({ content = '[]', onChange }: { content?: unknown, onChange: (value: string) => void }) {
     console.log('content', content);
-    
-    const [accordionItems, setAccordionItems] = useState<AccordionItemProps[]>([content]);
+    const [accordionItems, setAccordionItems] = useState<AccordionItemProps[]>([]);
     console.log('accordionItems', accordionItems);
 
     const handleAddAccordionItem = () => {
-        setAccordionItems([...accordionItems, { value: `item-${accordionItems.length + 1}`, title: `Item ${accordionItems.length + 1}`, content: `Content ${accordionItems.length + 1}` }]);
-        onChange(JSON.stringify(accordionItems));
+		const nextItems: AccordionItemProps[] = [
+			...accordionItems,
+			{ value: `item-${accordionItems.length + 1}`, title: `Item ${accordionItems.length + 1}`, content: `Content ${accordionItems.length + 1}` }
+		];
+		setAccordionItems(nextItems);
+		onChange(JSON.stringify(nextItems));
     };
 
     const handleUpdateTitle = (value: string, title: string) => {
-        setAccordionItems(accordionItems.map((item) => item.value === value ? { ...item, title } : item));
-        onChange(JSON.stringify(accordionItems));
+		const nextItems = accordionItems.map((item) => item.value === value ? { ...item, title } : item);
+		setAccordionItems(nextItems);
+		onChange(JSON.stringify(nextItems));
     };
 
     const handleUpdateContent = (value: string, content: string) => {
-        setAccordionItems(accordionItems.map((item) => item.value === value ? { ...item, content } : item));
-        onChange(JSON.stringify(accordionItems));
+		const nextItems = accordionItems.map((item) => item.value === value ? { ...item, content } : item);
+		setAccordionItems(nextItems);
+		onChange(JSON.stringify(nextItems));
     };
 
     return (
@@ -44,7 +50,6 @@ export default function AccordionComponent({ content = '[]', onChange }: { conte
           <AccordionItem key={index} value={index.toString()}>
             <AccordionTrigger>
                 <Input value={item.title}
-                    defaultValue={item.title}
                     onChange={(e) => handleUpdateTitle(item.value, e.target.value)}
                     placeholder="Заголовок" />
             </AccordionTrigger>
