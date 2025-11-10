@@ -12,6 +12,7 @@ import TextEditor from '../editor/TextEditor';
 import FileManagerComponent from '../editor/fileManager/FileManagerComponent';
 import Popup from '../popup/Popup';
 import AccordionComponent from '../AccordionComponent/AccordionComponent';
+import ListBlock from '../listBlock/ListBlock';
 
 interface ServicesFormData {
     title: string;
@@ -131,6 +132,15 @@ export default function ServicesBuilderForm({ components, services, personas }: 
                     description: 'Аккордеон',
                     content: '',
                     component_id: components.find((component) => component.name === 'accordion-block')?.id || '',
+                };
+                break;
+            case 'list-block':
+                newElement = {
+                    id: `element-${Date.now()}`,
+                    type: 'list-block',
+                    description: 'Список',
+                    content: '',
+                    component_id: components.find((component) => component.name === 'list-block')?.id || '',
                 };
                 break;
             default:
@@ -380,6 +390,9 @@ export default function ServicesBuilderForm({ components, services, personas }: 
 
                     {element.type === 'accordion-block' && (
                         <AccordionComponent content={element.content || ''} onChange={(value) => handleUpdateContent(element.id, value)} />
+                    )}
+                    {element.type === 'list-block' && (
+                        <ListBlock content={element.content || ''} onChange={(value) => handleUpdateContent(element.id, value)} />
                     )}
                 </div>
             ))}
