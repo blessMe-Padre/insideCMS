@@ -5,8 +5,6 @@ import { Head} from '@inertiajs/react';
 import PageBuilderForm from '@/components/form/PageBuilderForm';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Info } from 'lucide-react';
-import ListBlock from '@/components/listBlock/ListBlock';
-
 
 interface Component {
     id: string;
@@ -49,7 +47,6 @@ export default function AddPages({ components }: { components: Component[] }) {
                  </Alert>
                 <PageBuilderForm components={components}/>
             </div>
-            <ListBlock />
        </AppLayout>
     );
 }

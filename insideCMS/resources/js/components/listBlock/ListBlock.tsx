@@ -15,14 +15,12 @@ interface ListBlockItem {
     images: string[];
 }
 
-export default function ListBlock() {
+export default function ListBlock({ onChange }: { onChange: (value: string) => void }) {
     const [listItems, setListItems] = useState<ListBlockItem[]>([]);
 
     // File manager
     const [activePopup, setActivePopup] = useState<boolean>(false);
     const [currentImageElementId, setCurrentImageElementId] = useState<string>('');
-    
-    console.log('listItems', listItems);
 
     const handleAddListBlockItem = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
@@ -36,38 +34,43 @@ export default function ListBlock() {
             }
         ];
         setListItems(nextItems);
+        onChange(JSON.stringify(nextItems));
     };
 
     const handleRemoveListBlockItem = (e: React.MouseEvent<HTMLButtonElement>, value: string) => {
         e.preventDefault();
         const nextItems = listItems.filter((item) => item.title !== value);
         setListItems(nextItems);
+        onChange(JSON.stringify(nextItems));
     }
 
     const handleUpdateTitle = (value: string, title: string) => {
         const nextItems = listItems.map((item) => item.title === value ? { ...item, title } : item);
         setListItems(nextItems);
+        onChange(JSON.stringify(nextItems));
     }
 
     const handleUpdateLink = (value: string, link: string) => {
         const nextItems = listItems.map((item) => item.link === value ? { ...item, link } : item);
         setListItems(nextItems);
+        onChange(JSON.stringify(nextItems));
     }
 
     const handleUpdateContent = (value: string, content: string) => {
-        console.log(value, content);
+        const nextItems = listItems.map((item) => item.title === value ? { ...item, content } : item);
+        setListItems(nextItems);
+        onChange(JSON.stringify(nextItems));
     }
 
     const handleRemoveFile = (e: React.MouseEvent, elementId: string, fileIndex: number) => {
         e.preventDefault();
-
-        setListItems((prev) =>
-            prev.map((item) =>
-                item.title === elementId
-                    ? { ...item, images: (item.images || []).filter((_, index) => index !== fileIndex) }
-                    : item
-            )
+        const nextItems = listItems.map((item) =>
+            item.title === elementId
+                ? { ...item, images: (item.images || []).filter((_, index) => index !== fileIndex) }
+                : item
         );
+        setListItems(nextItems);
+        onChange(JSON.stringify(nextItems));
     };
 
 	const handleFilesSelected = (files: FileManagerFile[]) => {
@@ -78,14 +81,14 @@ export default function ListBlock() {
 
 		const newPaths = files.map((f) => f.path).filter(Boolean) as string[];
 
-		setListItems((prev) =>
-			prev.map((item) => {
-				if (item.title !== currentImageElementId) return item;
-				const existing = item.images || [];
-				const merged = Array.from(new Set([...existing, ...newPaths]));
-				return { ...item, images: merged };
-			})
-		);
+        const nextItems = listItems.map((item) => {
+            if (item.title !== currentImageElementId) return item;
+            const existing = item.images || [];
+            const merged = Array.from(new Set([...existing, ...newPaths]));
+            return { ...item, images: merged };
+        });
+		setListItems(nextItems);
+        onChange(JSON.stringify(nextItems));
 
 		setActivePopup(false);
 		setCurrentImageElementId('');
