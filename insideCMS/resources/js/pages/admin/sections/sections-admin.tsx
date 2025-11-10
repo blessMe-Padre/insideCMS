@@ -25,13 +25,13 @@ export default function SectionsAdmin({ sections}: { sections: Section[] }) {
     const [processingNewsId, setProcessingNewsId] = useState<number | null>(null);
 
     const handleEdit = (id: number) => {
-        router.visit(`/sections/${id}/edit`);
+        router.visit(`sections/${id}/edit`);
     };
 
     const handleDelete = (id: number) => {
         setProcessingNewsId(id);
 
-        deleteForm.delete(`/sections/${id}`, {
+        deleteForm.delete(`sections/${id}`, {
             onSuccess: () => {
                 setProcessingNewsId(null);
                 toast.success('Раздел удален');

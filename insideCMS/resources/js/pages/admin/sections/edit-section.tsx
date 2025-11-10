@@ -11,6 +11,7 @@ import TextEditor from '@/components/editor/TextEditor';
 import FileManagerComponent from '@/components/editor/fileManager/FileManagerComponent';
 import Popup from '@/components/popup/Popup';
 import { FileManagerFile } from '@cubone/react-file-manager';
+import AccordionComponent from '@/components/AccordionComponent/AccordionComponent';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -44,10 +45,10 @@ export default function EditSection({ section, components }: { section: Section,
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(`/sections/${section.id}`, {
+        post(`/admin/sections/${section.id}`, {
             onSuccess: () => {
                 toast.success('Раздел успешно обновлен');
-                window.location.href = '/sections-admin';
+                window.location.href = '/admin/sections-admin';
             },
             onError: () => {
                 toast.error('Ошибка при обновлении раздела');
@@ -64,6 +65,9 @@ export default function EditSection({ section, components }: { section: Section,
                 if (element.component_type === 'text-editor') {
                     return { ...element, data: content };
                 }
+                if (element.component_type === 'accordion-block') {
+                    return { ...element, data: content };
+                }
                 return { ...element, data: content };
             }
             return element;
@@ -72,8 +76,6 @@ export default function EditSection({ section, components }: { section: Section,
         setElements(updatedElements);
         setData('components', updatedElements);
     }, [elements, setData]);
-
-    // Обработка выбранных файлов выполняется непосредственно в handleFileSelection
 
     // Обработчик выбора файлов из FileManager
     const handleFileSelection = (files: FileManagerFile[]) => {
@@ -126,6 +128,8 @@ export default function EditSection({ section, components }: { section: Section,
                 return 'Текстовый редактор';
             case 'file':
                 return 'Файлы / Изображения';
+            case 'accordion-block':
+                return 'Аккордеон';
             default:
                 return component_type;
         }
@@ -301,6 +305,9 @@ export default function EditSection({ section, components }: { section: Section,
                                 />
                             </Popup>
                         </>
+                    )}
+                    {element.component_type === 'accordion-block' && (
+                        <AccordionComponent content={element.data || ''} onChange={(value) => handleUpdateContent(element.id, value)} />
                     )}
 
                     </div>

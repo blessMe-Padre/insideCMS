@@ -27,8 +27,6 @@ export default function AccordionComponent({ content = '[]', onChange }: { conte
         initialItems = content as AccordionItemProps[];
     }
     const [accordionItems, setAccordionItems] = useState<AccordionItemProps[]>(initialItems);
-    console.log('content', content);
-    console.log('accordionItems', accordionItems);
 
     const handleAddAccordionItem = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
@@ -57,7 +55,6 @@ export default function AccordionComponent({ content = '[]', onChange }: { conte
         type="single"
         collapsible
         className="w-full max-w-2xl"
-        defaultValue={accordionItems[0]?.value}
       >
         {accordionItems.map((item) => (
           <AccordionItem key={item.value} value={item.value}>

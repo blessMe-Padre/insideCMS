@@ -10,6 +10,8 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import TextEditor from '../editor/TextEditor';
 import FileManagerComponent from '../editor/fileManager/FileManagerComponent';
+import AccordionComponent from '../AccordionComponent/AccordionComponent';
+
 import Popup from '../popup/Popup';
 
 interface ArticleFormData {
@@ -101,6 +103,15 @@ export default function SectionsBuilderForm({ components }: { components: Compon
                     description: 'Текстовый редактор',
                     content: '',
                     component_id: components.find((component) => component.name === 'text-editor-block')?.id || '',
+                };
+                break;
+            case 'accordion-block':
+                newElement = {
+                    id: `element-${Date.now()}`,
+                    type: 'accordion-block',
+                    description: 'Аккордеон',
+                    content: '',
+                    component_id: components.find((component) => component.name === 'accordion-block')?.id || '',
                 };
                 break;
             default:
@@ -233,6 +244,10 @@ export default function SectionsBuilderForm({ components }: { components: Compon
                                 />
                             </Popup>
                         </>
+                    )}
+
+                    {element.type === 'accordion-block' && (
+                        <AccordionComponent content={element.content || ''} onChange={(value) => handleUpdateContent(element.id, value)} />
                     )}
                 </div>
             ))}
