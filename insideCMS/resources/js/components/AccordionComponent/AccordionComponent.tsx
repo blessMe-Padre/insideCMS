@@ -6,7 +6,6 @@ import { PlusIcon } from "lucide-react";
 import { Input } from "../ui/input";
 import TextEditor from "../editor/TextEditor";
 
-
 interface AccordionItemProps {
     value: string;
     title: string;
@@ -14,11 +13,12 @@ interface AccordionItemProps {
 }
 
 export default function AccordionComponent({ content = '[]', onChange }: { content?: unknown, onChange: (value: string) => void }) {
+    const [accordionItems, setAccordionItems] = useState<AccordionItemProps[]>(content as AccordionItemProps[]);
     console.log('content', content);
-    const [accordionItems, setAccordionItems] = useState<AccordionItemProps[]>([]);
     console.log('accordionItems', accordionItems);
 
-    const handleAddAccordionItem = () => {
+    const handleAddAccordionItem = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
 		const nextItems: AccordionItemProps[] = [
 			...accordionItems,
 			{ value: `item-${accordionItems.length + 1}`, title: `Item ${accordionItems.length + 1}`, content: `Content ${accordionItems.length + 1}` }
@@ -62,7 +62,7 @@ export default function AccordionComponent({ content = '[]', onChange }: { conte
           </AccordionItem>
         ))}
 
-        <Button variant="outline" className="flex items-center gap-2 cursor-pointer transition-all" onClick={handleAddAccordionItem}>
+        <Button  variant="outline" className="flex items-center gap-2 cursor-pointer transition-all" onClick={handleAddAccordionItem}>
             <PlusIcon className="size-4 text-gray-500"/>
             <span>Добавить элемент аккордиона</span>
         </Button>
