@@ -193,6 +193,7 @@ export default function ListBlock({ content, onChange }: { content?: unknown, on
                     variant="outline" 
                     onClick={(e) => handleRemoveListBlockItem(e, index)}
                     className="cursor-pointer"
+                    title="Удалить элемент списка"
                     >
                         <TrashIcon className="size-4 text-red-500"/>
                     </Button>

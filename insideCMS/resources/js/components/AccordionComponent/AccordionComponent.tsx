@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, TrashIcon } from "lucide-react";
 import { Input } from "../ui/input";
 import TextEditor from "../editor/TextEditor";
 
@@ -50,26 +50,37 @@ export default function AccordionComponent({ content = '[]', onChange }: { conte
 		onChange(JSON.stringify(nextItems));
     };
 
+    const handleRemoveAccordionItem = (index: number) => {
+		const nextItems = accordionItems.filter((_, i) => i !== index);
+		setAccordionItems(nextItems);
+		onChange(JSON.stringify(nextItems));
+    };
+
     return (
         <Accordion
         type="single"
         collapsible
         className="w-full max-w-2xl"
       >
-        {accordionItems.map((item) => (
-          <AccordionItem key={item.value} value={item.value}>
-            <AccordionTrigger>
-                <Input value={item.title}
-                    onChange={(e) => handleUpdateTitle(item.value, e.target.value)}
-                    placeholder="Заголовок" />
-            </AccordionTrigger>
-            <AccordionContent>
-                <TextEditor 
-                value={item.content} 
-                onChange={(value) => handleUpdateContent(item.value, value)} 
-                />
-            </AccordionContent>
-          </AccordionItem>
+        {accordionItems.map((item, index) => (
+          <div key={index} className="flex justify-between gap-2">
+            <AccordionItem key={index} value={String(index)}>
+              <AccordionTrigger>
+                  <Input value={item.title}
+                      onChange={(e) => handleUpdateTitle(item.value, e.target.value)}
+                      placeholder="Заголовок" />
+              </AccordionTrigger>
+              <AccordionContent>
+                  <TextEditor 
+                  value={item.content} 
+                  onChange={(value) => handleUpdateContent(item.value, value)} 
+                  />
+              </AccordionContent>
+            </AccordionItem>
+            <Button title="Удалить элемент аккордиона" variant="outline" className="flex items-center gap-2 cursor-pointer transition-all" onClick={() => handleRemoveAccordionItem(index)}>
+                <TrashIcon className="size-4 text-red-500"/>
+            </Button>
+          </div>
         ))}
 
         <Button  variant="outline" className="flex items-center gap-2 cursor-pointer transition-all" onClick={handleAddAccordionItem}>
