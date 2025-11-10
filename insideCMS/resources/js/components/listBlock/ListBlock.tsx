@@ -57,32 +57,37 @@ export default function ListBlock() {
         console.log(value, content);
     }
 
-    const handleRemoveFile = (e: React.FormEvent, elementId: number, fileIndex: number) => {
+    const handleRemoveFile = (e: React.MouseEvent, elementId: string, fileIndex: number) => {
         e.preventDefault();
 
-        // Если удаляем файл из временно выбранных (предпросмотр), синхронизируем и элементы
+        // Если удаляем файл из временно выбранных (предпросмотр) для активного элемента
         if (currentImageElementId === elementId && selectedFiles.length > 0) {
+            const fileToRemove = selectedFiles[fileIndex];
             const updatedSelectedFiles = selectedFiles.filter((_, index) => index !== fileIndex);
             setSelectedFiles(updatedSelectedFiles);
-            setData('images', updatedSelectedFiles);
 
-            const updatedElements = elements.map((element) =>
-                element.id === elementId ? { ...element, data: updatedSelectedFiles } : element
+            // Синхронизируем изображения у соответствующего элемента списка
+            setListItems((prev) =>
+                prev.map((item) => {
+                    if (item.title !== elementId) return item;
+                    const pathToRemove = fileToRemove?.path || '';
+                    if (pathToRemove) {
+                        return { ...item, images: (item.images || []).filter((p) => p !== pathToRemove) };
+                    }
+                    return { ...item, images: (item.images || []).filter((_, i) => i !== fileIndex) };
+                })
             );
-            setElements(updatedElements);
             return;
         }
 
-        // Иначе удаляем из уже сохранённых файлов
-        if (data.images && data.images.length > 0) {
-            const updatedImages = data.images.filter((_, index) => index !== fileIndex);
-            setData('images', updatedImages);
-            // Принудительно обновляем selectedFiles
-            setSelectedFiles(updatedImages);
-        } else {
-            // Если data.images пустой, принудительно очищаем selectedFiles
-            setSelectedFiles([]);
-        }
+        // Иначе удаляем по индексу из сохранённых изображений элемента
+        setListItems((prev) =>
+            prev.map((item) =>
+                item.title === elementId
+                    ? { ...item, images: (item.images || []).filter((_, index) => index !== fileIndex) }
+                    : item
+            )
+        );
     };
 
     return (
