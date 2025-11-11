@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Article;
 use App\Models\Service;
+use App\Models\News;
+use App\Models\Persona;
 use Illuminate\Support\Facades\DB;
 
 
@@ -44,8 +46,33 @@ class SearchController extends Controller
             'title', 'slug', 'description', 'content'
         ], 'like', "%{$query}%");
 
+        $newsResponse = News::query()
+        ->select(
+            'title',
+            'slug',
+            'excerpt',
+            'content',
+            DB::raw("'news' as type"))
+        ->whereAny([
+            'title', 'slug', 'excerpt', 'content'
+        ], 'like', "%{$query}%");
+
+        $personaResponse = Persona::query()
+        ->select(
+            'name',
+            'slug',
+            DB::raw("'' as description"),
+            'content',
+            DB::raw("'personas' as type"))
+        ->whereAny([
+            'name', 'slug', 'content'
+        ], 'like', "%{$query}%");
+
+
         $unionResponse = $articlesResponse
-            ->unionAll($servicesResponse); // Объединяем результаты из двух моделей
+            ->unionAll($servicesResponse)
+            ->unionAll($newsResponse)
+            ->unionAll($personaResponse); // Объединяем результаты из двух моделей
 
         $response = DB::query()
             ->fromSub($unionResponse, 's')
