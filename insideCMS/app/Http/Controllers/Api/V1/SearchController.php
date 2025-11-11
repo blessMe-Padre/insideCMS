@@ -27,45 +27,41 @@ class SearchController extends Controller
         $articlesResponse = Article::query()
         ->select(
             'title',
-            'slug',
             DB::raw("'' as description"), // Пустая строка как description чтобы не было ошибки (нужно одинаковое кол-во столбцов в моделях)
             'content',
             DB::raw("'article' as type")) // Добавляем в результат виртуальный столбец type
         ->whereAny([
-            'title', 'slug', 'content'
+            'title', 'content'
         ], 'like', "%{$query}%");
 
         $servicesResponse = Service::query()
         ->select(
             'title',
-            'slug',
             'description',
             'content',
             DB::raw("'service' as type"))
         ->whereAny([
-            'title', 'slug', 'description', 'content'
+            'title', 'description', 'content'
         ], 'like', "%{$query}%");
 
         $newsResponse = News::query()
         ->select(
             'title',
-            'slug',
             'excerpt',
             'content',
             DB::raw("'news' as type"))
         ->whereAny([
-            'title', 'slug', 'excerpt', 'content'
+            'title', 'excerpt', 'content'
         ], 'like', "%{$query}%");
 
         $personaResponse = Persona::query()
         ->select(
             'name',
-            'slug',
             DB::raw("'' as description"),
             'content',
             DB::raw("'personas' as type"))
         ->whereAny([
-            'name', 'slug', 'content'
+            'name', 'content'
         ], 'like', "%{$query}%");
 
 

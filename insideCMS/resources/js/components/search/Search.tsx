@@ -110,30 +110,29 @@ export default function Search() {
             </div>
 
             {
-                        isFocused && (
-                            <ul className="list-none">
-                                {inputValue.trim() === '' && <li>Начните печатать</li>}
-                                {loading && <Loader2Icon className="animate-spin" width={20} height={20} />}
-                                {!loading && dataList.length === 0 && inputValue.trim() !== '' && (
-                                    <li>Ничего не найдено</li>
-                                )}
+                isFocused && (
+                    <ul className="list-none">
+                        {inputValue.trim() === '' && <li>Начните печатать</li>}
+                        {loading && <Loader2Icon className="animate-spin" width={20} height={20} />}
+                        {!loading && dataList.length === 0 && inputValue.trim() !== '' && (
+                            <li>Ничего не найдено</li>
+                        )}
 
-                                {
-                                    !loading &&
-                                    dataList.map((item: { title: string, slug: string, type: string }, index: number) => {
-                                        return (
-                                            <li key={index}>     
-                                                <a href={`/articles/${item.slug}`} className="block underline">
-                                                    {highlightText(item.title, inputValue)}
-                                                </a>
-                                            </li>
-                                        );
-                                    })
-                                }
-                            </ul>
-                        )
-                    }
-
+                        {
+                            !loading &&
+                            dataList.map((item: { title: string, slug: string, type: string }, index: number) => {
+                                return (
+                                    <li key={index}>     
+                                        <a href={`/articles/${item.slug}`} className="block underline">
+                                            {highlightText(item.title, inputValue)}
+                                        </a>
+                                    </li>
+                                );
+                            })
+                        }
+                    </ul>
+                )
+            }
         </div>
     );
 }
