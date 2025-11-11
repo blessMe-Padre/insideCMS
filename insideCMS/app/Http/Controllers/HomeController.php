@@ -10,18 +10,13 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $services = Service::with(['components'])->get()->toArray();
+        $services = Service::with(['components', 'personas'])->get()->toArray();
 
         $servicesParsed = array_map(function ($service) {
             $service['components'] = array_map(function ($component) {
                 // Парсим внешний JSON из pivot->data
                 $data = json_decode($component['pivot']['data'], true);
-        
-                // Если декодирование не удалось — оставляем как есть
-                if (json_last_error() !== JSON_ERROR_NONE) {
-                    return $component;
-                }
-        
+       
                 // Проходим по каждому элементу в data и парсим вложенные content-строки
                 foreach ($data as &$item) {
                     if (isset($item['content']) && is_string($item['content'])) {

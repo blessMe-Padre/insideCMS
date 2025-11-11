@@ -14,6 +14,12 @@ type EditorChildNode =
   | NumberedListNode
   | ListItemNode;
 
+interface AccordionItem {
+  title: string;
+  value?: string;
+  content: EditorChildNode[];
+}
+
 export interface Component {
   id: number;
   type: string;
@@ -26,9 +32,15 @@ export interface Component {
   component_data?: EditorChildNode[];
 }
 
+/**
+ * @param component принимает элемент из массива components
+ * @description Функция для рендера контента из текстового редактора
+ * работает с компонентами text-editor, accordion-block, list-block
+ * @returns Возвращает html разметку для компонента
+ */
+
 export function renderComponent(component: Component) {
-    console.log(component);
-    
+ 
     const data = component.component_data ?? [];
     switch (component.type) {
         case 'text-editor':
@@ -63,7 +75,72 @@ export function renderComponent(component: Component) {
             });
 
         case 'accordion-block':
-            return <div>Accordion</div>;
+            return (
+               ((data as unknown as AccordionItem[]) ?? []).flatMap((item: AccordionItem, itemIndex: number) =>
+                    item.content.map((child: EditorChildNode, childIndex: number) => {
+                        switch (child.type) {
+                            case 'heading-one':
+                                return <h1 key={`comp-${component.id}-acc-${itemIndex}-h1-${childIndex}`}>{child.children[0]?.text ?? ''}</h1>;
+                            case 'heading-two':
+                                return <h2 key={`comp-${component.id}-acc-${itemIndex}-h2-${childIndex}`}>{child.children[0]?.text ?? ''}</h2>;
+                            case 'paragraph':
+                                return <p key={`comp-${component.id}-acc-${itemIndex}-p-${childIndex}`}>{child.children[0]?.text ?? ''}</p>;
+                            case 'bulleted-list':
+                                return (
+                                    <ul key={`comp-${component.id}-acc-${itemIndex}-ul-${childIndex}`}>
+                                        {(child as BulletedListNode).children.map((li: ListItemNode, liIndex: number) => (
+                                            <li key={`comp-${component.id}-acc-${itemIndex}-bul-${childIndex}-${liIndex}`}>{li.children[0]?.text ?? ''}</li>
+                                        ))}
+                                    </ul>
+                                );
+                            case 'numbered-list':
+                                return (
+                                    <ol key={`comp-${component.id}-acc-${itemIndex}-ol-${childIndex}`}>
+                                        {(child as NumberedListNode).children.map((li: ListItemNode, liIndex: number) => (
+                                            <li key={`comp-${component.id}-acc-${itemIndex}-num-${childIndex}-${liIndex}`}>{li.children[0]?.text ?? ''}</li>
+                                        ))}
+                                    </ol>
+                                );
+                            default:
+                                return null;
+                        }
+                    })
+                )
+            );
+
+        case 'list-block':
+            return (
+                ((data as unknown as AccordionItem[]) ?? []).flatMap((item: AccordionItem, itemIndex: number) =>
+                    item.content.map((child: EditorChildNode, childIndex: number) => {
+                        switch (child.type) {
+                            case 'heading-one':
+                                return <h1 key={`comp-${component.id}-acc-${itemIndex}-h1-${childIndex}`}>{child.children[0]?.text ?? ''}</h1>;
+                            case 'heading-two':
+                                return <h2 key={`comp-${component.id}-acc-${itemIndex}-h2-${childIndex}`}>{child.children[0]?.text ?? ''}</h2>;
+                            case 'paragraph':
+                                return <p key={`comp-${component.id}-acc-${itemIndex}-p-${childIndex}`}>{child.children[0]?.text ?? ''}</p>;
+                            case 'bulleted-list':
+                                return (
+                                    <ul key={`comp-${component.id}-acc-${itemIndex}-ul-${childIndex}`}>
+                                        {(child as BulletedListNode).children.map((li: ListItemNode, liIndex: number) => (
+                                            <li key={`comp-${component.id}-acc-${itemIndex}-bul-${childIndex}-${liIndex}`}>{li.children[0]?.text ?? ''}</li>
+                                        ))}
+                                    </ul>
+                                );
+                            case 'numbered-list':
+                                return (
+                                    <ol key={`comp-${component.id}-acc-${itemIndex}-ol-${childIndex}`}>
+                                        {(child as NumberedListNode).children.map((li: ListItemNode, liIndex: number) => (
+                                            <li key={`comp-${component.id}-acc-${itemIndex}-num-${childIndex}-${liIndex}`}>{li.children[0]?.text ?? ''}</li>
+                                        ))}
+                                    </ol>
+                                );
+                            default:
+                                return null;
+                        }
+                    })
+                )
+            );  
 
         default:
             return null;

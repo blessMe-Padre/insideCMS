@@ -23,6 +23,8 @@ import {
 
 export default function Welcome({ services }: { services: Service[] }) {
     const { auth, modules } = usePage<SharedData>().props;
+
+    console.log(services);
     return (
         <>
             <Head title="Welcome">
