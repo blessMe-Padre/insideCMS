@@ -26,9 +26,9 @@ class SearchController extends Controller
         ->select(
             'title',
             'slug',
-            DB::raw("'' as description"),
+            DB::raw("'' as description"), // Пустая строка как description чтобы не было ошибки (нужно одинаковое кол-во столбцов в моделях)
             'content',
-            DB::raw("'article' as type"))
+            DB::raw("'article' as type")) // Добавляем в результат виртуальный столбец type
         ->whereAny([
             'title', 'slug', 'content'
         ], 'like', "%{$query}%");
@@ -44,8 +44,12 @@ class SearchController extends Controller
             'title', 'slug', 'description', 'content'
         ], 'like', "%{$query}%");
 
-        $response = $articlesResponse
-            ->unionAll($servicesResponse) // Объединяем результаты из двух моделей
+        $unionResponse = $articlesResponse
+            ->unionAll($servicesResponse); // Объединяем результаты из двух моделей
+
+        $response = DB::query()
+            ->fromSub($unionResponse, 's')
+            ->limit(10)
             ->get();
 
         return response()->json([
