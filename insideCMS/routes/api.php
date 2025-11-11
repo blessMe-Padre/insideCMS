@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\SettingsController;
 use App\Http\Controllers\Api\V1\SectionController;
 use App\Http\Controllers\Api\V1\PersonaController;
 use App\Http\Controllers\Api\V1\ServicesController;
+use App\Http\Controllers\Api\V1\SearchController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -35,4 +36,5 @@ Route::prefix('v1')->group(function () {
     Route::get('persons/{slug}', [PersonaController::class, 'show']);
     Route::apiResource('services', ServicesController::class);
     Route::get('services/{slug}', [ServicesController::class, 'show']);
+    Route::get('search', [SearchController::class, 'index']);
 });

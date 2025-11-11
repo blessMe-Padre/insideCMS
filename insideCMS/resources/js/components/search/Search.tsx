@@ -9,7 +9,7 @@ export default function Search() {
     const [dataList, setData] = useState([]);
     const [isFocused, setIsFocused] = useState<boolean>(false);
 
-    const debounceTimeout = useRef<NodeJS.Timeout | null>(null)
+    const debounceTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
 
     const handleDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
@@ -26,22 +26,55 @@ export default function Search() {
         console.log('search', inputValue);
     };
 
+    const highlightText = (text: string, highlight: string  ) => {
+        if (!highlight) return text;
+
+        const regex = new RegExp(`(${highlight})`, 'i');
+        const match = text.match(regex);
+
+        if (!match) return text;
+
+        const parts = text.split(regex);
+        return (
+            <>
+                {parts[0]}
+                <mark>{parts[1]}</mark>
+                {parts[2]}
+            </>
+        );
+    };
+
     useEffect(() => {
         if (debounceTimeout.current) {
-            clearTimeout(debounceTimeout.current)
+            clearTimeout(debounceTimeout.current);
+            debounceTimeout.current = null;
         }
 
         if (inputValue.trim() === '') {
             setData([])
+            setLoading(false)
             return
         }
 
         setLoading(true)
         debounceTimeout.current = setTimeout(async () => {
-            setLoading(false)
+            try {
+                const result = await fetch('/api/v1/search?query=' + encodeURIComponent(inputValue));
+                const data = await result.json();
+                setData(data.data);
+                setLoading(false);
+            } catch (error) {
+                console.error('Ошибка загрузки Объектов:', error)
+                setLoading(false);
+            }
         }, 1000)
 
-        return () => debounceTimeout.current && clearTimeout(debounceTimeout.current as NodeJS.Timeout)
+        return () => {
+            if (debounceTimeout.current) {
+                clearTimeout(debounceTimeout.current);
+                debounceTimeout.current = null;
+            }
+        }
     }, [inputValue])
   
     return (
@@ -86,9 +119,12 @@ export default function Search() {
 
                                 {
                                     !loading &&
-                                    dataList.map((product, index) => {
+                                    dataList.map((item: { title: string, slug: string }, index: number) => {
                                         return (
                                             <li key={index}>     
+                                                <a href={`/articles/${item.slug}`} className="block underline">
+                                                    {highlightText(item.title, inputValue)}
+                                                </a>
                                             </li>
                                         );
                                     })

@@ -95,9 +95,9 @@ export default function EditArticleAdmin({ article }: EditArticleAdminPageProps)
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(`/articles/${article.id}`, {
+        post(`/admin/articles/${article.id}`, {
             onSuccess: () => {
-                window.location.href = '/articles-admin';
+                window.location.href = '/admin/articles-admin';
                 toast.success('Статья успешно обновлена');
             },
             onError: () => {
