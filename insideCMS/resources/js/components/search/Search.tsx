@@ -119,7 +119,7 @@ export default function Search() {
 
                                 {
                                     !loading &&
-                                    dataList.map((item: { title: string, slug: string }, index: number) => {
+                                    dataList.map((item: { title: string, slug: string, type: string }, index: number) => {
                                         return (
                                             <li key={index}>     
                                                 <a href={`/articles/${item.slug}`} className="block underline">
