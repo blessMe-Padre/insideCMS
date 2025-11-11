@@ -37,7 +37,7 @@ export default function Reviews({ reviews }: { reviews: Review[] }) {
 
     const handlePublish = (reviewId: number) => {
         setProcessingReviewId(reviewId);
-        publishForm.patch(`/reviews/${reviewId}/publish`, {
+        publishForm.patch(`/admin/reviews/${reviewId}/publish`, {
             onSuccess: () => {
                 setProcessingReviewId(null);
                 toast.success('Отзыв успешно опубликован');
@@ -51,7 +51,7 @@ export default function Reviews({ reviews }: { reviews: Review[] }) {
 
     const handleUnpublish = (reviewId: number) => {
         setProcessingReviewId(reviewId);
-        unpublishForm.patch(`/reviews/${reviewId}/unpublish`, {
+        unpublishForm.patch(`/admin/reviews/${reviewId}/unpublish`, {
             onSuccess: () => {
                 setProcessingReviewId(null);
                 toast.success('Отзыв успешно скрыт');

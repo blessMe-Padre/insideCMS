@@ -2,6 +2,7 @@ import { dashboard, login, register, reviews } from '@/routes';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { renderComponent, type Component } from '@/utils/renderComponent';
+import Search from '@/components/search/Search';
 
 import {
     Carousel,
@@ -34,6 +35,7 @@ export default function Welcome({ services }: { services: Service[] }) {
                     rel="stylesheet"
                 />
             </Head>
+            
             <div className="dark:bg-[#0a0a0a]">
                 <header className="mb-6 w-full py-6 max-w-[335px] text-sm not-has-[nav]:hidden lg:max-w-4xl">
                     <nav className="flex items-center justify-end gap-4">
@@ -93,7 +95,11 @@ export default function Welcome({ services }: { services: Service[] }) {
                 </main>
             </div>
 
+
             <div className="container">
+                <div className="mb-6">
+                    <Search />
+                </div>
                 {services.map((service) => (
                     <div key={service.id}>
                         <h2>{service.title}</h2>
