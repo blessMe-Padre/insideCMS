@@ -18,21 +18,35 @@ class SearchController extends Controller
     {
         $query = $request->input('query');
         
-        $response = Article::whereAny([
-            'title', 'slug'
-        ], 'like', "%{$query}%")->limit(10)->get();
-
-        // $articlesResponse = Article::select('title', 'slug', DB::raw("'' as description"), DB::raw("'article' as type"))->whereAny([
+        // $response = Article::whereAny([
         //     'title', 'slug'
-        // ], 'like', "%{$query}%")->get();
+        // ], 'like', "%{$query}%")->limit(10)->get();
 
-        // $servicesResponse = Service::select('title', 'slug', 'description', DB::raw("'service' as type"))->whereAny([
-        //     'title', 'slug', 'description'
-        // ], 'like', "%{$query}%")->get();
+        $articlesResponse = Article::query()
+        ->select(
+            'title',
+            'slug',
+            DB::raw("'' as description"),
+            'content',
+            DB::raw("'article' as type"))
+        ->whereAny([
+            'title', 'slug', 'content'
+        ], 'like', "%{$query}%");
 
-        // $response = $articlesResponse
-        //     ->unionAll($servicesResponse) // Объединяем результаты из двух моделей
-        //     ->get();
+        $servicesResponse = Service::query()
+        ->select(
+            'title',
+            'slug',
+            'description',
+            'content',
+            DB::raw("'service' as type"))
+        ->whereAny([
+            'title', 'slug', 'description', 'content'
+        ], 'like', "%{$query}%");
+
+        $response = $articlesResponse
+            ->unionAll($servicesResponse) // Объединяем результаты из двух моделей
+            ->get();
 
         return response()->json([
             'status' => 'success',

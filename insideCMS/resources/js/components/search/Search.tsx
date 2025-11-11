@@ -61,6 +61,7 @@ export default function Search() {
             try {
                 const result = await fetch('/api/v1/search?query=' + encodeURIComponent(inputValue));
                 const data = await result.json();
+                console.log('data', data);
                 setData(data.data);
                 setLoading(false);
             } catch (error) {
