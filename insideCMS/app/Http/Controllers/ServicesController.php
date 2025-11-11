@@ -51,7 +51,7 @@ class ServicesController extends Controller
             'content.*' => 'string',
             // элементы конструктора
             'elements' => 'sometimes|array',
-            'elements.*.component_id' => 'required|integer|exists:components,id',
+            'elements.*.component_id' => 'integer|exists:components,id',
             'elements.*.content' => 'nullable|string',
         ]);
 

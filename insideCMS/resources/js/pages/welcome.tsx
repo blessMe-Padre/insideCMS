@@ -1,6 +1,7 @@
 import { dashboard, login, register, reviews } from '@/routes';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
+import { renderComponent, type Component } from '@/utils/renderComponent';
 
 import {
     Carousel,
@@ -10,10 +11,18 @@ import {
     CarouselPrevious,
   } from "@/components/ui/carousel"
 
+  interface Service {
+    id: number;
+    title: string;
+    description: string;
+    images: string[];
+    components: Component[];
+  }
 
-export default function Welcome() {
+
+
+export default function Welcome({ services }: { services: Service[] }) {
     const { auth, modules } = usePage<SharedData>().props;
-
     return (
         <>
             <Head title="Welcome">
@@ -80,6 +89,20 @@ export default function Welcome() {
                         </Carousel>
                     </div>
                 </main>
+            </div>
+
+            <div className="container">
+                {services.map((service) => (
+                    <div key={service.id}>
+                        <h2>{service.title}</h2>
+                        <p>{service.description}</p>
+                        {service.components.map((component, index) => (
+                            <div key={`${service.id}-${component.id ?? `idx-${index}`}`}>
+                                {renderComponent(component)}
+                            </div>
+                        ))}
+                    </div>
+                ))}
             </div>
         </>
     );

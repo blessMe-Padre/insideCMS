@@ -5,10 +5,9 @@ use Inertia\Inertia;
 
 use App\Http\Controllers\ReviewsController;
 use App\Http\Controllers\MailController;
+use App\Http\Controllers\HomeController;
 
-Route::get('/', function () {
-    return Inertia::render('welcome');
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Роуты для отправки писем
 Route::get('/mail', [MailController::class, 'index'])->name('mail');
