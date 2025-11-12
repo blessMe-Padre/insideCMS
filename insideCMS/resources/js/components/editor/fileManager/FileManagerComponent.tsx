@@ -63,7 +63,7 @@ export default function FileManagerComponent({
         const filesToDelete = Array.isArray(files) ? files : [files];
         
         filesToDelete.forEach(file => {
-            router.delete('/files-delete', {
+            router.delete('/admin/files-delete', {
                 data: { path: file.path },
                 preserveScroll: true,
                 onBefore: () => {
@@ -85,7 +85,7 @@ export default function FileManagerComponent({
     const handleDownload = (files: FileManagerFile | FileManagerFile[]) => {
         const filesToDownload = Array.isArray(files) ? files : [files];
         filesToDownload.forEach(file => {
-            const url = `/files-download?path=${encodeURIComponent(file.path)}`;
+            const url = `/admin/files-download?path=${encodeURIComponent(file.path)}`;
             const link = document.createElement('a');
             link.href = url;
             link.download = file.name;
@@ -125,7 +125,7 @@ export default function FileManagerComponent({
                 }}
 
                 fileUploadConfig={{
-                    url: "/files-upload",
+                    url: "/admin/files-upload",
                     method: "POST",
                     headers: {
                     "X-CSRF-TOKEN":
