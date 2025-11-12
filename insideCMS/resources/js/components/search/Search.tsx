@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Loader2Icon, SearchIcon, XIcon } from 'lucide-react';
+import { router } from '@inertiajs/react';
 
 export default function Search() {
     const [inputValue, setInputValue] = useState<string>('');
@@ -23,8 +24,16 @@ export default function Search() {
     const handleSearchSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         if (inputValue.trim() === '') return;
-        console.log('search', inputValue);
+        router.visit(`/search?query=${encodeURIComponent(inputValue)}`);
     };
+
+    const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        if (e.which === 13) {
+            if (inputValue.trim() === '') return;
+            router.visit(`/search?query=${encodeURIComponent(inputValue)}`);
+        }
+    }
 
     const highlightText = (text: string, highlight: string  ) => {
         if (!highlight) return text;
@@ -87,6 +96,7 @@ export default function Search() {
                     value={inputValue}
                     onChange={handleChange}
                     onFocus={() => setIsFocused(true)}
+                    onKeyUp={handleKeyUp}
                     onBlur={() => setTimeout(() => setIsFocused(false), 1000)} // задержка, чтобы кликнуть по элементу
                 />
 
