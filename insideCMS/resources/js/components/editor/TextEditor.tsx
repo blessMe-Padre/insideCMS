@@ -35,12 +35,7 @@ declare module 'slate' {
   }
 }
 
-const HOTKEYS: Record<string, string> = {
-  'mod+b': 'bold',
-  'mod+i': 'italic',
-  'mod+u': 'underline',
-  'mod+`': 'code',
-}
+
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list']
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right']
@@ -148,15 +143,6 @@ export default function TextEditor({ value = '', onChange }: TextEditorProps) {
             placeholder="Введите текст..."
             spellCheck
             autoFocus
-            onKeyDown={event => {
-              for (const hotkey in HOTKEYS) {
-                if (isHotkey(hotkey, event.nativeEvent)) {
-                  event.preventDefault()
-                  const mark = HOTKEYS[hotkey]
-                  toggleMark(editor, mark)
-                }
-              }
-            }}
           />
         </div>
       </Slate>
@@ -299,17 +285,6 @@ const Element = ({ attributes, children, element }: RenderElementProps) => {
 }
 
 const Leaf = ({ attributes, children, leaf }: RenderLeafProps) => {
-  const tleaf = leaf as unknown as CustomText
-
-  if (tleaf.link && typeof tleaf.text === 'string') {
-    const text = tleaf.text
-    const match = text.match(/<a[^>]*href=["']([^"']+)["'][^>]*>(.*?)<\/a>/i)
-    if (match) {
-      const [, href, inner] = match
-      children = <a href={href} target="_blank" rel="noopener noreferrer">{inner}</a>
-    }
-  }
-
   if (leaf.bold) {
     children = <strong>{children}</strong>
   }
@@ -400,13 +375,3 @@ const MarkButton = ({ format, icon }: { format: string; icon: React.ReactNode })
   )
 }
 
-const isHotkey = (hotkey: string, event: KeyboardEvent) => {
-  const keys = hotkey.split('+')
-  const isModKey = keys.includes('mod')
-  const isMod = event.ctrlKey || event.metaKey
-  
-  if (isModKey && !isMod) return false
-  
-  const key = keys[keys.length - 1]
-  return event.key.toLowerCase() === key.toLowerCase()
-}
