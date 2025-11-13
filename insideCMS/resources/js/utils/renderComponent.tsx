@@ -1,3 +1,4 @@
+import React from 'react';
 
 type EditorText = { text: string; bold?: boolean; italic?: boolean; underline?: boolean; code?: boolean; link?: boolean };
 interface ParagraphNode { type: 'paragraph'; children: EditorText[] }
@@ -48,26 +49,6 @@ export function renderComponent(component: Component) {
         const text = leaf.text ?? '';
         let content: React.ReactNode = text;
 
-        if (leaf.link && typeof leaf.text === 'string') {
-            const match = leaf.text.match(/<a[^>]*href=["']([^"']+)["'][^>]*>(.*?)<\/a>/i);
-            if (match) {
-                const [, href, inner] = match;
-                content = (
-                    <a href={href} target="_blank" rel="noopener noreferrer">
-                        {inner}
-                    </a>
-                );
-            }
-        }
-
-        if (leaf.code && typeof text === 'string' && /<[^>]+>/.test(text)) {
-            return <span key={key} dangerouslySetInnerHTML={{ __html: text }} />;
-        }
-
-        if (!leaf.code && typeof text === 'string' && /<[^>]+>/.test(text) && !leaf.link) {
-            return <span key={key} dangerouslySetInnerHTML={{ __html: text }} />;
-        }
-
         if (leaf.code) {
             content = <code>{text}</code>;
         }
@@ -81,12 +62,13 @@ export function renderComponent(component: Component) {
             content = <u>{content}</u>;
         }
 
-        return <span key={key}>{content}</span>;
+        return <React.Fragment key={key}>{content}</React.Fragment>;
     };
 
     const renderChildren = (children: EditorText[] = []) => {
         return children.map((leaf, idx) => renderLeaf(leaf, idx));
     };
+    
     switch (component.type) {
         case 'text-editor':
             return data.map((child, childIndex) => {
@@ -96,7 +78,22 @@ export function renderComponent(component: Component) {
                     case 'heading-two':
                         return <h2 className="text-2xl font-bold my-3" key={`comp-${component.id}-h2-${childIndex}`}>{renderChildren(child.children)}</h2>;
                     case 'paragraph':
-                        return <p className="my-2" key={`comp-${component.id}-p-${childIndex}`}>{renderChildren(child.children)}</p>;
+                        {
+                            const leaves = (child as ParagraphNode).children as EditorText[];
+                            if (leaves && leaves.length === 1) {
+                                const leaf = leaves[0];
+                                const text = leaf.text ?? '';
+
+                                if (leaf.link && typeof text === 'string') {
+                                    return <span key={`comp-${component.id}-p-${childIndex}`} dangerouslySetInnerHTML={{ __html: text }} />;
+                                }
+
+                                if (leaf.code && typeof text === 'string') {
+                                    return <div key={`comp-${component.id}-p-${childIndex}`} dangerouslySetInnerHTML={{ __html: text }} />;
+                                }
+                            }
+                        }
+                        return <p className="my-2" key={`comp-${component.id}-p-${childIndex}`}>{renderChildren((child as ParagraphNode).children)}</p>;
                     case 'bulleted-list':
                         return (
                             <ul className="list-disc list-inside" key={`comp-${component.id}-ul-${childIndex}`}>

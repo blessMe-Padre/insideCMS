@@ -101,8 +101,8 @@ export default function Welcome({ services }: { services: Service[] }) {
                 </div>
                 {services.map((service) => (
                     <div key={service.id}>
-                        <h2>{service.title}</h2>
-                        <p>{service.description}</p>
+                        {/* <h2>{service.title}</h2> */}
+                        {/* <p>{service.description}</p> */}
                         {service.components.map((component, index) => (
                             <div key={`${service.id}-${component.id ?? `idx-${index}`}`}>
                                 {renderComponent(component)}
