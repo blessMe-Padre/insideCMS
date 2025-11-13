@@ -125,8 +125,24 @@ export function renderComponent(component: Component) {
                                 return <h1 key={`comp-${component.id}-acc-${itemIndex}-h1-${childIndex}`}>{renderChildren(child.children)}</h1>;
                             case 'heading-two':
                                 return <h2 key={`comp-${component.id}-acc-${itemIndex}-h2-${childIndex}`}>{renderChildren(child.children)}</h2>;
-                            case 'paragraph':
-                                return <p key={`comp-${component.id}-acc-${itemIndex}-p-${childIndex}`}>{renderChildren(child.children)}</p>;
+                                case 'paragraph':
+                                    {
+                                        const leaves = (child as ParagraphNode).children as EditorText[];
+                                        if (leaves && leaves.length === 1) {
+                                            const leaf = leaves[0];
+                                            const text = leaf.text ?? '';
+                                          
+                                            switch (true) {
+                                                case leaf.link && typeof text === 'string':
+                                                    return <span key={childIndex} dangerouslySetInnerHTML={{ __html: text }} />;
+                                                case leaf.code && typeof text === 'string':
+                                                    return <div key={childIndex} dangerouslySetInnerHTML={{ __html: text }} />;
+                                                default:
+                                                    return <p className="my-2" key={childIndex}>{renderChildren((child as ParagraphNode).children)}</p>;
+                                            }
+                                       }
+                                    }
+                                    return <p className="my-2" key={`comp-${component.id}-p-${childIndex}`}>{renderChildren((child as ParagraphNode).children)}</p>;
                             case 'bulleted-list':
                                 return (
                                     <ul key={`comp-${component.id}-acc-${itemIndex}-ul-${childIndex}`}>
@@ -159,8 +175,24 @@ export function renderComponent(component: Component) {
                                 return <h1 key={`comp-${component.id}-acc-${itemIndex}-h1-${childIndex}`}>{renderChildren(child.children)}</h1>;
                             case 'heading-two':
                                 return <h2 key={`comp-${component.id}-acc-${itemIndex}-h2-${childIndex}`}>{renderChildren(child.children)}</h2>;
-                            case 'paragraph':
-                                return <p key={`comp-${component.id}-acc-${itemIndex}-p-${childIndex}`}>{renderChildren(child.children)}</p>;
+                                case 'paragraph':
+                                    {
+                                        const leaves = (child as ParagraphNode).children as EditorText[];
+                                        if (leaves && leaves.length === 1) {
+                                            const leaf = leaves[0];
+                                            const text = leaf.text ?? '';
+                                          
+                                            switch (true) {
+                                                case leaf.link && typeof text === 'string':
+                                                    return <span key={childIndex} dangerouslySetInnerHTML={{ __html: text }} />;
+                                                case leaf.code && typeof text === 'string':
+                                                    return <div key={childIndex} dangerouslySetInnerHTML={{ __html: text }} />;
+                                                default:
+                                                    return <p className="my-2" key={childIndex}>{renderChildren((child as ParagraphNode).children)}</p>;
+                                            }
+                                       }
+                                    }
+                                    return <p className="my-2" key={`comp-${component.id}-p-${childIndex}`}>{renderChildren((child as ParagraphNode).children)}</p>;
                             case 'bulleted-list':
                                 return (
                                     <ul key={`comp-${component.id}-acc-${itemIndex}-ul-${childIndex}`}>
