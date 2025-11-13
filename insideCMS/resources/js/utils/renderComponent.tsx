@@ -45,7 +45,8 @@ export function renderComponent(component: Component) {
     const data = component.component_data ?? [];
 
     const renderLeaf = (leaf: EditorText, key: string | number) => {
-        let content: React.ReactNode = leaf.text ?? '';
+        const text = leaf.text ?? '';
+        let content: React.ReactNode = text;
 
         if (leaf.link && typeof leaf.text === 'string') {
             const match = leaf.text.match(/<a[^>]*href=["']([^"']+)["'][^>]*>(.*?)<\/a>/i);
@@ -59,8 +60,16 @@ export function renderComponent(component: Component) {
             }
         }
 
+        if (leaf.code && typeof text === 'string' && /<[^>]+>/.test(text)) {
+            return <span key={key} dangerouslySetInnerHTML={{ __html: text }} />;
+        }
+
+        if (!leaf.code && typeof text === 'string' && /<[^>]+>/.test(text) && !leaf.link) {
+            return <span key={key} dangerouslySetInnerHTML={{ __html: text }} />;
+        }
+
         if (leaf.code) {
-            content = <code>{content}</code>;
+            content = <code>{text}</code>;
         }
         if (leaf.bold) {
             content = <strong>{content}</strong>;
@@ -104,7 +113,6 @@ export function renderComponent(component: Component) {
                                 ))}
                             </ol>
                         );
-
                     default:
                         return null;
                 }
