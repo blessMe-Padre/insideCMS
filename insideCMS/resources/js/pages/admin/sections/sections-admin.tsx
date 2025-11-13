@@ -3,11 +3,12 @@ import { addSection, dashboard } from '@/routes';
 import { type BreadcrumbItem, type Section } from '@/types';
 import { Head, router, useForm} from '@inertiajs/react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import {  Lock, Plus, Trash, Edit } from 'lucide-react';
+import {  Lock, Plus, Trash, Edit, Info } from 'lucide-react';
 import { Spinner } from '@/components/ui/spinner';
 import { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { toast } from 'sonner';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -52,7 +53,21 @@ export default function SectionsAdmin({ sections}: { sections: Section[] }) {
                         rel="stylesheet"
                     />
                 </Head>
-                <h1 className="text-3xl font-bold text-foreground mb-4">Разделы</h1>
+
+                <div className="flex items-center gap-2 mb-4">
+                    <h1 className="text-3xl font-bold text-foreground">Разделы</h1>
+                    <Popover>
+                        <PopoverTrigger>
+                            <Info />
+                        </PopoverTrigger>
+                        <PopoverContent className="background-lab w-full max-w-[450px]">
+                            <p>Получение данных доступно только по API.</p>
+                            <p>Если нужно прокинуть данные в шаблон, используйте контролер SectionController.</p>
+                        </PopoverContent>
+                    </Popover>
+                </div>
+
+
                 <Alert variant="default" className="mb-4">
                     <Lock />
                     <AlertDescription>
