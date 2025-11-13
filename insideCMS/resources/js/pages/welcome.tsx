@@ -104,7 +104,7 @@ export default function Welcome({ services }: { services: Service[] }) {
                         {/* <h2>{service.title}</h2> */}
                         {/* <p>{service.description}</p> */}
                         {service.components.map((component, index) => (
-                            <div key={`${service.id}-${component.id ?? `idx-${index}`}`}>
+                            <div className="mb-6" key={index}>
                                 {renderComponent(component)}
                             </div>
                         ))}

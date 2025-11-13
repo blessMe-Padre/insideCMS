@@ -83,15 +83,16 @@ export function renderComponent(component: Component) {
                             if (leaves && leaves.length === 1) {
                                 const leaf = leaves[0];
                                 const text = leaf.text ?? '';
-
-                                if (leaf.link && typeof text === 'string') {
-                                    return <span key={`comp-${component.id}-p-${childIndex}`} dangerouslySetInnerHTML={{ __html: text }} />;
+                              
+                                switch (true) {
+                                    case leaf.link && typeof text === 'string':
+                                        return <span key={childIndex} dangerouslySetInnerHTML={{ __html: text }} />;
+                                    case leaf.code && typeof text === 'string':
+                                        return <div key={childIndex} dangerouslySetInnerHTML={{ __html: text }} />;
+                                    default:
+                                        return <p className="my-2" key={childIndex}>{renderChildren((child as ParagraphNode).children)}</p>;
                                 }
-
-                                if (leaf.code && typeof text === 'string') {
-                                    return <div key={`comp-${component.id}-p-${childIndex}`} dangerouslySetInnerHTML={{ __html: text }} />;
-                                }
-                            }
+                           }
                         }
                         return <p className="my-2" key={`comp-${component.id}-p-${childIndex}`}>{renderChildren((child as ParagraphNode).children)}</p>;
                     case 'bulleted-list':
