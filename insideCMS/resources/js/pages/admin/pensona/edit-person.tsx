@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard, personaAdmin } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import { LoaderCircle, LockIcon, SaveIcon, TrashIcon } from 'lucide-react';
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
@@ -398,7 +398,7 @@ export default function EditPage({ persona, components }: { persona: Persona, co
                         </button>
                         <button
                             type="button"
-                            onClick={() => window.location.href = '/persons-admin'}
+                            onClick={() => router.visit(personaAdmin().url)}
                             disabled={processing}
                             className="bg-gray-500 text-white cursor-pointer px-4 p-2 rounded-sm hover:bg-gray-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                         >

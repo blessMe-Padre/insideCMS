@@ -82,7 +82,7 @@ export default function EditMenuAdmin({ menu, pages }: { menu: MenuEntity, pages
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         transform((values) => ({ ...(values as Record<string, unknown>), data: menus } as unknown as typeof values));
-        post(`/menus/${menu.id}`, {
+        post(`/admin/menus/${menu.id}`, {
             onSuccess: () => {
                 reset();
                 toast.success('Меню успешно обновлено');

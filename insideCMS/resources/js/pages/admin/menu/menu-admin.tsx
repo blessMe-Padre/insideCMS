@@ -38,7 +38,7 @@ export default function MenuAdmin({ menus }: { menus: MenuItem[] }) {
     const handleDelete = (id: number) => {
         setProcessingNewsId(id);
 
-        deleteForm.delete(`/menus/${id}`, {
+        deleteForm.delete(`/admin/menus/${id}`, {
             onSuccess: () => {
                 setProcessingNewsId(null);
                 toast.success('Меню удалено');

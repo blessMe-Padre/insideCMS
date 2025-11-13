@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useForm } from '@inertiajs/react';
+import { router, useForm } from '@inertiajs/react';
 import { FileManagerFile } from '@cubone/react-file-manager';
 
 import { toast } from 'sonner';
@@ -14,6 +14,7 @@ import AccordionComponent from '../AccordionComponent/AccordionComponent';
 
 import Popup from '../popup/Popup';
 import ListBlock from '../listBlock/ListBlock';
+import { sectionsAdmin } from '@/routes';
 
 interface ArticleFormData {
     name: string;
@@ -299,6 +300,7 @@ export default function SectionsBuilderForm({ components }: { components: Compon
                 </PopoverContent>
             </Popover>
 
+            <div className="flex gap-2">
             <Button 
                 className="bg-blue-600 flex items-center gap-2 cursor-pointer text-white px-4 py-2 rounded-sm hover:bg-blue-700 transition-colors"
                 onClick={handleSubmit}
@@ -307,6 +309,15 @@ export default function SectionsBuilderForm({ components }: { components: Compon
                 {processing ? <LoaderCircle className="size-4 text-gray-500 animate-spin" /> : <SaveIcon className="size-4 text-gray-500"/>}
                 <span>Сохранить</span>
             </Button>
+            <Button
+                type="button"
+                onClick={() => router.visit(sectionsAdmin().url)}
+                disabled={processing}
+                className="bg-gray-500 text-white cursor-pointer px-4 p-2 rounded-sm hover:bg-gray-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+                Отмена
+            </Button>
+            </div>
         </>
     );
 }

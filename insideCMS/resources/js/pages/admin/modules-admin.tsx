@@ -25,7 +25,7 @@ export default function ModulesAdmin({ modules }: { modules: ModulesSetting[] })
     const handleToggleActive = (moduleId: number, isActive: boolean) => {
         setProcessingModuleId(moduleId);
 
-        router.post(`/modules/${moduleId}/active`, {}, {
+        router.post(`/admin/modules/${moduleId}/active`, {}, {
             onSuccess: () => {
                 setProcessingModuleId(null);
                 toast.success(isActive ? 'Модуль деактивирован' : 'Модуль активирован');

@@ -253,11 +253,11 @@ export default function NewsForm({ onSuccess }: NewsFormProps) {
                     </Button>
                     <Button
                         type="button"
-                        onClick={handleReset}
+                        onClick={() => router.visit(newsAdmin().url)}
                         disabled={processing}
                         className="bg-gray-500 text-white cursor-pointer px-4 p-2 rounded-sm hover:bg-gray-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                     >
-                        Очистить
+                        Отмена
                     </Button>
                 </div>
             </form>

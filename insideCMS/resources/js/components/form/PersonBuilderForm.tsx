@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useForm } from '@inertiajs/react';
+import { router, useForm } from '@inertiajs/react';
 import { FileManagerFile } from '@cubone/react-file-manager';
 
 import { toast } from 'sonner';
@@ -13,6 +13,7 @@ import FileManagerComponent from '../editor/fileManager/FileManagerComponent';
 import Popup from '../popup/Popup';
 import AccordionComponent from '../AccordionComponent/AccordionComponent';
 import ListBlock from '../listBlock/ListBlock';
+import { personaAdmin } from '@/routes';
 
 interface ArticleFormData {
     name: string;
@@ -139,6 +140,11 @@ export default function SectionsBuilderForm({ components }: { components: Compon
         setSelectedElement(value);
     }
 
+    const handleRemoveTopImage = (e: React.MouseEvent, fileIndex: number) => {
+        e.preventDefault();
+        setSelectedImage((prev) => prev.filter((_, index) => index !== fileIndex));
+    };
+
     useEffect(() => {
         if (selectedImage.length > 0) {
             setData('content', selectedImage.map((image) => image.path));
@@ -202,8 +208,19 @@ export default function SectionsBuilderForm({ components }: { components: Compon
 
                 {selectedImage.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                        {selectedImage.map((image, index) => (
-                            <img key={index} src={image.path} alt={image.name} className="w-20 h-20 object-cover rounded-md border" />
+                        {selectedImage.map((file, index) => (
+                            <div key={`selected-${index}`} className="relative">
+                                <button
+                                    className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700 z-10"
+                                    onClick={(e) => handleRemoveTopImage(e, index)}>
+                                    <TrashIcon className="w-4 h-4" />
+                                </button>
+                                <img  
+                                    src={file.path} 
+                                    alt={`Selected ${index + 1}`} 
+                                    className="w-20 h-20 object-cover rounded-md border"
+                                />
+                            </div>
                         ))}
                     </div>
                 )}
@@ -327,6 +344,7 @@ export default function SectionsBuilderForm({ components }: { components: Compon
                 </PopoverContent>
             </Popover>
 
+            <div className="flex gap-2">
             <Button 
                 className="bg-blue-600 flex items-center gap-2 cursor-pointer text-white px-4 py-2 rounded-sm hover:bg-blue-700 transition-colors"
                 onClick={handleSubmit}
@@ -335,6 +353,15 @@ export default function SectionsBuilderForm({ components }: { components: Compon
                 {processing ? <LoaderCircle className="size-4 text-gray-500 animate-spin" /> : <SaveIcon className="size-4 text-gray-500"/>}
                 <span>Сохранить</span>
             </Button>
+            <Button
+                type="button"
+                onClick={() => router.visit(personaAdmin().url)}
+                disabled={processing}
+                className="bg-gray-500 text-white cursor-pointer px-4 p-2 rounded-sm hover:bg-gray-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+                Отмена
+            </Button>
+            </div>
         </>
     );
 }

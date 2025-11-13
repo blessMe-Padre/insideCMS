@@ -87,7 +87,7 @@ export default function AddMenuAdmin({ pages }: { pages: Page[] }) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         transform((values) => ({ ...(values as Record<string, unknown>), data: menus } as unknown as typeof values));
-        post('/menus', {
+        post('/admin/menus', {
             onSuccess: () => {
                 reset();
                 toast.success('Меню успешно создано');
