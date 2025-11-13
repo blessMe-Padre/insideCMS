@@ -12,14 +12,15 @@ import {
 import { dashboard, newsAdmin, addNewsAdmin, articlesAdmin, addArticleAdmin, modulesAdmin, filesAdmin, pagesAdmin, addPages, siteSettings, menuAdmin, sectionsAdmin, addSection, personaAdmin, addPerson, servicesAdmin, addServices, info, reviewsAdmin} from '@/routes';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { LayoutGrid, List, MessageCircle, Newspaper, Plus, User, Settings, Folder, Menu } from 'lucide-react';
+import { Layout, List, MessageCircle, Newspaper, Plus, User, Settings, Folder, Menu, Users, UserPlus, Settings2, Monitor, FileText, BookOpen } from 'lucide-react';
 import AppLogo from './app-logo';
+import { HammerIcon } from 'lucide-react';
 
 const settingsNavItems: NavItem[] = [
     {
         title: 'Настройка модулей',
         href: modulesAdmin(),
-        icon: Settings,
+        icon: Settings2,
     },
     {
         title: 'Настройки сайта',
@@ -40,12 +41,12 @@ export function AppSidebar() {
         {
             title: 'Консоль',
             href: dashboard(),
-            icon: LayoutGrid,
+            icon: Monitor,
         },
         {
             title: 'Страницы',
             href: pagesAdmin(),
-            icon: Newspaper,
+            icon: FileText,
 
             subItems: [
                 {
@@ -63,7 +64,7 @@ export function AppSidebar() {
         {
             title: 'Секции',
             href: sectionsAdmin(),
-            icon: Newspaper,
+            icon: Layout,
 
             subItems: [
                 {
@@ -110,7 +111,7 @@ export function AppSidebar() {
         ...(modules?.articles?.is_active ? [{
             title: 'Статьи',
             href: articlesAdmin(),
-            icon: Newspaper,
+            icon: BookOpen,
             subItems: [
                 {
                     title: 'Все статьи',
@@ -128,7 +129,7 @@ export function AppSidebar() {
         ...(modules?.services?.is_active ? [{
             title: 'Услуги',
             href: servicesAdmin(),
-            icon: Newspaper,
+            icon: HammerIcon,
             subItems: [
                 {
                     title: 'Все услуги',
@@ -146,7 +147,7 @@ export function AppSidebar() {
         ...(modules?.person?.is_active ? [{
             title: 'Персоны',
             href: personaAdmin(),
-            icon: Newspaper,
+            icon: Users,
             subItems: [
                 {
                     title: 'Все персоны',
@@ -156,7 +157,7 @@ export function AppSidebar() {
                 {
                     title: 'Добавить персону',
                     href: addPerson(),
-                    icon: Plus,
+                    icon: UserPlus,
                 },
             ],
         }] : []),
