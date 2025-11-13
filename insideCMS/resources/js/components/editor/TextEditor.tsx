@@ -6,7 +6,8 @@ import { ReactEditor } from 'slate-react'
 import { 
   Bold, Italic, Underline, Code, Heading1, Heading2, 
   List, ListOrdered, Quote, AlignLeft, AlignCenter, 
-  AlignRight
+  AlignRight,
+  Link
 } from 'lucide-react'
 
 type ParagraphElement = { type: 'paragraph'; align?: string; children: CustomText[] }
@@ -23,6 +24,7 @@ type CustomText = {
   italic?: boolean
   underline?: boolean
   code?: boolean
+  link?: boolean
 }
 
 declare module 'slate' {
@@ -297,6 +299,17 @@ const Element = ({ attributes, children, element }: RenderElementProps) => {
 }
 
 const Leaf = ({ attributes, children, leaf }: RenderLeafProps) => {
+  const tleaf = leaf as unknown as CustomText
+
+  if (tleaf.link && typeof tleaf.text === 'string') {
+    const text = tleaf.text
+    const match = text.match(/<a[^>]*href=["']([^"']+)["'][^>]*>(.*?)<\/a>/i)
+    if (match) {
+      const [, href, inner] = match
+      children = <a href={href} target="_blank" rel="noopener noreferrer">{inner}</a>
+    }
+  }
+
   if (leaf.bold) {
     children = <strong>{children}</strong>
   }
@@ -323,6 +336,7 @@ const Toolbar = () => {
       <MarkButton format="italic" icon={<Italic size={18} />} />
       <MarkButton format="underline" icon={<Underline size={18} />} />
       <MarkButton format="code" icon={<Code size={18} />} />
+      <MarkButton format="link" icon={<Link size={18} />} />
       
       <div className="w-px h-6 bg-border mx-1" />
       
