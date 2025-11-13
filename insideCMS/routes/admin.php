@@ -30,8 +30,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () use 
     if ($modules['reviews'] && $modules['reviews']['is_active']) {
         Route::controller(ReviewsController::class)->group(function () {
             Route::get('reviews-admin', 'adminShow')->name('reviews-admin');
-            Route::patch('reviews/{review}/publish', 'publish')->name('reviews.publish');
-            Route::patch('reviews/{review}/unpublish', 'unpublish')->name('reviews.unpublish');
+            Route::patch('reviews/{review}/change-status', 'changeStatus')->name('reviews.changeStatus');
             Route::delete('reviews/{review}', 'destroy')->name('reviews.destroy');
         });
     }

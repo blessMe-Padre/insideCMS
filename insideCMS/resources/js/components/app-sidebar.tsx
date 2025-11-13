@@ -12,9 +12,9 @@ import {
 import { dashboard, newsAdmin, addNewsAdmin, articlesAdmin, addArticleAdmin, modulesAdmin, filesAdmin, pagesAdmin, addPages, siteSettings, menuAdmin, sectionsAdmin, addSection, personaAdmin, addPerson, servicesAdmin, addServices, info, reviewsAdmin} from '@/routes';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Layout, List, MessageCircle, Newspaper, Plus, User, Settings, Folder, Menu, Users, UserPlus, Settings2, Monitor, FileText, BookOpen } from 'lucide-react';
+import { Layout, List, MessageCircle, Newspaper, Plus, User, Settings, Folder, Menu, Users, UserPlus, Settings2, Monitor, FileText, BookOpen, PackageIcon } from 'lucide-react';
 import AppLogo from './app-logo';
-import { HammerIcon } from 'lucide-react';
+
 
 const settingsNavItems: NavItem[] = [
     {
@@ -129,7 +129,7 @@ export function AppSidebar() {
         ...(modules?.services?.is_active ? [{
             title: 'Услуги',
             href: servicesAdmin(),
-            icon: HammerIcon,
+            icon: PackageIcon,
             subItems: [
                 {
                     title: 'Все услуги',

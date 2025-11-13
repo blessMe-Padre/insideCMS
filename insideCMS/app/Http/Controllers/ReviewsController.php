@@ -43,16 +43,10 @@ class ReviewsController extends Controller
         return redirect()->route('reviews')->with('success', 'Отзыв успешно отправлен и будет рассмотрен администратором.');
     }
 
-    public function publish(Request $request, Review $review)
+    public function changeStatus(Request $request, Review $review)
     {
-        $review->update(['is_published' => true]);
-        return redirect()->back()->with('success', 'Отзыв опубликован.');
-    }
-
-    public function unpublish(Request $request, Review $review)
-    {
-        $review->update(['is_published' => false]);
-        return redirect()->back()->with('success', 'Отзыв снят с публикации.');
+        $review->update(['is_published' => !$review->is_published]);
+        return redirect()->back()->with('success', 'Статус отзыва успешно изменен');
     }
 
     public function destroy(Request $request, Review $review)

@@ -8,7 +8,8 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { toast } from "sonner";
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Lock } from 'lucide-react';
+import { Lock, Trash } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
 
 /**
  * TODO: Добавить кнопку для удаления отзыва
@@ -30,42 +31,24 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Reviews({ reviews }: { reviews: Review[] }) {
-    const publishForm = useForm();
-    const unpublishForm = useForm();
     const deleteForm = useForm();
+    const changeStatusForm = useForm();
     const [processingReviewId, setProcessingReviewId] = useState<number | null>(null);
 
-    const handlePublish = (reviewId: number) => {
-        setProcessingReviewId(reviewId);
-        publishForm.patch(`/admin/reviews/${reviewId}/publish`, {
-            onSuccess: () => {
-                setProcessingReviewId(null);
-                toast.success('Отзыв успешно опубликован');
-            },
-            onError: () => {
-                setProcessingReviewId(null);
-                toast.error('Ошибка при опубликовании отзыва');
-            }
-        });
-    };
 
-    const handleUnpublish = (reviewId: number) => {
+    const handleChangeStatus = (reviewId: number) => {
         setProcessingReviewId(reviewId);
-        unpublishForm.patch(`/admin/reviews/${reviewId}/unpublish`, {
+        changeStatusForm.patch(`/admin/reviews/${reviewId}/change-status`, {
             onSuccess: () => {
                 setProcessingReviewId(null);
-                toast.success('Отзыв успешно скрыт');
-            },
-            onError: () => {
-                setProcessingReviewId(null);
-                toast.error('Ошибка при скрытии отзыва');
+                toast.success('Статус отзыва успешно изменен');
             }
         });
     };
 
     const handleDelete = (reviewId: number) => {
         setProcessingReviewId(reviewId);
-        deleteForm.delete(`/reviews/${reviewId}`, {
+        deleteForm.delete(`/admin/reviews/${reviewId}`, {
             onSuccess: () => {
                 setProcessingReviewId(null);
                 toast.success('Отзыв успешно удален');
@@ -134,13 +117,7 @@ export default function Reviews({ reviews }: { reviews: Review[] }) {
                                         <Switch 
                                             id={`review-${review.id}`}
                                             checked={review.is_published}
-                                            onCheckedChange={(checked) => {
-                                                if (checked) {
-                                                    handlePublish(review.id);
-                                                } else {
-                                                    handleUnpublish(review.id);
-                                                }
-                                            }}
+                                            onClick={() => handleChangeStatus(review.id)}
                                         />
                                         {processingReviewId === review.id ? (
                                             <span className="text-sm text-gray-300">изменение статуса...</span>
@@ -164,7 +141,7 @@ export default function Reviews({ reviews }: { reviews: Review[] }) {
                                     className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors cursor-pointer"
                                     onClick={() => handleDelete(review.id)}
                                 >
-                                    {processingReviewId === review.id ? "удаление..." : "удалить"}
+                                    {processingReviewId === review.id ? <Spinner /> : <Trash className="w-5 h-5" />}
                                 </button>
                             </div>  
                             </div>
