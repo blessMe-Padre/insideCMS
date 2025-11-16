@@ -118,11 +118,12 @@ class PageController extends Controller
 
         // Добавляем новые компоненты, если они есть
         if ($request->components && is_array($request->components)) {
+            dd($request->components);
             foreach ($request->components as $component) {
                 $elementData = [
                     'page_id' => $page->id,
                     'component_id' => $component['component_id'],
-                    'data' => $component['data'],
+                    'data' => json_decode($component['data'], true),
                 ];
                 Page_component::create($elementData);
             }
