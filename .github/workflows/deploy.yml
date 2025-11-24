@@ -22,3 +22,7 @@ jobs:
             git pull
             cd insideCMS
             npm run build
+
+            # Создаём символическую ссылку storage → public/storage
+            rm -rf public/public
+            php artisan storage:link
