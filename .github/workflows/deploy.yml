@@ -1,7 +1,7 @@
 name: Deploy
 on: push
 
-# Deploy to VPS
+# Deploy to VPS (production)
 jobs:
   deploy-on-vps:
     runs-on: ubuntu-latest
