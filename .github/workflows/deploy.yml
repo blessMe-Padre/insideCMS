@@ -1,6 +1,7 @@
 name: Deploy
 on: push
 
+# Deploy to VPS
 jobs:
   deploy-on-vps:
     runs-on: ubuntu-latest
