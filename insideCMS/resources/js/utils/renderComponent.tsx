@@ -41,8 +41,6 @@ export interface Component {
  */
 
 export function renderComponent(component: Component) {
-    console.log(component);
- 
     const data = component.component_data ?? [];
 
     const renderLeaf = (leaf: EditorText, key: string | number) => {
