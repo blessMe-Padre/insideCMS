@@ -4,7 +4,24 @@ on: push
 jobs:
   deploy-on-vps:
     runs-on: ubuntu-latest
+    environment: production
     steps:
-      - name: Checkout and display some text
-        run: |
-          echo "Test message! Deploying on VPS..."
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /var/www/
+
+            git restore .
+
+            # Получаем новые изменения
+            git pull origin main
+
+            # Устанавливаем зависимости Node и собираем assets
+            npm run build
