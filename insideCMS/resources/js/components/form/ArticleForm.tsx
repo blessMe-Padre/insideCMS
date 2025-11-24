@@ -1,4 +1,4 @@
-import { useForm } from '@inertiajs/react';
+import { router, useForm } from '@inertiajs/react';
 import { toast } from "sonner";
 import TextEditor from '../editor/TextEditor';
 import { useState} from 'react';
@@ -7,6 +7,7 @@ import FileManagerComponent from '../editor/fileManager/FileManagerComponent';
 import { Button } from '@/components/ui/button';
 import { FileManagerFile } from '@cubone/react-file-manager';
 import { LoaderCircle, SaveIcon, TrashIcon } from 'lucide-react';
+import { articlesAdmin } from '@/routes';
 
 
 interface ArticleFormData {
@@ -79,12 +80,12 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/articles/add', {
+        post('/admin/articles/add', {
             onSuccess: () => {
                 reset();
                 onSuccess?.();
                 toast.success('Статья успешно создана');
-                window.location.href = '/articles-admin';
+                router.visit(articlesAdmin().url);
             },
             onError: () => {
                 toast.error('Ошибка при создании статьи');

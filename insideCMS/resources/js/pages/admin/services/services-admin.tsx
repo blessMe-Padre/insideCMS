@@ -11,6 +11,7 @@ import { Lock } from 'lucide-react';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Spinner } from '@/components/ui/spinner';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import ToggleLayout from '@/components/ToggleLayout/ToggleLayout';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -87,15 +88,16 @@ export default function ServicesAdmin({ services, links, total_pages, total}: Se
                         Добавить услугу
                     </Link>
                 </div>
+                <ToggleLayout />
 
                 {services.length === 0 ? (
                     <div className="text-center py-12">
                         <p className="text-gray-500 text-lg">Пока нет опубликованных записей.</p>
                     </div>
                 ) : (
-                    <div className="block">
+                    <ul className="items-layout">
                         {services.map((item) => (
-                            <div key={item.id} className="flex justify-between items-center gap-4 py-2 px-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow mb-4" style={{ borderColor: 'var(--foreground)' }}>
+                            <li key={item.id} className="flex justify-between items-center gap-4 py-2 px-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow mb-4" style={{ borderColor: 'var(--foreground)' }}>
                                 <div className="flex items-center justify-between gap-4">
                                     <img src={item.images && item.images.length > 0 ? `${item.images[0]}` : (item.content && item.content.length > 0 ? `${item.content[0]}` : placeholder)} alt={item.title} className="w-10 h-10 rounded-full object-cover" />
                                     <div className="">
@@ -125,9 +127,9 @@ export default function ServicesAdmin({ services, links, total_pages, total}: Se
                                         {processingNewsId === item.id ? (<Spinner />) : (<Trash className="w-5 h-5" />)}
                                     </button>
                                 </div>
-                            </div>
+                            </li>
                         ))}
-                    </div>
+                    </ul>
                 )}
 
                 {total_pages > 1 && (

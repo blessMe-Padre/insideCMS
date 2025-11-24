@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Lock } from 'lucide-react';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Spinner } from '@/components/ui/spinner';
+import ToggleLayout from '@/components/ToggleLayout/ToggleLayout';
 
 interface ArticlesAdminPageProps {
     articles: Articles[];
@@ -96,14 +97,16 @@ export default function ArticlesAdmin({ articles, links, total_pages, total }: A
                     </Link>
                 </div>
 
+                <ToggleLayout />
+
                 {articles.length === 0 ? (
                     <div className="text-center py-12">
                         <p className="text-gray-500 text-lg">Пока нет опубликованных новостей.</p>
                     </div>
                 ) : (
-                    <div className="block">
+                    <ul className="items-layout">
                         {articles.map((item) => (
-                            <div key={item.id} className="flex justify-between items-center gap-4 py-2 px-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow mb-4" style={{ borderColor: 'var(--foreground)' }}>
+                            <li key={item.id} className="flex justify-between items-center gap-4 py-2 px-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow mb-4" style={{ borderColor: 'var(--foreground)' }}>
                                 <div className="flex items-center justify-between gap-4">
                                     <img src={item.images && item.images.length > 0 ? `${item.images[0]}` : placeholder} alt={item.title} className="w-10 h-10 rounded-full" />
                                     <div className="">
@@ -134,9 +137,9 @@ export default function ArticlesAdmin({ articles, links, total_pages, total }: A
                                        
                                     </button>
                                 </div>
-                            </div>
+                            </li>
                         ))}
-                    </div>
+                    </ul>
                 )}
 
                 {total_pages > 1 && (
