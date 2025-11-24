@@ -3,12 +3,13 @@ import { addNewsAdmin, dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm, router } from '@inertiajs/react';
 import placeholder from '/public/placeholder.svg';
-import { Edit, Plus, Trash } from 'lucide-react';
+import { Edit, Plus,  Trash } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from "sonner";
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Lock, LoaderCircle } from 'lucide-react';
 import { Link } from '@inertiajs/react';
+import ToggleLayout from '@/components/ToggleLayout/ToggleLayout';
 
 /**
  * TODO: добавить иконку спинера при удалении новости
@@ -95,12 +96,13 @@ export default function NewsAdmin({ news }: NewsAdminPageProps) {
                         Создать новость 
                     </Link>
                 </div>
+                <ToggleLayout />
                 {news.length === 0 ? (
                     <div className="text-center py-12">
                         <p className="text-gray-500 text-lg">Пока нет опубликованных новостей.</p>
                     </div>
                 ) : (
-                    <div className="block">
+                    <div className="items-layout">
                         {news.map((item) => (
                             <div key={item.id} className="flex justify-between items-center gap-4 py-2 px-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow mb-4" style={{ borderColor: 'var(--foreground)' }}>
                                 <div className="flex items-center justify-between gap-4">
