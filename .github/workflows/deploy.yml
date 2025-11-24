@@ -20,4 +20,5 @@ jobs:
             cd /var/www/
             git restore .
             git pull
+            cd insideCMS
             npm run build
