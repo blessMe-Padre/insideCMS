@@ -154,3 +154,22 @@
 .background-lab {
     background-color: #2D2D2D;
 }
+
+.items-layout--grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.items-layout--grid li {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.items-layout--list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}

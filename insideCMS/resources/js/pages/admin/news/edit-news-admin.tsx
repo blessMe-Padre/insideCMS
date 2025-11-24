@@ -1,8 +1,8 @@
 import TextEditor from '@/components/editor/TextEditor';
 import AppLayout from '@/layouts/app-layout';
-import { dashboard } from '@/routes';
+import { dashboard, newsAdmin } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import { toast } from "sonner";
 import Popup from '@/components/popup/Popup';
 import FileManagerComponent from '@/components/editor/fileManager/FileManagerComponent';
@@ -115,9 +115,9 @@ export default function EditNewsAdmin({ news }: EditNewsAdminPageProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(`/news/${news.id}`, {
+        post(`/admin/news/${news.id}`, {
             onSuccess: () => {
-                window.location.href = '/news-admin';
+                router.visit(newsAdmin().url);
                 toast.success('Новость успешно обновлена');
             },
             onError: () => {

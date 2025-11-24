@@ -85,7 +85,7 @@ export default function NewsForm({ onSuccess }: NewsFormProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/news', {
+        post('/admin/news', {
             onSuccess: () => {
                 handleReset();
                 onSuccess?.();

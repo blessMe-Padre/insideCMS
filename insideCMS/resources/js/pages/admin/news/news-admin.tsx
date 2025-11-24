@@ -102,9 +102,9 @@ export default function NewsAdmin({ news }: NewsAdminPageProps) {
                         <p className="text-gray-500 text-lg">Пока нет опубликованных новостей.</p>
                     </div>
                 ) : (
-                    <div className="items-layout">
+                    <ul className="items-layout">
                         {news.map((item) => (
-                            <div key={item.id} className="flex justify-between items-center gap-4 py-2 px-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow mb-4" style={{ borderColor: 'var(--foreground)' }}>
+                            <li key={item.id} className="flex justify-between items-center gap-4 py-2 px-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow mb-4" style={{ borderColor: 'var(--foreground)' }}>
                                 <div className="flex items-center justify-between gap-4">
                                     <img src={item.images && item.images.length > 0 ? item.images[0] : placeholder} alt={item.title} className="w-10 h-10 rounded-full" />
                                     <div className="">
@@ -135,9 +135,9 @@ export default function NewsAdmin({ news }: NewsAdminPageProps) {
                                        
                                     </button>
                                 </div>
-                            </div>
+                            </li>
                         ))}
-                    </div>
+                    </ul>
                 )}
                            
             </div>
