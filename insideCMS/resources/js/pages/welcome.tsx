@@ -99,6 +99,8 @@ export default function Welcome({ services }: { services: Service[] }) {
                 <div className="mb-6">
                     <Search />
                 </div>
+
+                <h2>Services List - для тестового коммита</h2>
                 {services.map((service) => (
                     <div key={service.id}>
                         {/* <h2>{service.title}</h2> */}
