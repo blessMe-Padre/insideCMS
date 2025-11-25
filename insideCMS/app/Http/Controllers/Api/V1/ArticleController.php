@@ -8,31 +8,31 @@ use App\Models\Article;
 
 class ArticleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
-        return Article::all();
+        $articles = Article::all();
+        if (!$articles) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => ['Articles not found'],
+            ], 404);
+        }
+        return response()->json([
+            'status' => 'success',
+            'data' => $articles,
+        ], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
     public function show(string $slug)
     {
         $article = Article::where('slug', $slug)->first();
 
         if (!$article) {
-            return response()->json(['message' => 'Article not found'], 404);
+            return response()->json([
+                'status' => 'error',
+                'errors' => ['Article not found'],
+            ], 404);
         }
 
         return response()->json([

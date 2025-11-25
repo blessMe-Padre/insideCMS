@@ -8,31 +8,15 @@ use App\Models\News;
 
 class NewsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return News::all();
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $slug)
-    {
-        $news = News::where('slug', $slug)->first();
+        $news = News::all();
 
         if (!$news) {
-            return response()->json(['message' => 'News not found'], 404);
+            return response()->json([
+                'status' => 'error',
+                'errors' => ['News not found'],
+            ], 404);
         }
 
         return response()->json([
@@ -41,19 +25,20 @@ class NewsController extends Controller
         ], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function show(string $slug)
     {
-        //
-    }
+        $news = News::where('slug', $slug)->first();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        if (!$news) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => ['News not found'],
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $news,
+        ], 200);
     }
 }
