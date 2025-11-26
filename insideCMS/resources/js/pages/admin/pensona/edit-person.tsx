@@ -31,7 +31,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 interface Persona {
     id: number;
     name: string;
-    content: string[];
+    images: string[];
     slug: string;
     created_at: string;
 }
@@ -48,7 +48,7 @@ export default function EditPage({ persona, components }: { persona: Persona, co
     const { data, setData, post, processing, errors } = useForm({
         name: persona.name,
         slug: persona.slug,
-        content: persona.content,
+        images: persona.images,
         components: components,
     });
 
@@ -79,14 +79,14 @@ export default function EditPage({ persona, components }: { persona: Persona, co
     const handleMainFileSelection = (files: FileManagerFile[]) => {
         setSelectedMainImage(files);
         const imageUrls = files.map((file) => file.path);
-        setData('content', imageUrls);
+        setData('images', imageUrls);
     };
 
     const handleRemoveMainFile = (e: React.MouseEvent, fileIndex: number) => {
         e.preventDefault();
-        const current = Array.isArray(data.content) ? data.content : [];
+        const current = Array.isArray(data.images) ? data.images : [];
         const next = current.filter((_, index) => index !== fileIndex);
-        setData('content', next);
+        setData('images', next);
         if (selectedMainImage.length > 0) {
             const updated = selectedMainImage.filter((_, index) => index !== fileIndex);
             setSelectedMainImage(updated);
@@ -203,7 +203,7 @@ export default function EditPage({ persona, components }: { persona: Persona, co
                         {(() => {
                             const images = selectedMainImage.length > 0
                                 ? selectedMainImage.map((f) => f.path)
-                                : (Array.isArray(data.content) ? data.content : []);
+                                : (Array.isArray(data.images) ? data.images : []);
                             return images.length > 0 ? (
                                 <div className="flex flex-wrap gap-2 mt-2 mb-2">
                                     {images.map((url, index) => (

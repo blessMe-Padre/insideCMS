@@ -11,11 +11,11 @@ class Persona extends Model
     protected $fillable = [
         'name',
         'slug',
-        'content',
+        'images',
     ];
 
     protected $casts = [
-        'content' => 'array',
+        'images' => 'array',
     ];
 
     public function components(): BelongsToMany

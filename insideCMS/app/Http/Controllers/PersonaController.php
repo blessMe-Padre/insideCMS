@@ -35,14 +35,14 @@ class PersonaController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255',
-            'content' => 'array',
-            'content.*' => 'string',
+            'images' => 'array',
+            'images.*' => 'string',
         ]);
 
         $persona = Persona::create([
             'name' => $request->name,
             'slug' => $request->slug,
-            'content' => $request->content,
+            'images' => $request->images,
         ]);
 
 
@@ -84,8 +84,8 @@ class PersonaController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255',
-            'content' => 'array',
-            'content.*' => 'string',
+            'images' => 'array',
+            'images.*' => 'string',
         ]);
 
         $persona->update([

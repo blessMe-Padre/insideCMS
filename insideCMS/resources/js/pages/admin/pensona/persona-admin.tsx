@@ -108,7 +108,6 @@ export default function PersonaAdmin({ persons, links, total_pages, total}: Pers
 
                 {total_pages > 1 && (
                     console.log(links),
-            
                     <Pagination className="mt-6">
                         <PaginationContent>
                             {links.find(link => link.label === 'Предыдущая')?.url && (

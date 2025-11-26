@@ -20,6 +20,7 @@ interface ArticleFormData {
     slug: string;
     content?: string[];
     elements?: Element[];
+    images?: string[];
 }
 
 interface Element {
@@ -44,6 +45,7 @@ export default function SectionsBuilderForm({ components }: { components: Compon
         slug: '',
         elements: [],
         content: [],
+        images: [],
     });
 
     const [elements, setElements] = useState<Element[]>([]);
@@ -147,7 +149,7 @@ export default function SectionsBuilderForm({ components }: { components: Compon
 
     useEffect(() => {
         if (selectedImage.length > 0) {
-            setData('content', selectedImage.map((image) => image.path));
+            setData('images', selectedImage.map((image) => image.path));
         }
     }, [selectedImage, setData]);
 

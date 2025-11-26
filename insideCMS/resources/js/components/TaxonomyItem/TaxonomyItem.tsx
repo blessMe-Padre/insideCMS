@@ -1,10 +1,16 @@
 import placeholder from '/public/placeholder.svg';
 import { Edit, LoaderCircle,  Trash } from 'lucide-react';
 
+/**
+ * В таблице заголовки для записей такого типа могут быть title или name
+ * Поэтому нужно проверять, какой заголовок есть и отображать его
+ */
+
 interface TaxonomyItemProps {
     item: {
         id: number;
         title: string;
+        name?: string;
         content: string;
         slug: string;
         created_at: string;
@@ -19,9 +25,6 @@ interface TaxonomyItemProps {
 
 export default function TaxonomyItem( { item, handleDelete, handleEdit, processingNewsId }: TaxonomyItemProps) {
 
-    console.log(item);
-    
-
     return (
         <li key={item.id} className="flex justify-between gap-4 p-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow 
         " style={{ borderColor: 'var(--foreground)' }}>
@@ -35,7 +38,8 @@ export default function TaxonomyItem( { item, handleDelete, handleEdit, processi
 
             <div className="">
                 <div className="flex items-center justify-between">
-                    <h3 className="font-semibold">{item.title}</h3>
+                    {item?.title && <h3 className="font-semibold">{item.title}</h3>}
+                    {item?.name && <h3 className="font-semibold">{item.name}</h3>}
                 </div>
                 <div className="mb-2">
                     <p className="text-sm text-gray-500">
