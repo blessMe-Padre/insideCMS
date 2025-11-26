@@ -13,10 +13,10 @@ import AuthLayout from '@/layouts/auth-layout';
 export default function Register() {
     return (
         <AuthLayout
-            title="Create an account"
-            description="Enter your details below to create your account"
+            title="Регистация"
+            description="Введите свои данные ниже, чтобы создать учетную запись"
         >
-            <Head title="Register" />
+            <Head title="Регистация" />
             <Form
                 {...RegisteredUserController.store.form()}
                 resetOnSuccess={['password', 'password_confirmation']}
@@ -27,7 +27,7 @@ export default function Register() {
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="name">Name</Label>
+                                <Label htmlFor="name">Имя</Label>
                                 <Input
                                     id="name"
                                     type="text"
@@ -45,7 +45,7 @@ export default function Register() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                                <Label htmlFor="email">Email адрес</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -59,7 +59,7 @@ export default function Register() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
+                                <Label htmlFor="password">Пароль</Label>
                                 <Input
                                     id="password"
                                     type="password"
@@ -67,14 +67,14 @@ export default function Register() {
                                     tabIndex={3}
                                     autoComplete="new-password"
                                     name="password"
-                                    placeholder="Password"
+                                    placeholder="Пароль"
                                 />
                                 <InputError message={errors.password} />
                             </div>
 
                             <div className="grid gap-2">
                                 <Label htmlFor="password_confirmation">
-                                    Confirm password
+                                    Подтвердить пароль
                                 </Label>
                                 <Input
                                     id="password_confirmation"
@@ -83,7 +83,7 @@ export default function Register() {
                                     tabIndex={4}
                                     autoComplete="new-password"
                                     name="password_confirmation"
-                                    placeholder="Confirm password"
+                                    placeholder="Подтвердить пароль"
                                 />
                                 <InputError
                                     message={errors.password_confirmation}
@@ -99,14 +99,14 @@ export default function Register() {
                                 {processing && (
                                     <LoaderCircle className="h-4 w-4 animate-spin" />
                                 )}
-                                Create account
+                                Создать аккаунт
                             </Button>
                         </div>
 
                         <div className="text-center text-sm text-muted-foreground">
-                            Already have an account?{' '}
+                            У вас уже есть аккаунт?{' '}
                             <TextLink href={login()} tabIndex={6}>
-                                Log in
+                                Войти
                             </TextLink>
                         </div>
                     </>
