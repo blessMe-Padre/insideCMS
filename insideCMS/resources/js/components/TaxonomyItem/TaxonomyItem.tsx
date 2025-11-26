@@ -32,7 +32,7 @@ export default function TaxonomyItem( { item, handleDelete, handleEdit, processi
 
             <div className="">
                 <div className="flex items-center justify-between">
-                    <h3 className="font-semibold text-white">{item.title}</h3>
+                    <h3 className="font-semibold">{item.title}</h3>
                 </div>
                 <div className="mb-2">
                     <p className="text-sm text-gray-500">
@@ -51,13 +51,13 @@ export default function TaxonomyItem( { item, handleDelete, handleEdit, processi
             <button
              onClick={() => handleEdit(item.id)}
              title="редактировать" 
-             className="text-white px-2 py-2 rounded-sm hover:bg-blue-700 transition-colors cursor-pointer">
+             className="px-2 py-2 rounded-sm hover:bg-blue-700 transition-colors cursor-pointer">
                 <Edit className="w-5 h-5" />
             </button>
 
             <button
              title="удалить"
-             className="text-white px-2 py-2 rounded-sm hover:bg-red-700 transition-colors cursor-pointer"
+             className="px-2 py-2 rounded-sm hover:bg-red-700 transition-colors cursor-pointer"
              onClick={() => handleDelete(item.id)}
              >
                 {processingNewsId === item.id ? (<LoaderCircle className="w-5 h-5 animate-spin" />) : (<Trash className="w-5 h-5" />)}
