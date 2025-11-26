@@ -100,7 +100,7 @@ export default function Welcome({ services }: { services: Service[] }) {
                     <Search />
                 </div>
 
-                <h2>Services List - для тестового коммита</h2>
+                <h2>Services List - для тестового коммита 2</h2>
                 {services.map((service) => (
                     <div key={service.id}>
                         {/* <h2>{service.title}</h2> */}
