@@ -8,18 +8,18 @@ use App\Models\News;
 
 class NewsController extends Controller
 {
-    /**
-     * Отобразить список ресурса.
-     */
-    public function index()
-    {
-        //
-    }
-
     public function adminShow()
     {
+
+        $news = News::paginate(3);
+
         return Inertia::render('admin/news/news-admin', [
-            'news' => News::all(),
+            'news' => $news->items(),
+            'links' => $news->linkCollection()->toArray(),
+            'current_page' => $news->currentPage(),
+            'total_pages' => $news->lastPage(),
+            'per_page' => $news->perPage(),
+            'total' => $news->total(),
         ]);
     }
 

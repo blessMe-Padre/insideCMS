@@ -10,6 +10,9 @@ import { Link } from '@inertiajs/react';
 import ToggleLayout from '@/components/ToggleLayout/ToggleLayout';
 import TaxonomyItem from '@/components/TaxonomyItem/TaxonomyItem';
 
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+
+
 /**
  * TODO: добавить пагинацию
  * TODO: добавить поиск по названию новости (доработать )
@@ -18,6 +21,15 @@ import TaxonomyItem from '@/components/TaxonomyItem/TaxonomyItem';
 
 interface NewsAdminPageProps {
     news: News[];
+    links: Array<{
+        url: string | null;
+        label: string | null;
+        active: boolean | null;
+    }>;
+    current_page: number;
+    total_pages: number;
+    per_page: number;
+    total: number;
 }
 
 interface News {
@@ -42,7 +54,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function NewsAdmin({ news }: NewsAdminPageProps) {
+export default function NewsAdmin({ news, links, total_pages, total}: NewsAdminPageProps) {
     const deleteForm = useForm();
     const [processingNewsId, setProcessingNewsId] = useState<number | null>(null);
 
@@ -83,7 +95,7 @@ export default function NewsAdmin({ news }: NewsAdminPageProps) {
                 </Alert>
 
                 <div className="mb-5 flex justify-between items-center">
-                    <p className="text-gray-500 text-lg">Всего новостей: {news.length}</p>
+                    <p className="text-gray-500 text-lg">Всего новостей: {total}</p>
                     <Link
                         href={addNewsAdmin()}
                         className="bg-blue-600 flex items-center gap-2 cursor-pointer text-white px-4 py-2 rounded-sm hover:bg-blue-700 transition-colors"
@@ -109,6 +121,44 @@ export default function NewsAdmin({ news }: NewsAdminPageProps) {
                             />
                         ))}
                     </ul>
+                )}
+
+                {total_pages > 1 && (
+                    <Pagination className="mt-6">
+                        <PaginationContent>
+                            {links.find(link => link.label === 'Предыдущая')?.url && (
+                                <PaginationItem>
+                                    <PaginationPrevious 
+                                        href={links.find(link => link.label === 'Предыдущая')?.url || ''}
+                                    />
+                                </PaginationItem>
+                            )}
+                            {links
+                                .filter(link => link.label !== 'Предыдущая' && link.label !== 'Следующая')
+                                .map((link, index) => (
+                                    <PaginationItem key={index}>
+                                        {link.label === '...' ? (
+                                            <PaginationEllipsis />
+                                        ) : (
+                                            <PaginationLink 
+                                                href={link.url || ''} 
+                                                isActive={link.active || false}
+                                            >
+                                                {link.label}
+                                            </PaginationLink>
+                                        )}
+                                    </PaginationItem>
+                                ))
+                            }
+                            {links.find(link => link.label === 'Следующая')?.url && (
+                                <PaginationItem>
+                                    <PaginationNext 
+                                        href={links.find(link => link.label === 'Следующая')?.url || ''}
+                                    />
+                                </PaginationItem>
+                            )}
+                        </PaginationContent>
+                    </Pagination>
                 )}
                            
             </div>
