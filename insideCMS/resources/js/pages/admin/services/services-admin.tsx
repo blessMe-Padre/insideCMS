@@ -2,16 +2,14 @@ import AppLayout from '@/layouts/app-layout';
 import { addServices, dashboard } from '@/routes';
 import { type BreadcrumbItem, type ServicesAdminPageProps } from '@/types';
 import { Head, useForm, router, Link } from '@inertiajs/react';
-import placeholder from '/public/placeholder.svg';
-import { Edit, Info, Plus, Trash } from 'lucide-react';
+import { Info, Plus, Lock} from 'lucide-react';
 import { useState } from 'react';
 import { toast } from "sonner";
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Lock } from 'lucide-react';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { Spinner } from '@/components/ui/spinner';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import ToggleLayout from '@/components/ToggleLayout/ToggleLayout';
+import TaxonomyItem from '@/components/TaxonomyItem/TaxonomyItem';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -97,37 +95,13 @@ export default function ServicesAdmin({ services, links, total_pages, total}: Se
                 ) : (
                     <ul className="items-layout">
                         {services.map((item) => (
-                            <li key={item.id} className="flex justify-between items-center gap-4 py-2 px-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow mb-4" style={{ borderColor: 'var(--foreground)' }}>
-                                <div className="flex items-center justify-between gap-4">
-                                    <img src={item.images && item.images.length > 0 ? `${item.images[0]}` : (item.content && item.content.length > 0 ? `${item.content[0]}` : placeholder)} alt={item.title} className="w-10 h-10 rounded-full object-cover" />
-                                    <div className="">
-                                        <div className="flex items-center justify-between">
-                                            <h3 className="font-semibold text-white">{item.title}</h3>
-                                        </div>
-                                        <div className="mb-2">
-                                            <p className="text-sm text-gray-500">
-                                                {new Date(item.created_at).toLocaleDateString('ru-RU')}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <button
-                                     onClick={() => handleEdit(item.id)}
-                                     title="редактировать" 
-                                     className="bg-blue-600 text-white px-2 py-2 rounded-sm hover:bg-blue-700 transition-colors cursor-pointer">
-                                        <Edit className="w-5 h-5" />
-                                    </button>
-
-                                    <button
-                                     title="удалить"
-                                     className="bg-red-600 text-white px-2 py-2 rounded-sm hover:bg-red-700 transition-colors cursor-pointer"
-                                     onClick={() => handleDelete(item.id)}
-                                     >
-                                        {processingNewsId === item.id ? (<Spinner />) : (<Trash className="w-5 h-5" />)}
-                                    </button>
-                                </div>
-                            </li>
+                            <TaxonomyItem 
+                                key={item.id}
+                                item={item} 
+                                handleDelete={handleDelete}
+                                handleEdit={handleEdit}
+                                processingNewsId={processingNewsId}
+                            />
                         ))}
                     </ul>
                 )}

@@ -71,8 +71,10 @@ export interface Service {
     slug: string;
     images: string[];
     description: string;
-    content: string[];
+    content: string;
     created_at: string;
+    updated_at: string;
+    excerpt: string;
 }
 
 export interface ServicesAdminPageProps {
@@ -106,10 +108,13 @@ export interface ComponentAdmin {
 
 export interface Persona {
     id: number;
-    name: string;
+    title: string;
     content: string;
     slug: string;
     created_at: string;
+    updated_at: string;
+    excerpt: string;
+    images: string[]; 
 }
 
 export interface PersonaAdminPageProps {
@@ -164,4 +169,15 @@ export interface ModulesSetting {
     module_name: string;
     module_description: string;
     is_active: boolean;
+}
+
+export interface TaxonomyItemProps {
+    id: number;
+    title: string;
+    content: string;
+    slug: string;
+    created_at: string;
+    updated_at: string;
+    excerpt: string;
+    images: string[];
 }

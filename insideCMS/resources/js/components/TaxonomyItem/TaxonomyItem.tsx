@@ -19,6 +19,9 @@ interface TaxonomyItemProps {
 
 export default function TaxonomyItem( { item, handleDelete, handleEdit, processingNewsId }: TaxonomyItemProps) {
 
+    console.log(item);
+    
+
     return (
         <li key={item.id} className="flex justify-between gap-4 p-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow 
         " style={{ borderColor: 'var(--foreground)' }}>

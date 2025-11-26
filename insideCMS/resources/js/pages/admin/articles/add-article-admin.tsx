@@ -4,6 +4,10 @@ import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import ArticleForm from '@/components/form/ArticleForm';
 
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Info } from 'lucide-react';
+
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Консоль',
@@ -33,6 +37,13 @@ export default function AddArticleAdmin() {
                 </Head>
 
                 <h1 className="text-3xl font-bold text-foreground mb-4">Добавить статью</h1>
+
+                <Alert variant="default" className="mb-4">
+                    <Info />
+                    <AlertDescription>
+                        <p>Для транслита slug используйте <a className="text-blue-500 hover:text-blue-700" href="https://www.itranslit.com/" target="_blank">этот сервис</a></p>
+                    </AlertDescription>
+                </Alert>
 
                 <ArticleForm />
 
