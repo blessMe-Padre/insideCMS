@@ -35,6 +35,11 @@ class UserSettinsController extends Controller
 
     public function destroy(User $user)
     {
+        $roles = Role_user::where('role_id', '=', 1)->get();
+
+        if ($roles->count() === 1) {
+            return back()->with('error', 'Нельзя удалить последнего администратора');
+        }
 
         $user->delete();
         return back()->with('success', 'Пользователь успешно удален');
