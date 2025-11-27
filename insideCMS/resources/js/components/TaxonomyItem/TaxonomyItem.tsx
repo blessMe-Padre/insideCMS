@@ -4,6 +4,7 @@ import { Edit, LoaderCircle,  Trash } from 'lucide-react';
 /**
  * В таблице заголовки для записей такого типа могут быть title или name
  * Поэтому нужно проверять, какой заголовок есть и отображать его
+ * 
  */
 
 interface TaxonomyItemProps {

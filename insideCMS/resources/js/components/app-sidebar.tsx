@@ -9,7 +9,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, newsAdmin, addNewsAdmin, articlesAdmin, addArticleAdmin, modulesAdmin, filesAdmin, pagesAdmin, addPages, siteSettings, menuAdmin, sectionsAdmin, addSection, personaAdmin, addPerson, servicesAdmin, addServices, info, reviewsAdmin} from '@/routes';
+import { dashboard, newsAdmin, addNewsAdmin, articlesAdmin, addArticleAdmin, modulesAdmin, filesAdmin, pagesAdmin, addPages, siteSettings, menuAdmin, sectionsAdmin, addSection, personaAdmin, addPerson, servicesAdmin, addServices, info, reviewsAdmin, userSettings} from '@/routes';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { Layout, List, MessageCircle, Newspaper, Plus, User, Settings, Folder, Menu, Users, UserPlus, Settings2, Monitor, FileText, BookOpen, PackageIcon } from 'lucide-react';
@@ -26,6 +26,11 @@ const settingsNavItems: NavItem[] = [
         title: 'Настройки сайта',
         href: siteSettings(),
         icon: Settings,
+    },
+    {
+        title: 'Пользователи',
+        href: userSettings(),
+        icon: Users,
     },
     {
         title: 'Меню',

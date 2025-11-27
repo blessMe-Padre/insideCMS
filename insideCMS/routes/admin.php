@@ -14,6 +14,7 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\ServicesController;
+use App\Http\Controllers\UserSettinsController;
 
 $modules = getModules();
 
@@ -108,6 +109,13 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () use 
         Route::post('menus', 'store')->name('menus.store');
         Route::post('menus/{menu}', 'update')->name('menus.update');
         Route::delete('menus/{menu}', 'destroy')->name('menus.destroy');
+    });
+
+    // Роуты для настроек пользователей
+    Route::controller(UserSettinsController::class)->group(function () {
+        Route::get('user-settings', 'index')->name('user-settings');
+        Route::post('user-settings', 'update')->name('user-settings.update');
+        Route::delete('user-settings/{user}', 'destroy')->name('user-settings.destroy');
     });
 
     // Роуты для персон 
