@@ -36,7 +36,7 @@ class UserSettinsController extends Controller
     public function destroy(User $user)
     {
         $user_role = $user->roles()->first()->id;
-        
+
         if ($user_role === 1) {
             $roles = Role_user::where('role_id', '=', 1)->get();
             if ($roles->count() === 1 ) {
@@ -47,6 +47,6 @@ class UserSettinsController extends Controller
         }
 
         $user->delete();
-        return back()->with(['success' => 'Пользователь успешно удален2222']);
+        return back()->with(['success' => 'Пользователь успешно удален']);
     }
 }

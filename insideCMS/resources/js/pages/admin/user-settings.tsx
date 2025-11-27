@@ -62,8 +62,11 @@ export default function UserSettings({ users, roles, auth_user }: { users: UserT
         setProcessingUserId(userId);
         deleteForm.delete(`/admin/user-settings/${userId}`, {
 
-            onSuccess: (response) => {
-                toast.success(String(response.props.success));
+            onSuccess: (page) => {
+                const successMessage = (page.props.flash as { success?: string })?.success;
+                if (successMessage) {
+                    toast.success(successMessage);
+                }
             },
 
             onError: (errors) => {
