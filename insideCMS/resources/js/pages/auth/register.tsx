@@ -43,6 +43,7 @@ export default function Register() {
                                     className="mt-2"
                                 />
                             </div>
+                            <input type="text" name="honeypot" style={{ display: 'none' }} />
 
                             <div className="grid gap-2">
                                 <Label htmlFor="email">Email адрес</Label>
