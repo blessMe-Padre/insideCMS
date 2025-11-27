@@ -18,7 +18,7 @@ use App\Http\Controllers\UserSettinsController;
 
 $modules = getModules();
 
-Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () use ($modules) {
+Route::middleware(['auth', 'verified', \App\Http\Middleware\AdminAccess::class])->prefix('admin')->group(function () use ($modules) {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
@@ -62,7 +62,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () use 
     }
 
     // Роуты для настройки модулей
-    Route::controller(ModulesController::class)->group(function () {
+    Route::middleware(\App\Http\Middleware\AdminOnly::class)->controller(ModulesController::class)->group(function () {
         Route::get('modules-admin', 'adminShow')->name('modules-admin');
         Route::post('modules/{module}/active', 'toggleActive')->name('modules.toggleActive');
     });
@@ -96,13 +96,13 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () use 
     });
 
     // Роуты для настроек сайта
-    Route::controller(SettingsController::class)->group(function () {
+    Route::middleware(\App\Http\Middleware\AdminOnly::class)->controller(SettingsController::class)->group(function () {
         Route::get('site-settings', 'index')->name('site-settings');
         Route::post('site-settings', 'update')->name('site-settings.update');
     });
 
     // Роуты для меню
-    Route::controller(MenuController::class)->group(function () {
+    Route::middleware(\App\Http\Middleware\AdminOnly::class)->controller(MenuController::class)->group(function () {
         Route::get('menu-admin', 'index')->name('menu-admin');
         Route::get('add-menu-admin', 'create')->name('add-menu-admin');
         Route::get('edit-menu-admin/{menu}', 'edit')->name('edit-menu-admin');
@@ -112,7 +112,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () use 
     });
 
     // Роуты для настроек пользователей
-    Route::controller(UserSettinsController::class)->group(function () {
+    Route::middleware(\App\Http\Middleware\AdminOnly::class)->controller(UserSettinsController::class)->group(function () {
         Route::get('user-settings', 'index')->name('user-settings');
         Route::post('user-settings', 'update')->name('user-settings.update');
         Route::delete('user-settings/{user}', 'destroy')->name('user-settings.destroy');
