@@ -58,16 +58,20 @@ export default function UserSettings({ users, roles, auth_user }: { users: UserT
     const deleteForm = useForm();
     const [processingUserId, setProcessingUserId] = useState<number | null>(null);
 
-    console.log(auth_user);
-
     const handleDelete = (userId: number) => {
         setProcessingUserId(userId);
         deleteForm.delete(`/admin/user-settings/${userId}`, {
-            onSuccess: () => {
-                toast.success('Пользователь успешно удален');
+
+            onSuccess: (response) => {
+                toast.success(String(response.props.success));
             },
-            onError: () => {
-                toast.error('Ошибка при удалении пользователя');
+
+            onError: (errors) => {
+                if (errors.delete) {
+                    toast.error(String(errors.delete));
+                } else {
+                    toast.error('Ошибка при удалении пользователя');
+                }
             },
             onFinish: () => {
                 setProcessingUserId(null);
