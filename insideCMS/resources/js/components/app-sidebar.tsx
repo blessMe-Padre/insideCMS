@@ -40,7 +40,9 @@ const settingsNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
-    const { modules } = usePage<SharedData>().props;
+    const { modules, auth } = usePage<SharedData>().props;
+    const roleIds = (auth?.user?.role_ids || []) as number[];
+    const isAdmin = roleIds.includes(1);
 
     const mainNavItems: NavItem[] = [
         {
@@ -193,7 +195,7 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                <NavMain items={settingsNavItems} />
+                {isAdmin && <NavMain items={settingsNavItems} />}
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

@@ -60,13 +60,6 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\AdminAccess::class])
 
         });
     }
-
-    // Роуты для настройки модулей
-    Route::middleware(\App\Http\Middleware\AdminOnly::class)->controller(ModulesController::class)->group(function () {
-        Route::get('modules-admin', 'adminShow')->name('modules-admin');
-        Route::post('modules/{module}/active', 'toggleActive')->name('modules.toggleActive');
-    });
-
     // Роуты для файлов
     Route::controller(FileController::class)->group(function () {
         Route::get('files-admin', 'adminShow')->name('files-admin');
@@ -95,6 +88,36 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\AdminAccess::class])
         Route::delete('sections/{section}', 'destroy')->name('sections.destroy');
     });
 
+    // Роуты для персон 
+    if ($modules['person'] && $modules['person']['is_active']) {
+        Route::controller(PersonaController::class)->group(function () {
+            Route::get('persons-admin', 'index')->name('persona-admin');
+                Route::get('add-person', 'create')->name('add-person');
+                Route::post('persons', 'store')->name('persons.store');
+                Route::get('persons/{persona}/edit', 'edit')->name('persons.edit');
+                Route::post('persons/{persona}', 'update')->name('persons.update');
+                Route::delete('persons/{persona}', 'destroy')->name('persons.destroy');
+            });
+        }
+    
+    // Роуты для услуг
+    if ($modules['services'] && $modules['services']['is_active']) {
+        Route::controller(ServicesController::class)->group(function () {
+        Route::get('services-admin', 'index')->name('services-admin');
+        Route::get('add-services', 'create')->name('add-services');
+        Route::post('services', 'store')->name('services.store');
+        Route::get('services/{service}/edit', 'edit')->name('services.edit');
+        Route::post('services/{service}', 'update')->name('services.update');
+        Route::delete('services/{service}', 'destroy')->name('services.destroy');
+        });
+    }
+
+    // Роуты для настройки модулей
+    Route::middleware(\App\Http\Middleware\AdminOnly::class)->controller(ModulesController::class)->group(function () {
+        Route::get('modules-admin', 'adminShow')->name('modules-admin');
+        Route::post('modules/{module}/active', 'toggleActive')->name('modules.toggleActive');
+    });
+
     // Роуты для настроек сайта
     Route::middleware(\App\Http\Middleware\AdminOnly::class)->controller(SettingsController::class)->group(function () {
         Route::get('site-settings', 'index')->name('site-settings');
@@ -117,29 +140,5 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\AdminAccess::class])
         Route::post('user-settings', 'update')->name('user-settings.update');
         Route::delete('user-settings/{user}', 'destroy')->name('user-settings.destroy');
     });
-
-    // Роуты для персон 
-    if ($modules['person'] && $modules['person']['is_active']) {
-    Route::controller(PersonaController::class)->group(function () {
-        Route::get('persons-admin', 'index')->name('persona-admin');
-            Route::get('add-person', 'create')->name('add-person');
-            Route::post('persons', 'store')->name('persons.store');
-            Route::get('persons/{persona}/edit', 'edit')->name('persons.edit');
-            Route::post('persons/{persona}', 'update')->name('persons.update');
-            Route::delete('persons/{persona}', 'destroy')->name('persons.destroy');
-        });
-    }
-
-    // Роуты для услуг
-    if ($modules['services'] && $modules['services']['is_active']) {
-        Route::controller(ServicesController::class)->group(function () {
-        Route::get('services-admin', 'index')->name('services-admin');
-        Route::get('add-services', 'create')->name('add-services');
-        Route::post('services', 'store')->name('services.store');
-        Route::get('services/{service}/edit', 'edit')->name('services.edit');
-        Route::post('services/{service}', 'update')->name('services.update');
-        Route::delete('services/{service}', 'destroy')->name('services.destroy');
-        });
-    }
 
  });
