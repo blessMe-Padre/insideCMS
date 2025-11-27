@@ -54,9 +54,11 @@ const rolesNames = [
     },
 ];
 
-export default function UserSettings({ users, roles }: { users: UserType[], roles: Role_userType[] }) {
+export default function UserSettings({ users, roles, auth_user }: { users: UserType[], roles: Role_userType[], auth_user: UserType }) {
     const deleteForm = useForm();
     const [processingUserId, setProcessingUserId] = useState<number | null>(null);
+
+    console.log(auth_user);
 
     const handleDelete = (userId: number) => {
         setProcessingUserId(userId);
@@ -120,47 +122,48 @@ export default function UserSettings({ users, roles }: { users: UserType[], role
                             <p>3 - Пользователь</p>
                         </PopoverContent>
                     </Popover>
-                </div>
-
+            </div>
 
             <div className="flex flex-col gap-4">
                 {users && users.length > 0 && users.map((user) => (
                     <div key={user.id} className="flex flex-col gap-2">
                         <h2 className="text-lg font-bold">{user.name}</h2>
                         <p className="text-sm text-gray-500">{user.email}</p>
-                        <Select
-                            value={String(userRoles[user.id] ?? '')}
-                            onValueChange={(value) =>
-                                setUserRoles((prev) => ({
-                                    ...prev,
-                                    [user.id]: Number(value),
-                                }))
-                            }
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder="Выберите роль" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {rolesNames.map((role) => (
-                                    <SelectItem 
-                                        key={role.id} 
-                                        value={String(role.id)}
-                                    >
-                                        {role.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
 
+                        <div className="flex items-center gap-2">
+                            <Select
+                                value={String(userRoles[user.id] ?? '')}
+                                onValueChange={(value) =>
+                                    setUserRoles((prev) => ({
+                                        ...prev,
+                                        [user.id]: Number(value),
+                                    }))
+                                }
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Выберите роль" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {rolesNames.map((role) => (
+                                        <SelectItem 
+                                            key={role.id} 
+                                            value={String(role.id)}
+                                        >
+                                            {role.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
 
-                        <button
-                            title="удалить"
-                            className="p-2 w-10 h-10 rounded-sm hover:bg-red-700 transition-colors cursor-pointer"
-                            onClick={() => handleDelete(user.id)}
-                        >
-                            {processingUserId === user.id ? (<LoaderCircle className="w-5 h-5 animate-spin" />) : (<Trash className="w-5 h-5" />)}
-                        </button>
-
+                            <button
+                                title="удалить"
+                                className="flex items-center justify-center p-2 w-10 h-10 rounded-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-red-700 transition-colors cursor-pointer"
+                                onClick={() => handleDelete(user.id)}
+                                disabled={auth_user.id === user.id}
+                            >
+                                {processingUserId === user.id ? (<LoaderCircle className="w-5 h-5 animate-spin" />) : (<Trash className="w-5 h-5" />)}
+                            </button>
+                        </div>
                     </div>
                 ))}
 

@@ -14,9 +14,11 @@ class UserSettinsController extends Controller
     {
         $users = User::all();
         $roles = Role_user::all();
+        $auth_user = auth()->user();
         return Inertia::render('admin/user-settings', [
             'users' => $users,
             'roles' => $roles,
+            'auth_user' => $auth_user,
         ]);
     }
 
@@ -33,6 +35,7 @@ class UserSettinsController extends Controller
 
     public function destroy(User $user)
     {
+
         $user->delete();
         return back()->with('success', 'Пользователь успешно удален');
     }
