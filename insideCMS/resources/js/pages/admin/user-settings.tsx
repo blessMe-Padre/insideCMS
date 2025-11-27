@@ -6,7 +6,9 @@ import { Head } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import { toast } from 'sonner';
-import { LoaderCircle, SaveIcon, Trash } from 'lucide-react';
+import { Info, LoaderCircle, SaveIcon, Trash } from 'lucide-react';
+import { Select, SelectContent, SelectTrigger, SelectValue, SelectItem } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -103,30 +105,53 @@ export default function UserSettings({ users, roles }: { users: UserType[], role
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Настройки пользователей" />
-            <h1 className="text-2xl font-bold mb-4">Настройки пользователей</h1>
+
+            <div className="flex items-center gap-2 mb-4">
+                    <h1 className="text-3xl font-bold text-foreground">Настройки пользователей</h1>
+                    <Popover>
+                        <PopoverTrigger>
+                            <Info />
+                        </PopoverTrigger>
+                        <PopoverContent className="background-lab w-full max-w-[450px]">
+                            <p>Для изменения роли пользователя, выберите роль из списка и нажмите кнопку "Сохранить".</p>
+                            <p>Роли:</p>
+                            <p>1 - Администратор</p>
+                            <p>2 - Менеджер</p>
+                            <p>3 - Пользователь</p>
+                        </PopoverContent>
+                    </Popover>
+                </div>
+
+
             <div className="flex flex-col gap-4">
-                
-                {users.map((user) => (
+                {users && users.length > 0 && users.map((user) => (
                     <div key={user.id} className="flex flex-col gap-2">
                         <h2 className="text-lg font-bold">{user.name}</h2>
                         <p className="text-sm text-gray-500">{user.email}</p>
-                        <select 
-                            name="role" 
-                            id="role"
+                        <Select
                             value={String(userRoles[user.id] ?? '')}
-                            onChange={(e) => setUserRoles((prev) => ({
-                                ...prev,
-                                [user.id]: Number(e.target.value),
-                            }))}
+                            onValueChange={(value) =>
+                                setUserRoles((prev) => ({
+                                    ...prev,
+                                    [user.id]: Number(value),
+                                }))
+                            }
                         >
-                            {rolesNames.map((role) => (
-                                <option 
-                                    key={role.id} 
-                                    value={role.id}>
-                                    {role.name}
-                                </option>
-                            ))}
-                        </select>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Выберите роль" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {rolesNames.map((role) => (
+                                    <SelectItem 
+                                        key={role.id} 
+                                        value={String(role.id)}
+                                    >
+                                        {role.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+
 
                         <button
                             title="удалить"
