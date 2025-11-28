@@ -82,9 +82,25 @@ export default function NewsAdmin({ news, links, total_pages, total}: NewsAdminP
     const handleShowSearchPanel = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         setShowSearch(!showSearch);
+
     };
 
     const handleSearchSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        if (data.query.trim() === '') return;
+
+        post('/admin/news-admin',{
+            onSuccess: (response) => {
+                reset();
+                console.log(response);
+            },
+            onError: () => {
+                toast.error('Ошибка при выполнении поиска');
+            }
+        });
+    }
+
+    const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
         e.preventDefault();
         if (data.query.trim() === '') return;
 
@@ -148,6 +164,8 @@ export default function NewsAdmin({ news, links, total_pages, total}: NewsAdminP
                         className="w-full" 
                         value={data.query}
                         onChange={(e) => setData('query', e.target.value)}
+                        onKeyUp={handleKeyUp}
+                        autoFocus
                     />
                     <button 
                         className="cursor-pointer" 
