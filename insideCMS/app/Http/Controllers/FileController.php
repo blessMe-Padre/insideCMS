@@ -53,6 +53,28 @@ class FileController extends Controller
 
     public function store(Request $request)
     {
+        // Валидация входящих данных
+        $validator = Validator::make($request->all(), [
+            'file' => [
+                'required',                      // файл обязателен
+                'file',                          // должен быть файлом
+                'max:10240',                     // максимум 10 МБ (в килобайтах)
+                'mimes:jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx,txt,zip,rar,webp,mp4', // допустимые MIME-типы
+            ],
+        ], [
+            'file.required' => 'Файл обязателен для загрузки.',
+            'file.file' => 'Поле должно содержать файл.',
+            'file.max' => 'Размер файла не должен превышать 10 МБ.',
+            'file.mimes' => 'Недопустимый формат файла. Разрешены: jpg, jpeg, png, gif, pdf, doc, docx, xls, xlsx, txt, zip, rar, webp, mp4.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'ok' => false,
+                'message' => $validator->errors()->first('file'),
+            ], 422);
+        }
+
         // файл лежит под ключом "file"
         $file = $request->file('file');
     
@@ -91,7 +113,6 @@ class FileController extends Controller
             'mime_type'   => $file->getMimeType(),
             'original'    => $originalName,
         ], 200);
-            
     }
 
     public function destroy(Request $request)
