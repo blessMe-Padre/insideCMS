@@ -32,10 +32,10 @@ class SearchController extends Controller
         ->select(
             'title',
             'description',
-            'content',
+            DB::raw("'' as content"),
             DB::raw("'service' as type"))
         ->whereAny([
-            'title', 'description', 'content'
+            'title', 'description'
         ], 'like', "%{$query}%");
 
         $newsResponse = News::query()
@@ -52,12 +52,11 @@ class SearchController extends Controller
         ->select(
             'name',
             DB::raw("'' as description"),
-            'content',
+            DB::raw("'' as content"),
             DB::raw("'personas' as type"))
         ->whereAny([
-            'name', 'content'
+            'name', 'slug'
         ], 'like', "%{$query}%");
-
 
         $unionResponse = $articlesResponse
             ->unionAll($servicesResponse)

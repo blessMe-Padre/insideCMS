@@ -19,10 +19,6 @@ class SearchController extends Controller
     public function index(Request $request)
     {
         $query = $request->input('query');
-        
-        // $response = Article::whereAny([
-        //     'title', 'slug'
-        // ], 'like', "%{$query}%")->limit(10)->get();
 
         $articlesResponse = Article::query()
         ->select(
@@ -38,10 +34,10 @@ class SearchController extends Controller
         ->select(
             'title',
             'description',
-            'content',
+            DB::raw("'' as content"),
             DB::raw("'service' as type"))
         ->whereAny([
-            'title', 'description', 'content'
+            'title', 'description'
         ], 'like', "%{$query}%");
 
         $newsResponse = News::query()
@@ -58,10 +54,10 @@ class SearchController extends Controller
         ->select(
             'name',
             DB::raw("'' as description"),
-            'content',
+            DB::raw("'' as content"),
             DB::raw("'personas' as type"))
         ->whereAny([
-            'name', 'content'
+            'name', 'slug'
         ], 'like', "%{$query}%");
 
 
