@@ -15,6 +15,7 @@ import AccordionComponent from '../AccordionComponent/AccordionComponent';
 import ListBlock from '../listBlock/ListBlock';
 import { personaAdmin } from '@/routes';
 import transliterateToSlug from '@/utils/transliterateToSlug';
+import { Input } from '@/components/ui/input';
 
 interface ArticleFormData {
     name: string;
@@ -48,9 +49,6 @@ export default function SectionsBuilderForm({ components }: { components: Compon
         content: [],
         images: [],
     });
-
-    console.log(data);
-
 
     const [elements, setElements] = useState<Element[]>([]);
     const [selectedElement, setSelectedElement] = useState<string>('');
@@ -197,7 +195,7 @@ export default function SectionsBuilderForm({ components }: { components: Compon
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                     Имя
                 </label>
-                <input 
+                <Input 
                     onChange={(e) => setData('name', e.target.value)}
                     placeholder="Введите имя..."
                     className="w-full p-2 border rounded"
@@ -207,7 +205,7 @@ export default function SectionsBuilderForm({ components }: { components: Compon
                 <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">
                     Slug
                 </label>
-                <input 
+                <Input 
                     value={data.slug}
                     onChange={(e) => setData('slug', e.target.value)}
                     placeholder="Введите slug..."

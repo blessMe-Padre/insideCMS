@@ -9,6 +9,7 @@ import { FileManagerFile } from '@cubone/react-file-manager';
 import { LoaderCircle, SaveIcon, TrashIcon } from 'lucide-react';
 import { newsAdmin } from '@/routes';
 import transliterateToSlug from '@/utils/transliterateToSlug';
+import { Input } from '@/components/ui/input';
 
 interface NewsFormData {
     title: string;
@@ -105,8 +106,6 @@ export default function NewsForm({ onSuccess }: NewsFormProps) {
         setData('slug', slug);
     }
 
-    console.log(data);
-
     return (
         <>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -114,16 +113,33 @@ export default function NewsForm({ onSuccess }: NewsFormProps) {
                     <label htmlFor="title" className="block text-foreground text-sm font-medium mb-1">
                         Заголовок *
                     </label>
-                    <input
+                    <Input
                         id="title"
                         type="text"
                         value={data.title}
                         onChange={(e) => setData('title', e.target.value)}
-                        className="w-full text-white px-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        required
+                        className="w-full p-2 border rounded"                        required
                     />
                     {errors.title && (
                         <p className="text-red-500 text-sm mt-1">{errors.title}</p>
+                    )}
+                </div>
+
+                <div>
+                    <label htmlFor="slug" className="block text-sm font-medium text-foreground mb-1">
+                        Slug *
+                    </label>
+                    <Input
+                        id="slug"
+                        type="text"
+                        value={data.slug}
+                        onChange={(e) => setData('slug', e.target.value)}
+                        className="w-full p-2 border rounded"                        required
+                    />
+                    <button className="cursor-pointer text-[10px] underline text-blue-500 transition-colors hover:text-blue-700" onClick={handleGenerateSlug}>Сгенерировать slug</button>
+
+                    {errors.slug && (
+                        <p className="text-red-500 text-sm mt-1">{errors.slug}</p>
                     )}
                 </div>
 
@@ -148,8 +164,7 @@ export default function NewsForm({ onSuccess }: NewsFormProps) {
                         id="excerpt"
                         value={data.excerpt}
                         onChange={(e) => setData('excerpt', e.target.value)}
-                        className="w-full text-white px-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        rows={2}
+                        className="w-full p-2 border rounded"                         rows={2}
                         required
                     />
                     {errors.excerpt && (
@@ -158,36 +173,16 @@ export default function NewsForm({ onSuccess }: NewsFormProps) {
                 </div>
 
                 <div>
-                    <label htmlFor="slug" className="block text-sm font-medium text-foreground mb-1">
-                        Slug *
-                    </label>
-                    <input
-                        id="slug"
-                        type="text"
-                        value={data.slug}
-                        onChange={(e) => setData('slug', e.target.value)}
-                        className="w-full text-white px-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        required
-                    />
-                    <button className="cursor-pointer text-[10px] underline text-blue-500 transition-colors hover:text-blue-700" onClick={handleGenerateSlug}>Сгенерировать slug</button>
-
-                    {errors.slug && (
-                        <p className="text-red-500 text-sm mt-1">{errors.slug}</p>
-                    )}
-                </div>
-
-                <div>
                     <label htmlFor="time_to_read" className="block text-sm font-medium text-foreground mb-1">
                         Время на чтение (минут) *
                     </label>
-                    <input
+                    <Input
                         id="time_to_read"
                         type="number"
                         min="1"
                         value={data.time_to_read}
                         onChange={(e) => setData('time_to_read', parseInt(e.target.value))}
-                        className="w-full text-white px-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        required
+                        className="w-full p-2 border rounded"                         required
                     />
                     {errors.time_to_read && (
                         <p className="text-red-500 text-sm mt-1">{errors.time_to_read}</p>

@@ -15,6 +15,7 @@ import AccordionComponent from '../AccordionComponent/AccordionComponent';
 import ListBlock from '../listBlock/ListBlock';
 import { pagesAdmin } from '@/routes';
 import transliterateToSlug from '@/utils/transliterateToSlug';
+import { Input } from '@/components/ui/input';
 
 interface ArticleFormData {
     name: string;
@@ -171,7 +172,7 @@ export default function PageBuilderForm({ components }: { components: Component[
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                     Название страницы
                 </label>
-                <input 
+                <Input 
                     onChange={(e) => setData('name', e.target.value)}
                     placeholder="Введите название страницы..."
                     className="w-full p-2 border rounded"
@@ -181,7 +182,7 @@ export default function PageBuilderForm({ components }: { components: Component[
                 <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">
                     Slug
                 </label>
-                <input 
+                <Input 
                     value={data.slug}
                     onChange={(e) => setData('slug', e.target.value)}
                     placeholder="Введите slug..."
@@ -194,7 +195,7 @@ export default function PageBuilderForm({ components }: { components: Component[
                 <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
                     Описание
                 </label>
-                <input 
+                <Input 
                     onChange={(e) => setData('description', e.target.value)}
                     placeholder="Введите описание..."
                     className="w-full p-2 border rounded"
@@ -211,7 +212,7 @@ export default function PageBuilderForm({ components }: { components: Component[
                     </div>
                     
                     {element.type === 'text-block' && (
-                        <input 
+                        <Input 
                             value={element.content || ''}
                             onChange={(e) => handleUpdateContent(element.id, e.target.value)}
                             placeholder="Введите текст..."

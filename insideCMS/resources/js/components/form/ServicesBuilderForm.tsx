@@ -15,6 +15,7 @@ import AccordionComponent from '../AccordionComponent/AccordionComponent';
 import ListBlock from '../listBlock/ListBlock';
 import { servicesAdmin } from '@/routes';
 import transliterateToSlug from '@/utils/transliterateToSlug';
+import { Input } from '@/components/ui/input';
 
 interface ServicesFormData {
     title: string;
@@ -241,7 +242,7 @@ export default function ServicesBuilderForm({ components, services, personas }: 
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                     Название
                 </label>
-                <input 
+                <Input 
                     onChange={(e) => setData('title', e.target.value)}
                     placeholder="Введите название..."
                     className="w-full p-2 border rounded"
@@ -251,7 +252,8 @@ export default function ServicesBuilderForm({ components, services, personas }: 
                 <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">
                     Slug
                 </label>
-                <input 
+                <Input 
+                    value={data.slug}
                     onChange={(e) => setData('slug', e.target.value)}
                     placeholder="Введите slug..."
                     className="w-full p-2 border rounded"
@@ -263,7 +265,7 @@ export default function ServicesBuilderForm({ components, services, personas }: 
                 <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">
                     Описание
                 </label>
-                <input 
+                <Input 
                     onChange={(e) => setData('description', e.target.value)}
                     placeholder="Введите описание..."
                     className="w-full p-2 border rounded"

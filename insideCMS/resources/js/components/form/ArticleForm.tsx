@@ -9,6 +9,7 @@ import { FileManagerFile } from '@cubone/react-file-manager';
 import { LoaderCircle, SaveIcon, TrashIcon } from 'lucide-react';
 import { articlesAdmin } from '@/routes';
 import transliterateToSlug from '@/utils/transliterateToSlug';
+import { Input } from '@/components/ui/input';
 
 
 interface ArticleFormData {
@@ -94,7 +95,8 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
         });
     };
 
-    const handleGenerateSlug = () => {
+    const handleGenerateSlug = (e: React.MouseEvent) => {
+        e.preventDefault();
         const slug = transliterateToSlug(data.title);
         setData('slug', slug);
     }
@@ -108,16 +110,34 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
                     <label htmlFor="title" className="block text-foreground text-sm font-medium mb-1">
                         Заголовок *
                     </label>
-                    <input
+                    <Input
                         id="title"
                         type="text"
                         value={data.title}
                         onChange={(e) => setData('title', e.target.value)}
-                        className="w-full text-whitepx-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full p-2 border rounded"
                         required
                     />
                     {errors.title && (
                         <p className="text-red-500 text-sm mt-1">{errors.title}</p>
+                    )}
+                </div>
+
+                <div>
+                    <label htmlFor="slug" className="block text-sm font-medium text-foreground mb-1">
+                        Slug *
+                    </label>
+                    <Input
+                        id="slug"
+                        type="text"
+                        value={data.slug}
+                        onChange={(e) => setData('slug', e.target.value)}
+                        className="w-full p-2 border rounded"                        required
+                    />
+                    <button className="cursor-pointer text-[10px] underline text-blue-500 transition-colors hover:text-blue-700" onClick={handleGenerateSlug}>Сгенерировать slug</button>
+
+                    {errors.slug && (
+                        <p className="text-red-500 text-sm mt-1">{errors.slug}</p>
                     )}
                 </div>
 
@@ -131,25 +151,6 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
                     />  
                     {errors.content && (
                         <p className="text-red-500 text-sm mt-1">{errors.content}</p>
-                    )}
-                </div>
-
-                <div>
-                    <label htmlFor="slug" className="block text-sm font-medium text-foreground mb-1">
-                        Slug *
-                    </label>
-                    <input
-                        id="slug"
-                        type="text"
-                        value={data.slug}
-                        onChange={(e) => setData('slug', e.target.value)}
-                        className="w-full text-whitepx-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        required
-                    />
-                    <button className="cursor-pointer text-[10px] underline text-blue-500 transition-colors hover:text-blue-700" onClick={handleGenerateSlug}>Сгенерировать slug</button>
-
-                    {errors.slug && (
-                        <p className="text-red-500 text-sm mt-1">{errors.slug}</p>
                     )}
                 </div>
 

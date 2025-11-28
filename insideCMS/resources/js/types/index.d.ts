@@ -111,6 +111,7 @@ export interface Persona {
     id: number;
     title: string;
     content: string;
+    name: string;
     slug: string;
     created_at: string;
     updated_at: string;

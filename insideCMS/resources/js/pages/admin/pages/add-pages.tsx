@@ -43,6 +43,7 @@ export default function AddPages({ components }: { components: Component[] }) {
                     <Info />
                     <AlertDescription>
                         <p>Для транслита используйте <a className="text-blue-500 hover:text-blue-700" href="https://www.itranslit.com/" target="_blank">этот сервис</a></p>
+                        <p>Тексты форматируйте с помощью <a className="text-blue-500 hover:text-blue-700" href="https://www.artlebedev.ru/typograf/" target="_blank">Типографа</a></p>
                     </AlertDescription>
                  </Alert>
                 <PageBuilderForm components={components}/>
