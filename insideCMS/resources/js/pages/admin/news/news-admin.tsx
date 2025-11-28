@@ -90,9 +90,9 @@ export default function NewsAdmin({ news, links, total_pages, total}: NewsAdminP
         if (data.query.trim() === '') return;
 
         post('/admin/news-admin',{
-            onSuccess: (response) => {
+            onSuccess: () => {
                 reset();
-                console.log(response);
+                setShowSearch(false);
             },
             onError: () => {
                 toast.error('Ошибка при выполнении поиска');
@@ -105,9 +105,9 @@ export default function NewsAdmin({ news, links, total_pages, total}: NewsAdminP
         if (data.query.trim() === '') return;
 
         post('/admin/news-admin',{
-            onSuccess: (response) => {
+            onSuccess: () => {
                 reset();
-                console.log(response);
+                setShowSearch(false);
             },
             onError: () => {
                 toast.error('Ошибка при выполнении поиска');

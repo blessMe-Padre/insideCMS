@@ -2,13 +2,14 @@ import AppLayout from '@/layouts/app-layout';
 import { addArticleAdmin, dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm, router, Link } from '@inertiajs/react';
-import { Plus, Lock} from 'lucide-react';
+import { Plus, Lock, Search, Loader2} from 'lucide-react';
 import { useState } from 'react';
 import { toast } from "sonner";
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import ToggleLayout from '@/components/ToggleLayout/ToggleLayout';
 import TaxonomyItem from '@/components/TaxonomyItem/TaxonomyItem';
+import { Input } from '@/components/ui/input';
 
 interface ArticlesAdminPageProps {
     articles: Articles[];
@@ -48,6 +49,11 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function ArticlesAdmin({ articles, links, total_pages, total }: ArticlesAdminPageProps) {
     const deleteForm = useForm();
     const [processingNewsId, setProcessingNewsId] = useState<number | null>(null);
+    const [showSearch, setShowSearch] = useState(false);
+
+    const { data, setData, post, processing, reset } = useForm({
+        query: '',
+    });
 
     const handleDelete = (id: number) => {
         setProcessingNewsId(id);
@@ -66,6 +72,43 @@ export default function ArticlesAdmin({ articles, links, total_pages, total }: A
     const handleEdit = (id: number) => {
         router.visit(`articles/${id}/edit`);
     };
+
+    const handleShowSearchPanel = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        setShowSearch(!showSearch);
+
+    };
+
+    const handleSearchSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        if (data.query.trim() === '') return;
+
+        post('/admin/articles-admin',{
+            onSuccess: () => {
+                reset();
+                setShowSearch(false);
+            },
+            onError: () => {
+                toast.error('Ошибка при выполнении поиска');
+            }
+        });
+    }
+
+    const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        if (data.query.trim() === '') return;
+
+        post('/admin/articles-admin',{
+            onSuccess: () => {
+                reset();
+                setShowSearch(false);
+            },
+            onError: () => {
+                toast.error('Ошибка при выполнении поиска');
+            }
+        });
+    }
+
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -96,7 +139,41 @@ export default function ArticlesAdmin({ articles, links, total_pages, total }: A
                     </Link>
                 </div>
 
-                <ToggleLayout />
+                <div className="flex items-center gap-2">
+                    <ToggleLayout />
+                    <button 
+                        title="Открыть панель поиска"
+                        onClick={handleShowSearchPanel}
+                        className="cursor-pointer mb-4"
+                    >
+                        <Search className="w-5 h-5" />
+                    </button>
+                </div>
+
+                {showSearch && (
+                <div className="mb-4 flex items-center gap-2">
+                    <Input 
+                        type="text" 
+                        name="query" 
+                        placeholder="Поиск по названию" 
+                        className="w-full" 
+                        value={data.query}
+                        onChange={(e) => setData('query', e.target.value)}
+                        onKeyUp={handleKeyUp}
+                        autoFocus
+                    />
+                    <button 
+                        className="cursor-pointer" 
+                        onClick={handleSearchSubmit}
+                    >
+                        {processing ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                            <Search className="w-5 h-5" />
+                        )}
+                    </button>
+                </div>
+                )}
 
                 {articles.length === 0 ? (
                     <div className="text-center py-12">

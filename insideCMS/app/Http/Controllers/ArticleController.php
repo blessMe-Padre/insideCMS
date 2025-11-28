@@ -8,17 +8,14 @@ use Inertia\Inertia;
 
 class ArticleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function adminShow(Request $request)
     {
-        //
-    }
-
-    public function adminShow()
-    {
-        $articles = Article::paginate(6);
+        $query = $request->get('query');
+        $articles = Article::query();
+        if ($query) {
+            $articles->where('title', 'like', '%' . $query . '%');
+        }
+        $articles = $articles->paginate(6);
 
         return Inertia::render('admin/articles/articles-admin', [
             'articles' => $articles->items(),

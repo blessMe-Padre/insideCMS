@@ -52,6 +52,7 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\AdminAccess::class])
     if ($modules['articles'] && $modules['articles']['is_active']) {
         Route::controller(ArticleController::class)->group(function () {
             Route::get('articles-admin', 'adminShow')->name('articles-admin');
+            Route::post('articles-admin', 'adminShow');
             Route::get('add-article-admin', 'create')->name('add-article-admin');
             // Роуты для добавления, редактирования и удаления статей
             Route::post('articles/add', 'store')->name('articles.store');
