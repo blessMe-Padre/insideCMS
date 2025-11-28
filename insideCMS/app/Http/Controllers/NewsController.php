@@ -8,10 +8,15 @@ use App\Models\News;
 
 class NewsController extends Controller
 {
-    public function adminShow()
+    public function adminShow(Request $request)
     {
-
-        $news = News::paginate(3);
+        $query = $request->get('query');
+        
+        $news = News::query();
+        if ($query) {
+            $news->where('title', 'like', '%' . $query . '%');
+        }
+        $news = $news->paginate(3);
 
         return Inertia::render('admin/news/news-admin', [
             'news' => $news->items(),

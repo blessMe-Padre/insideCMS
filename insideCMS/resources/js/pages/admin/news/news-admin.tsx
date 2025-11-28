@@ -2,7 +2,7 @@ import AppLayout from '@/layouts/app-layout';
 import { addNewsAdmin, dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm, router } from '@inertiajs/react';
-import { Plus, Lock } from 'lucide-react';
+import { Plus, Lock, Search, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from "sonner";
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -11,11 +11,9 @@ import ToggleLayout from '@/components/ToggleLayout/ToggleLayout';
 import TaxonomyItem from '@/components/TaxonomyItem/TaxonomyItem';
 
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-
+import { Input } from '@/components/ui/input';
 
 /**
- * TODO: добавить пагинацию
- * TODO: добавить поиск по названию новости (доработать )
  * TODO: добавить сортировку по дате создания
  */
 
@@ -57,6 +55,11 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function NewsAdmin({ news, links, total_pages, total}: NewsAdminPageProps) {
     const deleteForm = useForm();
     const [processingNewsId, setProcessingNewsId] = useState<number | null>(null);
+    const [showSearch, setShowSearch] = useState(false);
+
+    const { data, setData, post, processing, reset } = useForm({
+        query: '',
+    });
 
     const handleDelete = (id: number) => {
         setProcessingNewsId(id);
@@ -75,6 +78,26 @@ export default function NewsAdmin({ news, links, total_pages, total}: NewsAdminP
     const handleEdit = (id: number) => {
         router.visit(`news/${id}/edit`);
     };
+
+    const handleShowSearchPanel = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        setShowSearch(!showSearch);
+    };
+
+    const handleSearchSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        if (data.query.trim() === '') return;
+
+        post('/admin/news-admin',{
+            onSuccess: (response) => {
+                reset();
+                console.log(response);
+            },
+            onError: () => {
+                toast.error('Ошибка при выполнении поиска');
+            }
+        });
+    }
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -104,7 +127,41 @@ export default function NewsAdmin({ news, links, total_pages, total}: NewsAdminP
                         Создать новость 
                     </Link>
                 </div>
-                <ToggleLayout />
+
+                <div className="flex items-center gap-2">
+                    <ToggleLayout />
+                    <button 
+                        title="Открыть панель поиска"
+                        onClick={handleShowSearchPanel}
+                        className="cursor-pointer mb-4"
+                    >
+                        <Search className="w-5 h-5" />
+                    </button>
+                </div>
+
+                {showSearch && (
+                <div className="mb-4 flex items-center gap-2">
+                    <Input 
+                        type="text" 
+                        name="query" 
+                        placeholder="Поиск по названию" 
+                        className="w-full" 
+                        value={data.query}
+                        onChange={(e) => setData('query', e.target.value)}
+                    />
+                    <button 
+                        className="cursor-pointer" 
+                        onClick={handleSearchSubmit}
+                    >
+                        {processing ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                            <Search className="w-5 h-5" />
+                        )}
+                    </button>
+                </div>
+                )}
+
                 {news.length === 0 ? (
                     <div className="text-center py-12">
                         <p className="text-gray-500 text-lg">Пока нет опубликованных новостей.</p>

@@ -18,10 +18,6 @@ class SearchController extends Controller
     {
         $query = $request->input('query');
         
-        // $response = Article::whereAny([
-        //     'title', 'slug'
-        // ], 'like', "%{$query}%")->limit(10)->get();
-
         $articlesResponse = Article::query()
         ->select(
             'title',

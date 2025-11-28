@@ -41,6 +41,7 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\AdminAccess::class])
         Route::controller(NewsController::class)->group(function () {
             Route::post('news', 'store')->name('news.store');
             Route::get('news-admin', 'adminShow')->name('news-admin');
+            Route::post('news-admin', 'adminShow');
             Route::get('add-news-admin', 'create')->name('add-news-admin');
             Route::get('news/{news}/edit', 'edit')->name('news.edit');
             Route::post('news/{news}', 'update')->name('news.update');
