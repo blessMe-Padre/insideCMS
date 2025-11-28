@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { FileManagerFile } from '@cubone/react-file-manager';
 import { LoaderCircle, LockIcon, SaveIcon, TrashIcon } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Input } from '@/components/ui/input';
 
 interface News {
     id: number;
@@ -151,13 +152,12 @@ export default function EditNewsAdmin({ news }: EditNewsAdminPageProps) {
                         <label htmlFor="title" className="block text-foreground text-sm font-medium mb-1">
                             Заголовок *
                         </label>
-                        <input
+                        <Input
                             id="title"
                             type="text"
                             value={data.title}
                             onChange={(e) => setData('title', e.target.value)}
-                            className="w-full text-foreground px-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            required
+                            className="w-full p-2 border rounded"                            required
                         />
                         {errors.title && (
                             <p className="text-red-500 text-sm mt-1">{errors.title}</p>
@@ -198,13 +198,12 @@ export default function EditNewsAdmin({ news }: EditNewsAdminPageProps) {
                         <label htmlFor="slug" className="block text-sm font-medium text-foreground mb-1">
                             Slug *
                         </label>
-                        <input
+                        <Input
                             id="slug"
                             type="text"
                             value={data.slug}
                             onChange={(e) => setData('slug', e.target.value)}
-                            className="w-full text-foreground px-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            required
+                            className="w-full p-2 border rounded"                            required
                         />
                         {errors.slug && (
                             <p className="text-red-500 text-sm mt-1">{errors.slug}</p>
@@ -215,14 +214,13 @@ export default function EditNewsAdmin({ news }: EditNewsAdminPageProps) {
                         <label htmlFor="time_to_read" className="block text-sm font-medium text-foreground mb-1">
                             Время на чтение (минут) *
                         </label>
-                        <input
+                        <Input
                             id="time_to_read"
                             type="number"
                             min="1"
                             value={data.time_to_read}
                             onChange={(e) => setData('time_to_read', parseInt(e.target.value))}
-                            className="w-full text-foreground px-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            required
+                            className="w-full p-2 border rounded"                            required
                         />
                         {errors.time_to_read && (
                             <p className="text-red-500 text-sm mt-1">{errors.time_to_read}</p>
