@@ -14,6 +14,7 @@ import Popup from '../popup/Popup';
 import AccordionComponent from '../AccordionComponent/AccordionComponent';
 import ListBlock from '../listBlock/ListBlock';
 import { personaAdmin } from '@/routes';
+import transliterateToSlug from '@/utils/transliterateToSlug';
 
 interface ArticleFormData {
     name: string;
@@ -40,13 +41,16 @@ interface Component {
 }
 
 export default function SectionsBuilderForm({ components }: { components: Component[] }) {
-       const { setData, post, processing, reset } = useForm<ArticleFormData>({
+       const { data, setData, post, processing, reset } = useForm<ArticleFormData>({
         name: '',
         slug: '',
         elements: [],
         content: [],
         images: [],
     });
+
+    console.log(data);
+
 
     const [elements, setElements] = useState<Element[]>([]);
     const [selectedElement, setSelectedElement] = useState<string>('');
@@ -181,6 +185,12 @@ export default function SectionsBuilderForm({ components }: { components: Compon
         });
     }
 
+    const handleGenerateSlug = (e: React.MouseEvent) => {
+        e.preventDefault();
+        const slug = transliterateToSlug(data.name);
+        setData('slug', slug);
+    }
+
     return (
         <>
            <div className="mb-4">
@@ -198,10 +208,12 @@ export default function SectionsBuilderForm({ components }: { components: Compon
                     Slug
                 </label>
                 <input 
+                    value={data.slug}
                     onChange={(e) => setData('slug', e.target.value)}
                     placeholder="Введите slug..."
                     className="w-full p-2 border rounded"
                 />
+                <button className="cursor-pointer text-[10px] underline text-blue-500 transition-colors hover:text-blue-700" onClick={handleGenerateSlug}>Сгенерировать slug</button>
            </div>
            <div className="mb-4">
                 <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">

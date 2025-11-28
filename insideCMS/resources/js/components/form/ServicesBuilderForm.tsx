@@ -14,6 +14,7 @@ import Popup from '../popup/Popup';
 import AccordionComponent from '../AccordionComponent/AccordionComponent';
 import ListBlock from '../listBlock/ListBlock';
 import { servicesAdmin } from '@/routes';
+import transliterateToSlug from '@/utils/transliterateToSlug';
 
 interface ServicesFormData {
     title: string;
@@ -228,6 +229,12 @@ export default function ServicesBuilderForm({ components, services, personas }: 
         setData('personaIds', next);
     }
 
+    const handleGenerateSlug = (e: React.MouseEvent) => {
+        e.preventDefault();
+        const slug = transliterateToSlug(data.title);
+        setData('slug', slug);
+    }
+
     return (
         <>
            <div className="mb-4">
@@ -249,6 +256,8 @@ export default function ServicesBuilderForm({ components, services, personas }: 
                     placeholder="Введите slug..."
                     className="w-full p-2 border rounded"
                 />
+                <button className="cursor-pointer text-[10px] underline text-blue-500 transition-colors hover:text-blue-700" onClick={handleGenerateSlug}>Сгенерировать slug</button>
+
            </div>
            <div className="mb-4">
                 <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">

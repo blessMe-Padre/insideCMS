@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { FileManagerFile } from '@cubone/react-file-manager';
 import { LoaderCircle, SaveIcon, TrashIcon } from 'lucide-react';
 import { newsAdmin } from '@/routes';
+import transliterateToSlug from '@/utils/transliterateToSlug';
 
 interface NewsFormData {
     title: string;
@@ -98,6 +99,14 @@ export default function NewsForm({ onSuccess }: NewsFormProps) {
         });
     };
 
+    const handleGenerateSlug = (e: React.MouseEvent) => {
+        e.preventDefault();
+        const slug = transliterateToSlug(data.title);
+        setData('slug', slug);
+    }
+
+    console.log(data);
+
     return (
         <>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -160,6 +169,8 @@ export default function NewsForm({ onSuccess }: NewsFormProps) {
                         className="w-full text-white px-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         required
                     />
+                    <button className="cursor-pointer text-[10px] underline text-blue-500 transition-colors hover:text-blue-700" onClick={handleGenerateSlug}>Сгенерировать slug</button>
+
                     {errors.slug && (
                         <p className="text-red-500 text-sm mt-1">{errors.slug}</p>
                     )}
