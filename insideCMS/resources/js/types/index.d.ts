@@ -135,10 +135,12 @@ export interface PersonaAdminPageProps {
 export interface Section {
     id: number;
     name: string;
+    title: string;
     slug: string;
     description: string;
     created_at: string;
     title: string;
+    images: string[];
 }
 
 export interface Section_component {

@@ -1,5 +1,6 @@
 import placeholder from '/public/placeholder.svg';
 import { Edit, LoaderCircle,  Trash } from 'lucide-react';
+import { Button } from '../ui/button';
 
 /**
  * В таблице заголовки для записей такого типа могут быть title или name
@@ -12,11 +13,11 @@ interface TaxonomyItemProps {
         id: number;
         title: string;
         name?: string;
-        content: string;
+        content?: string;
         slug: string;
         created_at: string;
-        updated_at: string;
-        excerpt: string;
+        updated_at?: string;
+        excerpt?: string;
         images: string[];
     };
     handleDelete: (id: number) => void;
@@ -27,8 +28,7 @@ interface TaxonomyItemProps {
 export default function TaxonomyItem( { item, handleDelete, handleEdit, processingNewsId }: TaxonomyItemProps) {
 
     return (
-        <li key={item.id} className="flex justify-between gap-4 p-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow 
-        " style={{ borderColor: 'var(--foreground)' }}>
+        <li key={item.id} className="flex justify-between items-end gap-4 px-4 py-3 rounded-sm shadow-md border hover:shadow-lg transition-shadow">
 
         <div className="flex justify-between gap-4">
             <img 
@@ -63,14 +63,16 @@ export default function TaxonomyItem( { item, handleDelete, handleEdit, processi
                 <Edit className="w-5 h-5" />
             </button>
 
-            <button
-             title="удалить"
-             className="px-2 py-2 rounded-sm hover:bg-red-700 transition-colors cursor-pointer"
-             onClick={() => handleDelete(item.id)}
+            <Button
+                title="удалить"
+                variant="destructive"
+                size="icon"
+                className="cursor-pointer"
+                onClick={() => handleDelete(item.id)}
              >
                 {processingNewsId === item.id ? (<LoaderCircle className="w-5 h-5 animate-spin" />) : (<Trash className="w-5 h-5" />)}
                
-            </button>
+            </Button>
         </div>
     </li>
     );

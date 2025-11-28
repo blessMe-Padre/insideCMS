@@ -90,8 +90,7 @@ export default function ArticlesAdmin({ articles, links, total_pages, total }: A
                     <p className="text-gray-500 text-lg">Всего статей: {total}</p>
                     <Link
                         href={addArticleAdmin()}
-                        className="bg-blue-600 flex items-center gap-2 cursor-pointer text-white px-4 py-2 rounded-sm hover:bg-blue-700 transition-colors"
-                    >
+                        className="shadow-[0_4px_14px_0_rgb(0,118,255,39%)] hover:shadow-[0_6px_20px_rgba(0,118,255,23%)] hover:bg-[rgba(0,118,255,0.9)] px-8 py-2 bg-[#0070f3] rounded-md text-white font-light transition duration-200 ease-linear flex items-center gap-2 cursor-pointer"                    >
                         <Plus className="w-5 h-5" />
                         Добавить статью
                     </Link>
