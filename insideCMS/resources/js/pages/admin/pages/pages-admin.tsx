@@ -90,7 +90,6 @@ export default function PagesAdmin({ pages}: { pages: Page[] }) {
                     <div className="block">
                         {pages.map((item) => (
                             <TaxonomyItem key={item.id} item={item} handleEdit={handleEdit} handleDelete={handleDelete} processingNewsId={processingNewsId} />
-
                         ))}
                     </div>
                 )}

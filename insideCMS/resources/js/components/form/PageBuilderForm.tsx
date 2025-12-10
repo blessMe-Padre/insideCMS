@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { router, useForm } from '@inertiajs/react';
 import { FileManagerFile } from '@cubone/react-file-manager';
 
@@ -41,7 +41,6 @@ interface Component {
     content?: string;
     type: string;
 }
-
 export default function PageBuilderForm({ components }: { components: Component[] }) {
        const { data, setData, post, processing, reset } = useForm<ArticleFormData>({
         name: '',
@@ -66,13 +65,59 @@ export default function PageBuilderForm({ components }: { components: Component[
         setData('elements', updatedElements);
     }, [elements, setData]);
 
-    useEffect(() => {
-        if (selectedFiles.length > 0 && currentImageElementId) {
-            const imageUrls = selectedFiles.map((file) => file.path);
-            handleUpdateContent(currentImageElementId, JSON.stringify(imageUrls));
-            setSelectedFiles([]); // Очищаем выбранные файлы после обработки
+    const handleFileSelection = (files: FileManagerFile[]) => {
+        setSelectedFiles(files);
+
+        if (currentImageElementId) {
+            const imageUrls = files.map((file) => file.path);
+            const updatedElements = elements.map((element) => 
+                element.id === currentImageElementId
+                    ? { ...element, content: JSON.stringify(imageUrls) }
+                    : element
+            );
+
+            setElements(updatedElements);
+            setData('elements', updatedElements);
         }
-    }, [selectedFiles, currentImageElementId, handleUpdateContent]);
+    };
+
+    const handleRemoveFile = (e: React.FormEvent, elementId: string, fileIndex: number) => {
+        e.preventDefault();
+
+        if (currentImageElementId === elementId && selectedFiles.length > 0) {
+            const updatedSelectedFiles = selectedFiles.filter((_, index) => index !== fileIndex);
+            setSelectedFiles(updatedSelectedFiles);
+
+            const imageUrls = updatedSelectedFiles.map((file) => file.path);
+            const updatedElements = elements.map((element) =>
+                element.id === elementId
+                    ? { ...element, content: JSON.stringify(imageUrls) }
+                    : element
+            );
+
+            setElements(updatedElements);
+            setData('elements', updatedElements);
+            return;
+        }
+
+        const updatedElements = elements.map((element) => {
+            if (element.id !== elementId) return element;
+
+            try {
+                const images = element.content ? JSON.parse(element.content) : [];
+                const nextImages = Array.isArray(images)
+                    ? images.filter((_, index) => index !== fileIndex)
+                    : [];
+
+                return { ...element, content: JSON.stringify(nextImages) };
+            } catch {
+                return { ...element, content: '[]' };
+            }
+        });
+
+        setElements(updatedElements);
+        setData('elements', updatedElements);
+    };
 
     const handleAddElement = () => {
         if (!selectedElement) return;
@@ -150,12 +195,18 @@ export default function PageBuilderForm({ components }: { components: Component[
         e.preventDefault();
 
         post('pages', {
-                onSuccess: () => {
-                    reset();
-                    toast.success('Страница создана успешно');
+            onSuccess: (page) => {
+                const successMessage = (page.props.flash as { success?: string })?.success;
+                if (successMessage) {
+                    toast.success(successMessage);
+                }
+                reset();
             },
-            onError: () => {
-                toast.error('Ошибка при создании страницы');
+            onError: (errors) => {
+                const errorMessage = (errors.post as { error?: string })?.error;
+                if (errorMessage) {
+                    toast.error(errorMessage);
+                }
             },
         });
     }
@@ -226,45 +277,81 @@ export default function PageBuilderForm({ components }: { components: Component[
 
                     {element.type === 'image-block' && (
                         <>
-                           {element.content && (() => {
-                                try {
-                                    const images = JSON.parse(element.content);
-                                    return Array.isArray(images) && images.length > 0;
-                                } catch {
-                                    return false;
+                            {(() => {
+                                if (currentImageElementId === element.id && selectedFiles.length > 0) {
+                                    return (
+                                        <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                                            {selectedFiles.map((file, index) => (
+                                                <div className="relative" key={`selected-wrapper-${index}`}>
+                                                    <button
+                                                        key={`remove-${index}`}
+                                                        className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700"
+                                                        onClick={(e) => handleRemoveFile(e, element.id, index)}
+                                                    >
+                                                        <TrashIcon className="w-4 h-4" />
+                                                    </button>
+                                                    <img
+                                                        key={`selected-${index}`}
+                                                        src={file.path}
+                                                        alt={`Selected ${index + 1}`}
+                                                        className="w-20 h-20 object-cover rounded-md border border-blue-500"
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    );
                                 }
-                            })() && (
-                                <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                                    {(() => {
-                                        try {
-                                            return JSON.parse(element.content).map((image: string, index: number) => (
-                                                <img 
-                                                    key={`preview-${index}`}
-                                                    src={image} 
-                                                    alt={`Preview ${index + 1}`} 
-                                                    className="w-20 h-20 object-cover rounded-md border" 
-                                                />
-                                            ));
-                                        } catch {
-                                            return null;
-                                        }
-                                    })()}
-                                </div>
-                            )}
 
-                          <Button 
-                              variant="outline" 
-                              onClick={(e) => {
-                                e.preventDefault();
-                                setCurrentImageElementId(element.id);
-                                setActivePopup(true);
-                            }}>Выбрать файл</Button>
-                            
+                                if (element.content) {
+                                    try {
+                                        const images = JSON.parse(element.content);
+                                        if (Array.isArray(images) && images.length > 0) {
+                                            return (
+                                                <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                                                    {images.map((image: string, index: number) => (
+                                                        <div key={`image-${index}`} className="relative">
+                                                            <button
+                                                                className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700"
+                                                                key={`remove-${index}`}
+                                                                onClick={(e) => handleRemoveFile(e, element.id, index)}
+                                                            >
+                                                                <TrashIcon className="w-4 h-4" />
+                                                            </button>
+                                                            <img
+                                                                key={`preview-${index}`}
+                                                                src={image}
+                                                                alt={`Preview ${index + 1}`}
+                                                                className="w-20 h-20 object-cover rounded-md border"
+                                                            />
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            );
+                                        }
+                                    } catch {
+                                        return null;
+                                    }
+                                }
+
+                                return null;
+                            })()}
+
+                            <Button
+                                variant="outline"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setCurrentImageElementId(element.id);
+                                    setActivePopup(true);
+                                }}
+                            >
+                                Выбрать файл
+                            </Button>
+
                             <Popup activePopup={activePopup} setActivePopup={setActivePopup}>
-                                <FileManagerComponent 
+                                <FileManagerComponent
                                     initialFiles={[]}
                                     setActivePopup={setActivePopup}
-                                    setSelectedFiles={setSelectedFiles}
+                                    setSelectedFiles={handleFileSelection}
                                 />
                             </Popup>
                         </>

@@ -8,6 +8,11 @@ use App\Models\Page;
 use App\Models\Component;
 use App\Models\Page_component;
 
+/**
+ * В return добавлены проверки на успешность операции
+ * сообщения ошибок и успеха прокидываются в flash и отображаются в toasts
+ */
+
 class PageController extends Controller
 {
 
@@ -44,7 +49,6 @@ class PageController extends Controller
             'description' => $request->description,
         ]);
 
-
         foreach ($request->elements as $element) {
             $contentJson = json_decode($element['content'], true);
 
@@ -58,7 +62,16 @@ class PageController extends Controller
             Page_component::create($elementData);
         }
 
-        return redirect()->route('pages-admin')->with('success', 'Страница создана');
+        if ($page) {
+            return redirect()
+                ->route('pages-admin')
+                ->with('success', 'Страница успешно создана');
+        }
+        
+        return redirect()
+            ->route('pages-admin')
+            ->with('error', 'Произошла ошибка при создании страницы');
+
     }
 
     /**
@@ -114,7 +127,15 @@ class PageController extends Controller
             }
         }
 
-        return redirect()->route('pages-admin')->with('success', 'Страница обновлена');
+        if ($page) {
+            return redirect()
+                ->route('pages-admin')
+                ->with('success', 'Страница успешно обновлена');
+        }
+
+        return redirect()
+            ->route('pages-admin')
+            ->with('error', 'Произошла ошибка при обновлении страницы');
     }
 
     /**
@@ -123,6 +144,14 @@ class PageController extends Controller
     public function destroy(Page $page)
     {
             $page->delete();
-            return redirect()->route('pages-admin')->with('success', 'Страница удалена');
+            if ($page) {
+                return redirect()
+                    ->route('pages-admin')
+                    ->with('success', 'Страница успешно удалена');
+            }
+
+            return redirect()
+                ->route('pages-admin')
+                ->with('error', 'Произошла ошибка при удалении страницы');
     }
 }
