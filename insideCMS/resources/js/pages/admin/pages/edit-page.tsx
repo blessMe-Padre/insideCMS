@@ -13,6 +13,7 @@ import Popup from '@/components/popup/Popup';
 import { FileManagerFile } from '@cubone/react-file-manager';
 import AccordionComponent from '@/components/AccordionComponent/AccordionComponent';
 import ListBlock from '@/components/listBlock/ListBlock';
+import { Input } from '@/components/ui/input';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -166,12 +167,12 @@ export default function EditPage({ page, components }: { page: Page, components:
                         <label htmlFor="title" className="block text-foreground text-sm font-medium mb-1">
                             Название *
                         </label>
-                        <input
+                        <Input  
                             id="name"
                             type="text"
                             value={data.name}
                             onChange={(e) => setData('name', e.target.value)}
-                            className="w-full text-foreground px-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full p-2 border rounded"
                             required
                         />
                         {errors.name && (
@@ -182,12 +183,12 @@ export default function EditPage({ page, components }: { page: Page, components:
                         <label htmlFor="title" className="block text-foreground text-sm font-medium mb-1">
                             Slug *
                         </label>
-                        <input
+                        <Input
                             id="slug"
                             type="text"
                             value={data.slug}
                             onChange={(e) => setData('slug', e.target.value)}
-                            className="w-full text-foreground px-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full p-2 border rounded"
                             required
                         />
                         {errors.slug && (
@@ -198,12 +199,12 @@ export default function EditPage({ page, components }: { page: Page, components:
                         <label htmlFor="title" className="block text-foreground text-sm font-medium mb-1">
                             Описание *
                         </label>
-                        <input
+                        <Input
                             id="description"
                             type="text"
                             value={data.description}
                             onChange={(e) => setData('description', e.target.value)}
-                            className="w-full text-foreground px-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full p-2 border rounded"
                             required
                         />
                         {errors.description && (
@@ -218,7 +219,7 @@ export default function EditPage({ page, components }: { page: Page, components:
                         </div>
                     
                     {element.component_type === 'text' && (
-                        <input 
+                        <Input 
                             id={`text-input-${element.id}`}
                             value={element.data?.[0] || ''}
                             onChange={(e) => handleUpdateContent(element.id, e.target.value)}

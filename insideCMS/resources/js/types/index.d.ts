@@ -158,6 +158,9 @@ export interface Page {
     description: string;
     created_at: string;
     title: string;
+    content: string;
+    excerpt: string;
+    images: string[];
 }
 
 export interface Page_component {

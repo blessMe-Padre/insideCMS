@@ -10,13 +10,6 @@ use App\Models\Page_component;
 
 class PageController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
 
     public function adminShow()
     {
@@ -69,14 +62,6 @@ class PageController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
     public function edit(Page $page)
@@ -118,7 +103,7 @@ class PageController extends Controller
 
         // Добавляем новые компоненты, если они есть
         if ($request->components && is_array($request->components)) {
-            dd($request->components);
+
             foreach ($request->components as $component) {
                 $elementData = [
                     'page_id' => $page->id,

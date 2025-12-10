@@ -3,12 +3,12 @@ import { addPages, dashboard } from '@/routes';
 import { type BreadcrumbItem, type Page } from '@/types';
 import { Head, router, useForm} from '@inertiajs/react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import {  Lock, Plus, Trash, Edit, Info } from 'lucide-react';
-import { Spinner } from '@/components/ui/spinner';
+import {  Lock, Plus, Info } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { toast } from 'sonner';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import TaxonomyItem from '@/components/TaxonomyItem/TaxonomyItem';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -57,7 +57,7 @@ export default function PagesAdmin({ pages}: { pages: Page[] }) {
                     <h1 className="text-3xl font-bold text-foreground">Страницы</h1>
                     <Popover>
                         <PopoverTrigger>
-                            <Info />
+                            <Info className="cursor-pointer" />
                         </PopoverTrigger>
                         <PopoverContent className="background-lab w-full max-w-[450px]">
                             <p>Получение данных доступно только по API.</p>
@@ -89,37 +89,8 @@ export default function PagesAdmin({ pages}: { pages: Page[] }) {
                 ) : (
                     <div className="block">
                         {pages.map((item) => (
-                            <div key={item.id} className="flex justify-between items-center gap-4 py-2 px-4 rounded-sm shadow-md border hover:shadow-lg transition-shadow mb-4" style={{ borderColor: 'var(--foreground)' }}>
-                                <div className="flex items-center justify-between gap-4">
-                                    <div>
-                                        <div>
-                                            <h3 className="text-white text-lg font-bold">{item.name}</h3>
-                                            <p className="text-sm text-gray-500">slug: <span className="text-white">{item.slug}</span></p>
-                                        </div>
-                                        <div className="mb-2">
-                                            <p className="text-xs text-gray-500">
-                                                {new Date(item.created_at).toLocaleDateString('ru-RU')}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <button
-                                     onClick={() => handleEdit(item.id)}
-                                     title="редактировать" 
-                                     className="bg-blue-600 text-white px-2 py-2 rounded-sm hover:bg-blue-700 transition-colors cursor-pointer">
-                                        <Edit className="w-5 h-5" />
-                                    </button>
+                            <TaxonomyItem key={item.id} item={item} handleEdit={handleEdit} handleDelete={handleDelete} processingNewsId={processingNewsId} />
 
-                                    <button
-                                     title="удалить"
-                                     className="bg-red-600 text-white px-2 py-2 rounded-sm hover:bg-red-700 transition-colors cursor-pointer"
-                                     onClick={() => handleDelete(item.id)}
-                                     >
-                                        {processingNewsId === item.id ? (<Spinner />) : (<Trash className="w-5 h-5" />)}
-                                    </button>
-                                </div>
-                            </div>
                         ))}
                     </div>
                 )}
