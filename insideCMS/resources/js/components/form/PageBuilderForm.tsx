@@ -16,6 +16,7 @@ import ListBlock from '../listBlock/ListBlock';
 import { pagesAdmin } from '@/routes';
 import transliterateToSlug from '@/utils/transliterateToSlug';
 import { Input } from '@/components/ui/input';
+import ElementsBuilder from '../ElementsBuilder/ElementsBuilder';
 
 interface ArticleFormData {
     name: string;
@@ -252,6 +253,8 @@ export default function PageBuilderForm({ components }: { components: Component[
                     className="w-full p-2 border rounded"
                 />
            </div>
+
+            <ElementsBuilder />
 
             {elements.map((element) => (
                 <div key={element.id} className="mb-4 p-4 border rounded">
