@@ -104,15 +104,17 @@ export default function NewsAdmin({ news, links, total_pages, total}: NewsAdminP
         e.preventDefault();
         if (data.query.trim() === '') return;
 
-        post('/admin/news-admin',{
-            onSuccess: () => {
-                reset();
-                setShowSearch(false);
-            },
-            onError: () => {
-                toast.error('Ошибка при выполнении поиска');
-            }
-        });
+        if (e.key === 'Enter') {
+            post('/admin/news-admin',{
+                onSuccess: () => {
+                    reset();
+                    setShowSearch(false);
+                },
+                onError: () => {
+                    toast.error('Ошибка при выполнении поиска');
+                }
+            });
+        }
     }
 
     return (
