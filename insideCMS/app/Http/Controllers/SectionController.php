@@ -58,15 +58,18 @@ class SectionController extends Controller
     public function edit(Section $section)
     {
         $section_component = Section_component::query()
-         ->select('sc.id', 'sc.data', 'sc.component_id', 'c.type as component_type')
-         ->from('section_components as sc')
-         ->join('components as c', 'sc.component_id', '=', 'c.id')
-         ->where('sc.section_id', $section->id)
-         ->get();
+            ->select('sc.id', 'sc.data', 'sc.component_id', 'c.type as component_type')
+            ->from('section_components as sc')
+            ->join('components as c', 'sc.component_id', '=', 'c.id')
+            ->where('sc.section_id', $section->id)
+            ->get();
+
+        $components = Component::all();
 
         $section_data = [
             'section' => $section,
-            'components' => $section_component->toArray(),
+            'components' => $components,
+            'sectionComponents' => $section_component->toArray(),
         ];
 
         return Inertia::render('admin/sections/edit-section', $section_data);
@@ -95,7 +98,7 @@ class SectionController extends Controller
                 $elementData = [
                     'section_id' => $section->id,
                     'component_id' => $component['component_id'],
-                    'data' => $component['data'],
+                    'data' => json_decode($component['data'], true),
                 ];
                 Section_component::create($elementData);
             }
