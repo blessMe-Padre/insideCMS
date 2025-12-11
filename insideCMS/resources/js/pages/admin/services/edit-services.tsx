@@ -1,5 +1,4 @@
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard, servicesAdmin } from '@/routes';
@@ -13,11 +12,9 @@ import { Head, useForm } from '@inertiajs/react';
 import { LoaderCircle, LockIcon, SaveIcon, TrashIcon } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { toast } from 'sonner';
-import FileManagerComponent from '@/components/editor/fileManager/FileManagerComponent';
-import Popup from '@/components/popup/Popup';
-import { FileManagerFile } from '@cubone/react-file-manager';
 import { Input } from '@/components/ui/input';
 import ElementsBuilder from '@/components/ElementsBuilder/ElementsBuilder';
+import MainImagesComponent from '@/components/MainImagesComponent/MainImagesComponent';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -196,13 +193,6 @@ export default function EditService({
 
     const [elements, setElements] = useState<BuilderElement[]>(initialElements);
 
-    const [activeMainPopup, setActiveMainPopup] = useState<boolean>(false);
-    const [selectedMainImage, setSelectedMainImage] = useState<FileManagerFile[]>(
-        service.images
-            ? service.images.map((path: string) => ({ path } as FileManagerFile))
-            : [],
-    );
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post(`/admin/services/${service.id}`, {
@@ -214,23 +204,6 @@ export default function EditService({
                 toast.error('Ошибка при обновлении услуги');
             },
         });
-    };
-
-    const handleMainFileSelection = (files: FileManagerFile[]) => {
-        setSelectedMainImage(files);
-        const imageUrls = files.map((file) => file.path);
-        setData('images', imageUrls);
-    };
-
-    const handleRemoveMainFile = (e: React.MouseEvent, fileIndex: number) => {
-        e.preventDefault();
-        const current = Array.isArray(data.images) ? data.images : [];
-        const next = current.filter((_: string, index: number) => index !== fileIndex);
-        setData('images', next);
-        if (selectedMainImage.length > 0) {
-            const updated = selectedMainImage.filter((_: FileManagerFile, index: number) => index !== fileIndex);
-            setSelectedMainImage(updated);
-        }
     };
 
     // Собираем множество ID всех потомков текущей услуги, чтобы запретить их как родителя
@@ -292,47 +265,11 @@ export default function EditService({
                 </h1>
 
                 <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                        <label htmlFor="content" className="block text-foreground text-sm font-medium mb-1">
-                           Изображения
-                        </label>
-
-                        {(() => {
-                            const images = selectedMainImage.length > 0
-                                ? selectedMainImage.map((f) => f.path)
-                                : (Array.isArray(data.images) ? data.images : []);
-                            return images.length > 0 ? (
-                                <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                                    {images.map((url: string, index: number) => (
-                                        <div key={`main-image-${index}`} className="relative">
-                                            <button
-                                                className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700"
-                                                onClick={(e) => handleRemoveMainFile(e, index)}
-                                            >
-                                                <TrashIcon className="w-4 h-4" />
-                                            </button>
-                                            <img src={url} alt={`Main ${index + 1}`} className="w-20 h-20 object-cover rounded-md border" />
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : null;
-                        })()}
-
-                        <Button 
-                            variant="outline" 
-                            onClick={(e) => {
-                                e.preventDefault();
-                                setActiveMainPopup(true);
-                            }}>Выбрать файл</Button>
-
-                        <Popup activePopup={activeMainPopup} setActivePopup={setActiveMainPopup}>
-                            <FileManagerComponent 
-                                initialFiles={[]}
-                                setActivePopup={setActiveMainPopup}
-                                setSelectedFiles={handleMainFileSelection}
-                            />
-                        </Popup>
-                    </div>
+                    <MainImagesComponent
+                        label="Изображения"
+                        imagesList={data.images}
+                        setData={setData}
+                    />
                     <div className="mb-4">
                         <label htmlFor="title" className="block text-foreground text-sm font-medium mb-1">
                             Название *

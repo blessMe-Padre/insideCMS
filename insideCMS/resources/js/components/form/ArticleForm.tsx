@@ -1,15 +1,11 @@
 import { router, useForm } from '@inertiajs/react';
 import { toast } from "sonner";
 import TextEditor from '../editor/TextEditor';
-import { useState} from 'react';
-import Popup from '../popup/Popup';
-import FileManagerComponent from '../editor/fileManager/FileManagerComponent';
-import { Button } from '@/components/ui/button';
-import { FileManagerFile } from '@cubone/react-file-manager';
-import { LoaderCircle, SaveIcon, TrashIcon } from 'lucide-react';
+import { LoaderCircle, SaveIcon } from 'lucide-react';
 import { articlesAdmin } from '@/routes';
 import transliterateToSlug from '@/utils/transliterateToSlug';
 import { Input } from '@/components/ui/input';
+import MainImagesComponent from '../MainImagesComponent/MainImagesComponent';
 
 
 interface ArticleFormData {
@@ -31,54 +27,6 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
         slug: '',
         images: [],
     });
-
-    const [activePopup, setActivePopup] = useState(false);
-    const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
-    const [currentImageElementId, setCurrentImageElementId] = useState<number | null>(null);
-    const [elements, setElements] = useState<Array<{ id: number; data: string[] }>>([]);
-
-    // Обработчик выбора файлов из FileManager
-    const handleFileSelection = (files: FileManagerFile[]) => {
-        const filePaths = files.map(file => file.path);
-        setSelectedFiles(filePaths);
-        setData('images', filePaths);
-        
-        // Затем синхронизируем данные элемента
-        if (currentImageElementId !== null) {
-            const updatedElements = elements.map((element) => 
-                element.id === currentImageElementId ? { ...element, data: filePaths } : element
-            );
-            setElements(updatedElements);
-        }
-    };
-    
-    const handleRemoveFile = (e: React.FormEvent, elementId: number, fileIndex: number) => {
-        e.preventDefault();
-
-        // Если удаляем файл из временно выбранных (предпросмотр), синхронизируем и элементы
-        if (currentImageElementId === elementId && selectedFiles.length > 0) {
-            const updatedSelectedFiles = selectedFiles.filter((_, index) => index !== fileIndex);
-            setSelectedFiles(updatedSelectedFiles);
-            setData('images', updatedSelectedFiles);
-
-            const updatedElements = elements.map((element) =>
-                element.id === elementId ? { ...element, data: updatedSelectedFiles } : element
-            );
-            setElements(updatedElements);
-            return;
-        }
-
-        // Иначе удаляем из уже сохранённых файлов
-        if (data.images && data.images.length > 0) {
-            const updatedImages = data.images.filter((_, index) => index !== fileIndex);
-            setData('images', updatedImages);
-            // Принудительно обновляем selectedFiles
-            setSelectedFiles(updatedImages);
-        } else {
-            // Если data.images пустой, принудительно очищаем selectedFiles
-            setSelectedFiles([]);
-        }
-    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -154,73 +102,33 @@ export default function ArticleForm({ onSuccess }: ArticleFormProps) {
                     )}
                 </div>
 
-                <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">
-                            Изображения
-                        </label>
-                        
-                        {selectedFiles.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                                {selectedFiles.map((file, index) => (
-                                    <div key={`selected-${index}`} className="relative">
-                                        <button
-                                            className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700 z-10"
-                                            onClick={(e) => handleRemoveFile(e, 0, index)}>
-                                            <TrashIcon className="w-4 h-4" />
-                                        </button>
-                                        <img  
-                                            src={file} 
-                                            alt={`Selected ${index + 1}`} 
-                                            className={`w-20 h-20 object-cover rounded-md border ${
-                                                currentImageElementId === 0 ? 'border-blue-500' : ''
-                                            }`}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        <Button 
-                            type="button"
-                            variant="outline" 
-                            onClick={(e) => {
-                                e.preventDefault();
-                                setCurrentImageElementId(0);
-                                setActivePopup(true);
-                            }}>
-                            Выбрать файл
-                        </Button>
-                        
-                        <Popup activePopup={activePopup} setActivePopup={setActivePopup}>
-                            <FileManagerComponent 
-                                initialFiles={[]}
-                                setActivePopup={setActivePopup}
-                                setSelectedFiles={handleFileSelection}
-                            />
-                        </Popup>
-                    </div>
+                <MainImagesComponent
+                    label="Изображения"
+                    imagesList={data.images}
+                    setData={setData}
+                />
 
                 <div className="flex gap-2 mt-4">
-                        <button
-                            type="submit"
-                            disabled={processing}
-                            className="bg-blue-600 text-white cursor-pointer px-4 p-2 rounded-sm hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                        >
-                            {processing ? 
-                                (<div className="flex items-center gap-2"><LoaderCircle className="w-4 h-4 animate-spin" /> Сохранение...</div>)
-                                : 
-                                (<div className="flex items-center gap-2"><SaveIcon className="w-4 h-4" /> Создать</div>)
-                            }
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => window.location.href = '/admin/articles-admin'}
-                            disabled={processing}
-                            className="bg-gray-500 text-white cursor-pointer px-4 p-2 rounded-sm hover:bg-gray-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                        >
-                            Отмена
-                        </button>
-                    </div>
+                    <button
+                        type="submit"
+                        disabled={processing}
+                        className="bg-blue-600 text-white cursor-pointer px-4 p-2 rounded-sm hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    >
+                        {processing ? 
+                            (<div className="flex items-center gap-2"><LoaderCircle className="w-4 h-4 animate-spin" /> Сохранение...</div>)
+                            : 
+                            (<div className="flex items-center gap-2"><SaveIcon className="w-4 h-4" /> Создать</div>)
+                        }
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => window.location.href = '/admin/articles-admin'}
+                        disabled={processing}
+                        className="bg-gray-500 text-white cursor-pointer px-4 p-2 rounded-sm hover:bg-gray-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    >
+                        Отмена
+                    </button>
+                </div>
             </form>
         </>
     );

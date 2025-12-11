@@ -46,7 +46,6 @@ export default function AddNewsAdmin() {
                 
                 <NewsForm />
             </div>
-
        </AppLayout>
     );
 }

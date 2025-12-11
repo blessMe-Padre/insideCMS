@@ -47,9 +47,7 @@ export default function AddArticleAdmin() {
                 </Alert>
 
                 <ArticleForm />
-
             </div>
-
        </AppLayout>
     );
 }

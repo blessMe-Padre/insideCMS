@@ -1,15 +1,12 @@
 import { router, useForm } from '@inertiajs/react';
 import TextEditor from '../editor/TextEditor';
 import { toast } from 'sonner';
-import Popup from '../popup/Popup';
-import FileManagerComponent from '../editor/fileManager/FileManagerComponent';
 import { Button } from '../ui/button';
-import { useState, useEffect } from 'react';
-import { FileManagerFile } from '@cubone/react-file-manager';
-import { LoaderCircle, SaveIcon, TrashIcon } from 'lucide-react';
+import { LoaderCircle, SaveIcon} from 'lucide-react';
 import { newsAdmin } from '@/routes';
 import transliterateToSlug from '@/utils/transliterateToSlug';
 import { Input } from '@/components/ui/input';
+import MainImagesComponent from '../MainImagesComponent/MainImagesComponent';
 
 interface NewsFormData {
     title: string;
@@ -26,7 +23,7 @@ interface NewsFormProps {
 }
 
 export default function NewsForm({ onSuccess }: NewsFormProps) {
-    const { data, setData, post, processing, errors, reset } = useForm<NewsFormData>({
+    const { data, setData, post, processing, errors} = useForm<NewsFormData>({
         title: '',
         content: '',
         excerpt: '',
@@ -36,60 +33,10 @@ export default function NewsForm({ onSuccess }: NewsFormProps) {
         images: [],
     });
 
-    const [activePopup, setActivePopup] = useState(false);
-    const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
-    const [currentImageElementId, setCurrentImageElementId] = useState<number | null>(null);
-    const [elements, setElements] = useState<Array<{ id: number; data: string[] }>>([]);
-
-    // Синхронизация selectedFiles с data.images
-    useEffect(() => {
-        setSelectedFiles(data.images || []);
-    }, [data.images]);
-
-    // Обработчик выбора файлов из FileManager
-    const handleFileSelection = (files: FileManagerFile[]) => {
-        const filePaths = files.map(file => file.path);
-        setSelectedFiles(filePaths);
-        setData('images', filePaths);
-        
-        // Затем синхронизируем данные элемента
-        if (currentImageElementId) {
-            const updatedElements = elements.map((element) => 
-                element.id === currentImageElementId ? { ...element, data: filePaths } : element
-            );
-            setElements(updatedElements);
-        }
-    };
-    
-    const handleRemoveFile = (e: React.FormEvent, elementId: number, fileIndex: number) => {
-        e.preventDefault();
-
-        // Если удаляем файл из временно выбранных (предпросмотр), синхронизируем и элементы
-        if (currentImageElementId === elementId && selectedFiles.length > 0) {
-            const updatedSelectedFiles = selectedFiles.filter((_, index) => index !== fileIndex);
-            setSelectedFiles(updatedSelectedFiles);
-            setData('images', updatedSelectedFiles);
-
-            const updatedElements = elements.map((element) =>
-                element.id === elementId ? { ...element, data: updatedSelectedFiles } : element
-            );
-            setElements(updatedElements);
-            return;
-        }
-    };
-
-    const handleReset = () => {
-        reset();
-        setSelectedFiles([]);
-        setElements([]);
-        setCurrentImageElementId(null);
-    };
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post('/admin/news', {
             onSuccess: () => {
-                handleReset();
                 onSuccess?.();
                 toast.success('Новость успешно создана');
                 router.visit(newsAdmin().url);
@@ -205,49 +152,11 @@ export default function NewsForm({ onSuccess }: NewsFormProps) {
                     )}
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium text-foreground mb-1">
-                        Изображения
-                    </label>
-                    
-                    {selectedFiles.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                            {selectedFiles.map((file, index) => (
-                                <div key={`selected-${index}`} className="relative">
-                                    <button
-                                        className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700 z-10"
-                                        onClick={(e) => handleRemoveFile(e, 0, index)}>
-                                        <TrashIcon className="w-4 h-4" />
-                                    </button>
-                                    <img  
-                                        src={file} 
-                                        alt={`Selected ${index + 1}`} 
-                                        className="w-20 h-20 object-cover rounded-md border border-blue-500" 
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-                    <Button 
-                        type="button"
-                        variant="outline" 
-                        onClick={(e) => {
-                            e.preventDefault();
-                            setCurrentImageElementId(0);
-                            setActivePopup(true);
-                        }}>
-                        Выбрать файл
-                    </Button>
-                    
-                    <Popup activePopup={activePopup} setActivePopup={setActivePopup}>
-                        <FileManagerComponent 
-                            initialFiles={[]}
-                            setActivePopup={setActivePopup}
-                            setSelectedFiles={handleFileSelection}
-                        />
-                    </Popup>
-                </div>
+                <MainImagesComponent
+                    label="Изображения"
+                    imagesList={data.images}
+                    setData={setData}
+                />
 
                 <div className="flex gap-2">
                     <Button

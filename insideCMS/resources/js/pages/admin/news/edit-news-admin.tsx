@@ -4,14 +4,10 @@ import { dashboard, newsAdmin } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, useForm } from '@inertiajs/react';
 import { toast } from "sonner";
-import Popup from '@/components/popup/Popup';
-import FileManagerComponent from '@/components/editor/fileManager/FileManagerComponent';
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
-import { FileManagerFile } from '@cubone/react-file-manager';
-import { LoaderCircle, LockIcon, SaveIcon, TrashIcon } from 'lucide-react';
+import { LoaderCircle, LockIcon, SaveIcon} from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
+import MainImagesComponent from '@/components/MainImagesComponent/MainImagesComponent';
 
 interface News {
     id: number;
@@ -65,55 +61,7 @@ export default function EditNewsAdmin({ news }: EditNewsAdminPageProps) {
         is_published: news.is_published,
         images: news.images || [],
     });
-   
-    const [activePopup, setActivePopup] = useState(false);
-    const [selectedFiles, setSelectedFiles] = useState<string[]>(news?.images || []);
-    const [currentImageElementId, setCurrentImageElementId] = useState<number | null>(null);
-    const [elements, setElements] = useState<Array<{ id: number; data: string[] }>>([]);
-
-    // Обработчик выбора файлов из FileManager
-    const handleFileSelection = (files: FileManagerFile[]) => {
-        const filePaths = files.map(file => file.path);
-        setSelectedFiles(filePaths);
-        setData('images', filePaths);
-        
-        // Затем синхронизируем данные элемента
-        if (currentImageElementId) {
-            const updatedElements = elements.map((element) => 
-                element.id === currentImageElementId ? { ...element, data: filePaths } : element
-            );
-            setElements(updatedElements);
-        }
-    };
-    
-    const handleRemoveFile = (e: React.FormEvent, elementId: number, fileIndex: number) => {
-        e.preventDefault();
-
-        // Если удаляем файл из временно выбранных (предпросмотр), синхронизируем и элементы
-        if (currentImageElementId === elementId && selectedFiles.length > 0) {
-            const updatedSelectedFiles = selectedFiles.filter((_, index) => index !== fileIndex);
-            setSelectedFiles(updatedSelectedFiles);
-            setData('images', updatedSelectedFiles);
-
-            const updatedElements = elements.map((element) =>
-                element.id === elementId ? { ...element, data: updatedSelectedFiles } : element
-            );
-            setElements(updatedElements);
-            return;
-        }
-
-        // Иначе удаляем из уже сохранённых файлов
-        if (data.images && data.images.length > 0) {
-            const updatedImages = data.images.filter((_, index) => index !== fileIndex);
-            setData('images', updatedImages);
-            // Принудительно обновляем selectedFiles
-            setSelectedFiles(updatedImages);
-        } else {
-            // Если data.images пустой, принудительно очищаем selectedFiles
-            setSelectedFiles([]);
-        }
-    };
-
+ 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post(`/admin/news/${news.id}`, {
@@ -243,51 +191,11 @@ export default function EditNewsAdmin({ news }: EditNewsAdminPageProps) {
                         )}
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">
-                            Изображения
-                        </label>
-                        
-                        {selectedFiles.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                                {selectedFiles.map((file, index) => (
-                                    <div key={`selected-${index}`} className="relative">
-                                        <button
-                                            className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700 z-10"
-                                            onClick={(e) => handleRemoveFile(e, 0, index)}>
-                                            <TrashIcon className="w-4 h-4" />
-                                        </button>
-                                        <img  
-                                            src={file} 
-                                            alt={`Selected ${index + 1}`} 
-                                            className={`w-20 h-20 object-cover rounded-md border ${
-                                                currentImageElementId === 0 ? 'border-blue-500' : ''
-                                            }`}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        <Button 
-                            type="button"
-                            variant="outline" 
-                            onClick={(e) => {
-                                e.preventDefault();
-                                setCurrentImageElementId(0);
-                                setActivePopup(true);
-                            }}>
-                            Выбрать файл
-                        </Button>
-                        
-                        <Popup activePopup={activePopup} setActivePopup={setActivePopup}>
-                            <FileManagerComponent 
-                                initialFiles={[]}
-                                setActivePopup={setActivePopup}
-                                setSelectedFiles={handleFileSelection}
-                            />
-                        </Popup>
-                    </div>
+                   <MainImagesComponent
+                        label="Изображения"
+                        imagesList={data.images}
+                        setData={setData}
+                    />
 
                     <div className="flex gap-2 mt-4">
                         <button

@@ -4,14 +4,10 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import TextEditor from '@/components/editor/TextEditor';
 import { toast } from "sonner";
-import Popup from '@/components/popup/Popup';
-import FileManagerComponent from '@/components/editor/fileManager/FileManagerComponent';
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
-import { FileManagerFile } from '@cubone/react-file-manager';
-import { LoaderCircle, LockIcon, SaveIcon, TrashIcon } from 'lucide-react';
+import { LoaderCircle, LockIcon, SaveIcon } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
+import MainImagesComponent from '@/components/MainImagesComponent/MainImagesComponent';
 
 interface Article {
     id: number;
@@ -54,45 +50,6 @@ export default function EditArticleAdmin({ article }: EditArticleAdminPageProps)
         slug: article.slug,
         images: article?.images || [],
     });
-
-    const [activePopup, setActivePopup] = useState(false);
-    const [selectedFiles, setSelectedFiles] = useState<string[]>(article?.images || []);
-    const [currentImageElementId, setCurrentImageElementId] = useState<number | null>(null);
-    const [elements, setElements] = useState<Array<{ id: number; data: string[] }>>([]);
-
-    // Обработчик выбора файлов из FileManager
-    const handleFileSelection = (files: FileManagerFile[]) => {
-        const filePaths = files.map(file => file.path);
-        setSelectedFiles(filePaths);
-        setData('images', filePaths);
-        
-        // Затем синхронизируем данные элемента
-        if (currentImageElementId) {
-            const updatedElements = elements.map((element) => 
-                element.id === currentImageElementId ? { ...element, data: filePaths } : element
-            );
-            setElements(updatedElements);
-        }
-    };
-    
-    const handleRemoveFile = (e: React.FormEvent, elementId: number, fileIndex: number) => {
-        e.preventDefault();
-
-        // Удаляем файл из selectedFiles и синхронизируем с data.images
-        if (selectedFiles.length > 0) {
-            const updatedSelectedFiles = selectedFiles.filter((_, index) => index !== fileIndex);
-            setSelectedFiles(updatedSelectedFiles);
-            setData('images', updatedSelectedFiles);
-
-            // Синхронизируем с элементами если нужно
-            if (currentImageElementId === elementId) {
-                const updatedElements = elements.map((element) =>
-                    element.id === elementId ? { ...element, data: updatedSelectedFiles } : element
-                );
-                setElements(updatedElements);
-            }
-        }
-    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -172,51 +129,11 @@ export default function EditArticleAdmin({ article }: EditArticleAdminPageProps)
                             <p className="text-red-500 text-sm mt-1">{errors.slug}</p>
                         )}
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">
-                            Изображения
-                        </label>
-                        
-                        {selectedFiles.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                                {selectedFiles.map((file, index) => (
-                                    <div key={`selected-${index}`} className="relative">
-                                        <button
-                                            className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700 z-10"
-                                            onClick={(e) => handleRemoveFile(e, 0, index)}>
-                                            <TrashIcon className="w-4 h-4" />
-                                        </button>
-                                        <img  
-                                            src={file} 
-                                            alt={`Selected ${index + 1}`} 
-                                            className={`w-20 h-20 object-cover rounded-md border ${
-                                                currentImageElementId === 0 ? 'border-blue-500' : ''
-                                            }`}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        <Button 
-                            type="button"
-                            variant="outline" 
-                            onClick={(e) => {
-                                e.preventDefault();
-                                setCurrentImageElementId(0);
-                                setActivePopup(true);
-                            }}>
-                            Выбрать файл
-                        </Button>
-                        
-                        <Popup activePopup={activePopup} setActivePopup={setActivePopup}>
-                            <FileManagerComponent 
-                                initialFiles={[]}
-                                setActivePopup={setActivePopup}
-                                setSelectedFiles={handleFileSelection}
-                            />
-                        </Popup>
-                    </div>
+                    <MainImagesComponent
+                        label="Изображения"
+                        imagesList={data.images}
+                        setData={setData}
+                    />
 
                     <div className="flex gap-2 mt-4">
                         <button
