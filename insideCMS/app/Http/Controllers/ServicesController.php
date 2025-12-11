@@ -107,22 +107,25 @@ class ServicesController extends Controller
     }
     public function edit(Service $service)
     {
-         $service_components = Services_components::query()
-             ->select('sc.id', 'sc.data', 'sc.component_id', 'c.type as component_type')
-             ->from('services_components as sc')
-             ->join('components as c', 'sc.component_id', '=', 'c.id')
-             ->where('sc.service_id', $service->id)
-             ->get();
- 
-         $data = [
-             'service' => $service,
-             'components' => $service_components->toArray(),
-             'services' => Service::where('id', '!=', $service->id)->get(),
-             'personas' => Persona::all(),
-             'personaIds' => Service_persona::where('service_id', $service->id)->pluck('persona_id')->toArray(),
-         ];
- 
-         return Inertia::render('admin/services/edit-services', $data);
+        $service_components = Services_components::query()
+            ->select('sc.id', 'sc.data', 'sc.component_id', 'c.type as component_type')
+            ->from('services_components as sc')
+            ->join('components as c', 'sc.component_id', '=', 'c.id')
+            ->where('sc.service_id', $service->id)
+            ->get();
+
+        $components = Component::all();
+
+        $data = [
+            'service' => $service,
+            'components' => $components,
+            'serviceComponents' => $service_components->toArray(),
+            'services' => Service::where('id', '!=', $service->id)->get(),
+            'personas' => Persona::all(),
+            'personaIds' => Service_persona::where('service_id', $service->id)->pluck('persona_id')->toArray(),
+        ];
+
+        return Inertia::render('admin/services/edit-services', $data);
      }
 
     /**

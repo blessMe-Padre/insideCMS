@@ -2,19 +2,22 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import { dashboard, personaAdmin } from '@/routes';
-import { type BreadcrumbItem, type Service, type Component, type Persona } from '@/types';
+import { dashboard, servicesAdmin } from '@/routes';
+import {
+    type BreadcrumbItem,
+    type Service,
+    type ComponentAdmin,
+    type Persona,
+} from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { LoaderCircle, LockIcon, SaveIcon, TrashIcon } from 'lucide-react';
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { toast } from 'sonner';
-import TextEditor from '@/components/editor/TextEditor';
 import FileManagerComponent from '@/components/editor/fileManager/FileManagerComponent';
 import Popup from '@/components/popup/Popup';
 import { FileManagerFile } from '@cubone/react-file-manager';
-import AccordionComponent from '@/components/AccordionComponent/AccordionComponent';
-import ListBlock from '@/components/listBlock/ListBlock';
 import { Input } from '@/components/ui/input';
+import ElementsBuilder from '@/components/ElementsBuilder/ElementsBuilder';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -23,7 +26,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: 'Услуги',
-        href: personaAdmin().url,
+        href: servicesAdmin().url,
     },
     {
         title: 'Редактировать услугу',
@@ -31,7 +34,155 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function EditPage({ service, components, services, personas, personaIds }: { service: Service, components: Component[], services: Service[], personas: Persona[], personaIds?: number[] }) {
+type BuilderElement = {
+    id: string;
+    type?: string;
+    description?: string;
+    content?: string;
+    component_id?: string;
+};
+
+type ServiceComponent = {
+    id: number;
+    service_id?: number;
+    component_id?: number;
+    data: string | string[];
+    component_type: string;
+};
+
+const mapServiceComponentsToBuilderElements = (
+    serviceComponents: ServiceComponent[],
+    components: ComponentAdmin[],
+): BuilderElement[] => {
+    return serviceComponents.map((sc) => {
+        const template = components.find(
+            (c) => String(c.id) === String(sc.component_id),
+        );
+
+        const typeName = template?.name ?? sc.component_type;
+        const description = template?.description ?? sc.component_type;
+
+        let content = '';
+
+        if (typeName === 'text-block') {
+            if (Array.isArray(sc.data)) {
+                content = sc.data[0] ?? '';
+            } else if (typeof sc.data === 'string') {
+                content = sc.data;
+            }
+        } else if (typeName === 'text-editor-block') {
+            if (Array.isArray(sc.data)) {
+                content = JSON.stringify(sc.data);
+            } else if (typeof sc.data === 'string') {
+                content = sc.data;
+            }
+        } else if (typeName === 'image-block') {
+            if (Array.isArray(sc.data)) {
+                content = JSON.stringify(sc.data);
+            } else if (typeof sc.data === 'string') {
+                content = JSON.stringify([sc.data]);
+            }
+        } else if (typeName === 'accordion-block' || typeName === 'list-block') {
+            if (typeof sc.data === 'string') {
+                content = sc.data;
+            } else {
+                content = JSON.stringify(sc.data);
+            }
+        } else {
+            if (typeof sc.data === 'string') {
+                content = sc.data;
+            } else {
+                content = JSON.stringify(sc.data);
+            }
+        }
+
+        return {
+            id: String(sc.id),
+            type: typeName,
+            description,
+            content,
+            component_id: sc.component_id ? String(sc.component_id) : undefined,
+        };
+    });
+};
+
+const mapBuilderElementsToRequestComponents = (
+    elements: BuilderElement[],
+): Array<{ component_id?: string; data: string }> => {
+    return elements.map((element) => {
+        const typeName = element.type;
+        let data: string;
+
+        if (typeName === 'text-block') {
+            data = JSON.stringify([element.content ?? '']);
+        } else if (typeName === 'text-editor-block') {
+            if (!element.content) {
+                data = JSON.stringify([]);
+            } else {
+                try {
+                    const parsed = JSON.parse(element.content);
+                    data = JSON.stringify(parsed);
+                } catch {
+                    data = JSON.stringify([element.content]);
+                }
+            }
+        } else if (typeName === 'image-block') {
+            if (!element.content) {
+                data = JSON.stringify([]);
+            } else {
+                try {
+                    const parsed = JSON.parse(element.content);
+                    if (Array.isArray(parsed)) {
+                        data = JSON.stringify(parsed);
+                    } else {
+                        data = JSON.stringify([parsed]);
+                    }
+                } catch {
+                    data = JSON.stringify([element.content]);
+                }
+            }
+        } else if (typeName === 'accordion-block' || typeName === 'list-block') {
+            if (!element.content) {
+                data = JSON.stringify([]);
+            } else {
+                try {
+                    const parsed = JSON.parse(element.content);
+                    data = JSON.stringify(parsed);
+                } catch {
+                    data = JSON.stringify(element.content);
+                }
+            }
+        } else {
+            data = JSON.stringify(element.content ?? '');
+        }
+
+        return {
+            component_id: element.component_id,
+            data,
+        };
+    });
+};
+
+export default function EditService({
+    service,
+    components,
+    serviceComponents,
+    services,
+    personas,
+    personaIds,
+}: {
+    service: Service;
+    components: ComponentAdmin[];
+    serviceComponents: ServiceComponent[];
+    services: Service[];
+    personas: Persona[];
+    personaIds?: number[];
+}) {
+    const initialElements = mapServiceComponentsToBuilderElements(
+        serviceComponents,
+        components,
+    );
+
     const { data, setData, post, processing, errors } = useForm({
         title: service.title,
         slug: service.slug,
@@ -40,19 +191,17 @@ export default function EditPage({ service, components, services, personas, pers
         personaIds: personaIds || [],
         images: service.images || [],
         content: service.content || [],
-        components: components,
+        components: mapBuilderElementsToRequestComponents(initialElements),
     });
 
-    const [elements, setElements] = useState<Component[]>(components);
-    
-    const [activePopup, setActivePopup] = useState<boolean>(false);
-    const [selectedFiles, setSelectedFiles] = useState<FileManagerFile[]>([]);
+    const [elements, setElements] = useState<BuilderElement[]>(initialElements);
 
     const [activeMainPopup, setActiveMainPopup] = useState<boolean>(false);
     const [selectedMainImage, setSelectedMainImage] = useState<FileManagerFile[]>(
-        service.images ? service.images.map((path: string) => ({ path } as FileManagerFile)) : []
+        service.images
+            ? service.images.map((path: string) => ({ path } as FileManagerFile))
+            : [],
     );
-    const [currentImageElementId, setCurrentImageElementId] = useState<number | null>(null);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -84,27 +233,6 @@ export default function EditPage({ service, components, services, personas, pers
         }
     };
 
-    const handleUpdateContent = useCallback((id: number, content: string) => {
-        const updatedElements = elements.map((element) => {
-            if (element.id === id) {
-                if (element.component_type === 'text') {
-                    return { ...element, data: [content] };
-                }
-                if (element.component_type === 'text-editor') {
-                    return { ...element, data: content };
-                }
-                if (element.component_type === 'accordion-block') {
-                    return { ...element, data: content };
-                }
-                return { ...element, data: content };
-            }
-            return element;
-        });
-
-        setElements(updatedElements);
-        setData('components', updatedElements);
-    }, [elements, setData]);
-
     // Собираем множество ID всех потомков текущей услуги, чтобы запретить их как родителя
     const descendantIds = useMemo(() => {
         const result = new Set<number>();
@@ -122,62 +250,11 @@ export default function EditPage({ service, components, services, personas, pers
         return result;
     }, [service.id, services]);
 
-    // Обработчик выбора файлов из FileManager
-    const handleFileSelection = (files: FileManagerFile[]) => {
-        setSelectedFiles(files);
-        if (currentImageElementId !== null) {
-            const imageUrls = files.map((file) => file.path);
-            const updatedElements = elements.map((element) => 
-                element.id === currentImageElementId ? { ...element, data: imageUrls } : element
-            );
-            setElements(updatedElements);
-            setData('components', updatedElements);
-        }
+    const handleChangeElements = (nextElements: BuilderElement[]) => {
+        setElements(nextElements);
+        const payload = mapBuilderElementsToRequestComponents(nextElements);
+        setData('components', payload);
     };
-
-    const handleRemoveFile = (e: React.FormEvent, elementId: number, fileIndex: number) => {
-        e.preventDefault();
-
-        if (currentImageElementId === elementId && selectedFiles.length > 0) {
-            const updatedSelectedFiles = selectedFiles.filter((_: FileManagerFile, index: number) => index !== fileIndex);
-            setSelectedFiles(updatedSelectedFiles);
-
-            const imageUrls = updatedSelectedFiles.map((file) => file.path);
-            const updatedElements = elements.map((element) =>
-                element.id === elementId ? { ...element, data: imageUrls } : element
-            );
-            setElements(updatedElements);
-            setData('components', updatedElements);
-            return;
-        }
-
-        // Иначе удаляем из уже сохранённых файлов элемента
-        const updatedElements = elements.map((element) => {
-            if (element.id !== elementId) return element;
-            const images = Array.isArray(element.data) ? element.data : [];
-            const nextImages = images.filter((_: string, index: number) => index !== fileIndex);
-            return { ...element, data: nextImages };
-        });
-        setElements(updatedElements);
-        setData('components', updatedElements);
-    };
-
-    const componentName = (component_type: string) => {
-        switch (component_type) {
-            case 'text':
-                return 'Текст';
-            case "text-editor":
-                return 'Текстовый редактор';
-            case 'file':
-                return 'Файлы / Изображения';
-            case 'accordion-block':
-                return 'Аккордеон';
-            case 'list-block':
-                return 'Список блоков';
-            default:
-                return component_type;
-        }
-    }
 
     const addPersona = (value: string) => {
         const id = parseInt(value);
@@ -210,7 +287,9 @@ export default function EditPage({ service, components, services, personas, pers
                     </AlertDescription>
                 </Alert>
 
-                <h1 className="text-3xl font-bold text-foreground mb-4">Редактировать "{service.title}"</h1>
+                <h1 className="text-3xl font-bold text-foreground mb-4">
+                    Редактировать "{service.title}"
+                </h1>
 
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
@@ -263,7 +342,8 @@ export default function EditPage({ service, components, services, personas, pers
                             type="text"
                             value={data.title}
                             onChange={(e) => setData('title', e.target.value)}
-                            className="w-full p-2 border rounded"                            required
+                            className="w-full p-2 border rounded"
+                            required
                         />
                         {errors.title && (
                             <p className="text-red-500 text-sm mt-1">{errors.title}</p>
@@ -278,7 +358,8 @@ export default function EditPage({ service, components, services, personas, pers
                             type="text"
                             value={data.slug}
                             onChange={(e) => setData('slug', e.target.value)}
-                            className="w-full p-2 border rounded"                            required
+                            className="w-full p-2 border rounded"
+                            required
                         />
                         {errors.slug && (
                             <p className="text-red-500 text-sm mt-1">{errors.slug}</p>
@@ -294,7 +375,8 @@ export default function EditPage({ service, components, services, personas, pers
                             type="text"
                             value={data.description || ''}
                             onChange={(e) => setData('description', e.target.value)}
-                            className="w-full p-2 border rounded"                        />
+                            className="w-full p-2 border rounded"
+                        />
                         {errors.description && (
                             <p className="text-red-500 text-sm mt-1">{errors.description}</p>
                         )}
@@ -364,112 +446,11 @@ export default function EditPage({ service, components, services, personas, pers
                     </div>
 
                     
-                    {elements.map((element, index) => (
-                    <div key={index} className="mb-4 p-4 border rounded">
-                        <div className="flex items-center justify-between mb-2">
-                            <h2 className="font-medium">{componentName(element.component_type)}</h2>
-                        </div>
-                    
-                    {element.component_type === 'text' && (
-                        <input 
-                            id={`text-input-${element.id}`}
-                            value={Array.isArray(element.data) ? (element.data[0] || '') : (typeof element.data === 'string' ? element.data : '')}
-                            onChange={(e) => handleUpdateContent(element.id, e.target.value)}
-                            placeholder="Введите текст..."
-                            className="w-full p-2 border rounded"
-                         />
-                    )}
-                    
-                    {element.component_type === "text-editor" && (
-                        <div id={`text-editor-${element.id}`}>
-                            <TextEditor 
-                                value={
-                                    Array.isArray(element.data)
-                                        ? JSON.stringify(element.data)
-                                        : (typeof element.data === 'string' ? element.data : JSON.stringify(element.data ?? ''))
-                                }
-                                onChange={(value) => handleUpdateContent(element.id, value)} 
-                            />
-                        </div>
-                    )}
-
-                    {element.component_type === 'file' && (
-                        <>
-                           {(() => {
-                                if (currentImageElementId === element.id && selectedFiles.length > 0) {
-                                    return (
-                                        <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                                            {selectedFiles.map((file, index) => (
-                                                <div key={`selected-${index}`} className="relative">
-                                                    <button
-                                                        className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700"
-                                                        onClick={(e) => handleRemoveFile(e, element.id, index)}>
-                                                        <TrashIcon className="w-4 h-4" />
-                                                    </button>
-                                                    <img  
-                                                    src={file.path} 
-                                                    alt={`Selected ${index + 1}`} 
-                                                    className="w-20 h-20 object-cover rounded-md border border-blue-500" 
-                                                    />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    );
-                                }
-                                
-                                // Иначе показываем существующие файлы из element.data
-                                if (element.data) {
-                                    const images = Array.isArray(element.data) ? element.data : [];
-                                    if (images.length > 0) {
-                                        return (
-                                            <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                                                {images.map((image: string, index: number) => (
-                                                    <div key={`image-${index}`} className="relative">
-                                                        <button className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700"
-                                                        onClick={(e) => handleRemoveFile(e, element.id, index)}>
-                                                            <TrashIcon className="w-4 h-4" />
-                                                        </button>   
-                                                    <img 
-                                                        src={image} 
-                                                        alt={`Preview ${index + 1}`} 
-                                                        className="w-20 h-20 object-cover rounded-md border" 
-                                                    />
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        );
-                                    }
-                                }
-                                
-                                return null;
-                            })()}
-
-                          <Button 
-                              variant="outline" 
-                              onClick={(e) => {
-                                e.preventDefault();
-                                setCurrentImageElementId(element.id);
-                                setActivePopup(true);
-                            }}>Выбрать файл</Button>
-                            
-                            <Popup activePopup={activePopup} setActivePopup={setActivePopup}>
-                                <FileManagerComponent 
-                                    initialFiles={[]}
-                                    setActivePopup={setActivePopup}
-                                    setSelectedFiles={handleFileSelection}
-                                />
-                            </Popup>
-                        </>
-                    )}
-
-                    {element.component_type === 'accordion-block' && (
-                        <AccordionComponent content={element.data || ''} onChange={(value) => handleUpdateContent(element.id, value)} />
-                    )}
-                    {element.component_type === 'list-block' && (
-                        <ListBlock content={element.data || ''} onChange={(value) => handleUpdateContent(element.id, value)} />
-                    )}
-                    </div>
-                     ))}
+                    <ElementsBuilder
+                        components={components}
+                        elements={elements}
+                        onChangeElements={handleChangeElements}
+                    />
 
                     <div className="flex gap-2 mt-4">
                         <button
