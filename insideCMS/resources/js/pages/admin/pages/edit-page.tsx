@@ -277,7 +277,7 @@ export default function EditPage({
                         </button>
                         <button
                             type="button"
-                            onClick={() => window.location.href = '/pages-admin'}
+                            onClick={() => window.location.href = '/admin/pages-admin'}
                             disabled={processing}
                             className="bg-gray-500 text-white cursor-pointer px-4 p-2 rounded-sm hover:bg-gray-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                         >

@@ -403,7 +403,7 @@ export default function EditService({
                         </button>
                         <button
                             type="button"
-                            onClick={() => window.location.href = '/admin/persons-admin'}
+                            onClick={() => window.location.href = '/admin/services-admin'}
                             disabled={processing}
                             className="bg-gray-500 text-white cursor-pointer px-4 p-2 rounded-sm hover:bg-gray-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                         >
