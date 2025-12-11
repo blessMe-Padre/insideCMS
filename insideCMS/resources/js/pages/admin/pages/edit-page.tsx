@@ -1,19 +1,13 @@
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard, pagesAdmin } from '@/routes';
-import { type BreadcrumbItem, type Page, type Page_component } from '@/types';
+import { type BreadcrumbItem, type Page, type Page_component, type ComponentAdmin } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
-import { LoaderCircle, LockIcon, SaveIcon, TrashIcon } from 'lucide-react';
-import { useState, useCallback } from 'react';
+import { LoaderCircle, LockIcon, SaveIcon } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
-import TextEditor from '@/components/editor/TextEditor';
-import FileManagerComponent from '@/components/editor/fileManager/FileManagerComponent';
-import Popup from '@/components/popup/Popup';
-import { FileManagerFile } from '@cubone/react-file-manager';
-import AccordionComponent from '@/components/AccordionComponent/AccordionComponent';
-import ListBlock from '@/components/listBlock/ListBlock';
 import { Input } from '@/components/ui/input';
+import ElementsBuilder from '@/components/ElementsBuilder/ElementsBuilder';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -30,20 +24,149 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function EditPage({ page, components }: { page: Page, components: Page_component[] }) {
+type BuilderElement = {
+    id: string;
+    type?: string;
+    description?: string;
+    content?: string;
+    component_id?: string;
+};
+
+const mapPageComponentsToBuilderElements = (
+    pageComponents: Page_component[],
+    components: ComponentAdmin[],
+): BuilderElement[] => {
+    return pageComponents.map((pc) => {
+        const template = components.find(
+            (c) => String(c.id) === String(pc.component_id),
+        );
+
+        const typeName = template?.name ?? pc.component_type;
+        const description = template?.description ?? pc.component_type;
+
+        let content = '';
+
+        if (typeName === 'text-block') {
+            if (Array.isArray(pc.data)) {
+                content = pc.data[0] ?? '';
+            } else if (typeof pc.data === 'string') {
+                content = pc.data;
+            }
+        } else if (typeName === 'text-editor-block') {
+            if (Array.isArray(pc.data)) {
+                content = JSON.stringify(pc.data);
+            } else if (typeof pc.data === 'string') {
+                content = pc.data;
+            }
+        } else if (typeName === 'image-block') {
+            if (Array.isArray(pc.data)) {
+                content = JSON.stringify(pc.data);
+            } else if (typeof pc.data === 'string') {
+                content = JSON.stringify([pc.data]);
+            }
+        } else if (typeName === 'accordion-block' || typeName === 'list-block') {
+            if (typeof pc.data === 'string') {
+                content = pc.data;
+            } else {
+                content = JSON.stringify(pc.data);
+            }
+        } else {
+            if (typeof pc.data === 'string') {
+                content = pc.data;
+            } else {
+                content = JSON.stringify(pc.data);
+            }
+        }
+
+        return {
+            id: String(pc.id),
+            type: typeName,
+            description,
+            content,
+            component_id: pc.component_id ? String(pc.component_id) : undefined,
+        };
+    });
+};
+
+const mapBuilderElementsToRequestComponents = (
+    elements: BuilderElement[],
+): Array<{ component_id?: string; data: string }> => {
+    return elements.map((element) => {
+        const typeName = element.type;
+        let data: string;
+
+        if (typeName === 'text-block') {
+            data = JSON.stringify([element.content ?? '']);
+        } else if (typeName === 'text-editor-block') {
+            if (!element.content) {
+                data = JSON.stringify([]);
+            } else {
+                try {
+                    const parsed = JSON.parse(element.content);
+                    data = JSON.stringify(parsed);
+                } catch {
+                    data = JSON.stringify([element.content]);
+                }
+            }
+        } else if (typeName === 'image-block') {
+            if (!element.content) {
+                data = JSON.stringify([]);
+            } else {
+                try {
+                    const parsed = JSON.parse(element.content);
+                    if (Array.isArray(parsed)) {
+                        data = JSON.stringify(parsed);
+                    } else {
+                        data = JSON.stringify([parsed]);
+                    }
+                } catch {
+                    data = JSON.stringify([element.content]);
+                }
+            }
+        } else if (typeName === 'accordion-block' || typeName === 'list-block') {
+            if (!element.content) {
+                data = JSON.stringify([]);
+            } else {
+                try {
+                    const parsed = JSON.parse(element.content);
+                    data = JSON.stringify(parsed);
+                } catch {
+                    data = JSON.stringify(element.content);
+                }
+            }
+        } else {
+            data = JSON.stringify(element.content ?? '');
+        }
+
+        return {
+            component_id: element.component_id,
+            data,
+        };
+    });
+};
+
+export default function EditPage({
+    page,
+    components,
+    pageComponents,
+}: {
+    page: Page;
+    components: ComponentAdmin[];
+    pageComponents: Page_component[];
+}) {
+    const initialElements = mapPageComponentsToBuilderElements(
+        pageComponents,
+        components,
+    );
+
     const { data, setData, post, processing, errors } = useForm({
         name: page.name,
         slug: page.slug,
         description: page.description,
-        components: components,
+        components: mapBuilderElementsToRequestComponents(initialElements),
     });
 
-   const [elements, setElements] = useState<Page_component[]>(components);
-    
-    // File manager states
-    const [activePopup, setActivePopup] = useState<boolean>(false);
-    const [selectedFiles, setSelectedFiles] = useState<FileManagerFile[]>([]);
-    const [currentImageElementId, setCurrentImageElementId] = useState<number | null>(null);
+    const [elements, setElements] = useState<BuilderElement[]>(initialElements);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -58,89 +181,11 @@ export default function EditPage({ page, components }: { page: Page, components:
         });
     };
 
-    const handleUpdateContent = useCallback((id: number, content: string) => {
-        const updatedElements = elements.map((element) => {
-            if (element.id === id) {
-                if (element.component_type === 'text') {
-                    return { ...element, data: [content] };
-                }
-                if (element.component_type === 'text-editor') {
-                    return { ...element, data: content };
-                }
-                if (element.component_type === 'accordion-block') {
-                    return { ...element, data: content };
-                }
-                if (element.component_type === 'list-block') {
-                    return { ...element, data: content };
-                }
-                return { ...element, data: content };
-            }
-            return element;
-        });
-
-        setElements(updatedElements);
-        setData('components', updatedElements);
-    }, [elements, setData]);
-
-    // Обработчик выбора файлов из FileManager
-    const handleFileSelection = (files: FileManagerFile[]) => {
-        // Сначала сохраняем выбранные файлы для мгновенного предпросмотра
-        setSelectedFiles(files);
-        // Затем синхронизируем данные элемента
-        if (currentImageElementId) {
-            const imageUrls = files.map((file) => file.path);
-            const updatedElements = elements.map((element) => 
-                element.id === currentImageElementId ? { ...element, data: imageUrls } : element
-            );
-            setElements(updatedElements);
-            setData('components', updatedElements);
-        }
+    const handleChangeElements = (nextElements: BuilderElement[]) => {
+        setElements(nextElements);
+        const payload = mapBuilderElementsToRequestComponents(nextElements);
+        setData('components', payload);
     };
-
-    const handleRemoveFile = (e: React.FormEvent, elementId: number, fileIndex: number) => {
-        e.preventDefault();
-
-        // Если удаляем файл из временно выбранных (предпросмотр), синхронизируем и элементы
-        if (currentImageElementId === elementId && selectedFiles.length > 0) {
-            const updatedSelectedFiles = selectedFiles.filter((_, index) => index !== fileIndex);
-            setSelectedFiles(updatedSelectedFiles);
-
-            const imageUrls = updatedSelectedFiles.map((file) => file.path);
-            const updatedElements = elements.map((element) =>
-                element.id === elementId ? { ...element, data: imageUrls } : element
-            );
-            setElements(updatedElements);
-            setData('components', updatedElements);
-            return;
-        }
-
-        // Иначе удаляем из уже сохранённых файлов элемента
-        const updatedElements = elements.map((element) => {
-            if (element.id !== elementId) return element;
-            const images = Array.isArray(element.data) ? element.data : [];
-            const nextImages = images.filter((_, index) => index !== fileIndex);
-            return { ...element, data: nextImages };
-        });
-        setElements(updatedElements);
-        setData('components', updatedElements);
-    };
-
-    const componentName = (component_type: string) => {
-        switch (component_type) {
-            case 'text':
-                return 'Текст';
-            case "text-editor":
-                return 'Текстовый редактор';
-            case 'file':
-                return 'Файлы / Изображения';
-            case 'accordion-block':
-                return 'Аккордион';
-            case 'list-block':
-                return 'Список';
-            default:
-                return component_type;
-        }
-    }
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -211,119 +256,12 @@ export default function EditPage({ page, components }: { page: Page, components:
                             <p className="text-red-500 text-sm mt-1">{errors.description}</p>
                         )}
                     </div>
-                    
-                    {elements.map((element, index) => (
-                    <div key={index} className="mb-4 p-4 border rounded">
-                        <div className="flex items-center justify-between mb-2">
-                            <h2 className="font-medium">{componentName(element.component_type)}</h2>
-                        </div>
-                    
-                    {element.component_type === 'text' && (
-                        <Input 
-                            id={`text-input-${element.id}`}
-                            value={element.data?.[0] || ''}
-                            onChange={(e) => handleUpdateContent(element.id, e.target.value)}
-                            placeholder="Введите текст..."
-                            className="w-full p-2 border rounded"
-                         />
-                    )}
-                    
-                    {element.component_type === "text-editor" && (
-                        <div id={`text-editor-${element.id}`}>
-                            <TextEditor 
-                                value={
-                                    Array.isArray(element.data)
-                                        ? JSON.stringify(element.data)
-                                        : (typeof element.data === 'string' ? element.data : JSON.stringify(element.data ?? ''))
-                                }
-                                onChange={(value) => handleUpdateContent(element.id, value)} 
-                            />
-                        </div>
-                    )}
 
-                    {element.component_type === 'file' && (
-                        <>
-                           {(() => {
-                                if (currentImageElementId === element.id && selectedFiles.length > 0) {
-                                    return (
-                                        <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                                            {selectedFiles.map((file, index) => (
-                                                <div className="relative">
-                                                    <button
-                                                        key={`remove-${index}`}
-                                                        className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700"
-                                                        onClick={(e) => handleRemoveFile(e, element.id, index)}>
-                                                        <TrashIcon className="w-4 h-4" />
-                                                    </button>
-                                                    <img  
-                                                    key={`selected-${index}`}
-                                                    src={file.path} 
-                                                    alt={`Selected ${index + 1}`} 
-                                                    className="w-20 h-20 object-cover rounded-md border border-blue-500" 
-                                                    />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    );
-                                }
-                                
-                                // Иначе показываем существующие файлы из element.data
-                                if (element.data) {
-                                    const images = element.data;
-                                    if (Array.isArray(images) && images.length > 0) {
-                                        return (
-                                            <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                                                {images.map((image: string, index: number) => (
-                                                    <div key={`image-${index}`} className="relative">
-                                                        <button className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700"
-                                                        key={`remove-${index}`}
-                                                        onClick={(e) => handleRemoveFile(e, element.id, index)}>
-                                                            <TrashIcon className="w-4 h-4" />
-                                                        </button>   
-                                                    <img 
-                                                        key={`preview-${index}`}
-                                                        src={image} 
-                                                        alt={`Preview ${index + 1}`} 
-                                                        className="w-20 h-20 object-cover rounded-md border" 
-                                                    />
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        );
-                                    }
-                                }
-                                
-                                return null;
-                            })()}
-
-                          <Button 
-                              variant="outline" 
-                              onClick={(e) => {
-                                e.preventDefault();
-                                setCurrentImageElementId(element.id);
-                                setActivePopup(true);
-                            }}>Выбрать файл</Button>
-                            
-                            <Popup activePopup={activePopup} setActivePopup={setActivePopup}>
-                                <FileManagerComponent 
-                                    initialFiles={[]}
-                                    setActivePopup={setActivePopup}
-                                    setSelectedFiles={handleFileSelection}
-                                />
-                            </Popup>
-                        </>
-                    )}
-
-                    {element.component_type === 'accordion-block' && (
-                        <AccordionComponent content={element.data} onChange={(value) => handleUpdateContent(element.id, value)} />
-                    )}
-
-                    {element.component_type === 'list-block' && (
-                        <ListBlock content={element.data} onChange={(value) => handleUpdateContent(element.id, value)} />
-                    )}
-
-                    </div>
-                     ))}
+                    <ElementsBuilder
+                        components={components}
+                        elements={elements}
+                        onChangeElements={handleChangeElements}
+                    />
 
                     <div className="flex gap-2 mt-4">
                         <button

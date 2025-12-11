@@ -80,15 +80,18 @@ class PageController extends Controller
     public function edit(Page $page)
     {
         $page_component = Page_component::query()
-         ->select('pc.id', 'pc.data', 'pc.component_id', 'c.type as component_type')
-         ->from('page_components as pc')
-         ->join('components as c', 'pc.component_id', '=', 'c.id')
-         ->where('pc.page_id', $page->id)
-         ->get();
+            ->select('pc.id', 'pc.data', 'pc.component_id', 'c.type as component_type')
+            ->from('page_components as pc')
+            ->join('components as c', 'pc.component_id', '=', 'c.id')
+            ->where('pc.page_id', $page->id)
+            ->get();
+
+        $components = Component::all();
 
         $page_data = [
             'page' => $page,
-            'components' => $page_component->toArray(),
+            'components' => $components,
+            'pageComponents' => $page_component->toArray(),
         ];
 
         return Inertia::render('admin/pages/edit-page', $page_data);
