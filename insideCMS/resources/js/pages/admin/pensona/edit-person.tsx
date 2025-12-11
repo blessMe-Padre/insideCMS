@@ -2,18 +2,20 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard, personaAdmin } from '@/routes';
-import { type BreadcrumbItem } from '@/types';
+import {
+    type BreadcrumbItem,
+    type Persona,
+    type ComponentAdmin,
+} from '@/types';
 import { Head, router, useForm } from '@inertiajs/react';
 import { LoaderCircle, LockIcon, SaveIcon, TrashIcon } from 'lucide-react';
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
-import TextEditor from '@/components/editor/TextEditor';
 import FileManagerComponent from '@/components/editor/fileManager/FileManagerComponent';
 import Popup from '@/components/popup/Popup';
 import { FileManagerFile } from '@cubone/react-file-manager';
-import AccordionComponent from '@/components/AccordionComponent/AccordionComponent';
-import ListBlock from '@/components/listBlock/ListBlock';
 import { Input } from '@/components/ui/input';
+import ElementsBuilder from '@/components/ElementsBuilder/ElementsBuilder';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -29,39 +31,162 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '#',
     },
 ];
-interface Persona {
-    id: number;
-    name: string;
-    images: string[];
-    slug: string;
-    created_at: string;
-}
 
-interface Persona_component {
+type BuilderElement = {
+    id: string;
+    type?: string;
+    description?: string;
+    content?: string;
+    component_id?: string;
+};
+
+type PersonaComponent = {
     id: number;
     persona_id?: number;
     component_id?: number;
     data: string | string[];
     component_type: string;
-}
+};
 
-export default function EditPage({ persona, components }: { persona: Persona, components: Persona_component[] }) {
+const mapPersonaComponentsToBuilderElements = (
+    personaComponents: PersonaComponent[],
+    components: ComponentAdmin[],
+): BuilderElement[] => {
+    return personaComponents.map((pc) => {
+        const template = components.find(
+            (c) => String(c.id) === String(pc.component_id),
+        );
+
+        const typeName = template?.name ?? pc.component_type;
+        const description = template?.description ?? pc.component_type;
+
+        let content = '';
+
+        if (typeName === 'text-block') {
+            if (Array.isArray(pc.data)) {
+                content = pc.data[0] ?? '';
+            } else if (typeof pc.data === 'string') {
+                content = pc.data;
+            }
+        } else if (typeName === 'text-editor-block') {
+            if (Array.isArray(pc.data)) {
+                content = JSON.stringify(pc.data);
+            } else if (typeof pc.data === 'string') {
+                content = pc.data;
+            }
+        } else if (typeName === 'image-block') {
+            if (Array.isArray(pc.data)) {
+                content = JSON.stringify(pc.data);
+            } else if (typeof pc.data === 'string') {
+                content = JSON.stringify([pc.data]);
+            }
+        } else if (typeName === 'accordion-block' || typeName === 'list-block') {
+            if (typeof pc.data === 'string') {
+                content = pc.data;
+            } else {
+                content = JSON.stringify(pc.data);
+            }
+        } else {
+            if (typeof pc.data === 'string') {
+                content = pc.data;
+            } else {
+                content = JSON.stringify(pc.data);
+            }
+        }
+
+        return {
+            id: String(pc.id),
+            type: typeName,
+            description,
+            content,
+            component_id: pc.component_id ? String(pc.component_id) : undefined,
+        };
+    });
+};
+
+const mapBuilderElementsToRequestComponents = (
+    elements: BuilderElement[],
+): Array<{ component_id?: string; data: string }> => {
+    return elements.map((element) => {
+        const typeName = element.type;
+        let data: string;
+
+        if (typeName === 'text-block') {
+            data = JSON.stringify([element.content ?? '']);
+        } else if (typeName === 'text-editor-block') {
+            if (!element.content) {
+                data = JSON.stringify([]);
+            } else {
+                try {
+                    const parsed = JSON.parse(element.content);
+                    data = JSON.stringify(parsed);
+                } catch {
+                    data = JSON.stringify([element.content]);
+                }
+            }
+        } else if (typeName === 'image-block') {
+            if (!element.content) {
+                data = JSON.stringify([]);
+            } else {
+                try {
+                    const parsed = JSON.parse(element.content);
+                    if (Array.isArray(parsed)) {
+                        data = JSON.stringify(parsed);
+                    } else {
+                        data = JSON.stringify([parsed]);
+                    }
+                } catch {
+                    data = JSON.stringify([element.content]);
+                }
+            }
+        } else if (typeName === 'accordion-block' || typeName === 'list-block') {
+            if (!element.content) {
+                data = JSON.stringify([]);
+            } else {
+                try {
+                    const parsed = JSON.parse(element.content);
+                    data = JSON.stringify(parsed);
+                } catch {
+                    data = JSON.stringify(element.content);
+                }
+            }
+        } else {
+            data = JSON.stringify(element.content ?? '');
+        }
+
+        return {
+            component_id: element.component_id,
+            data,
+        };
+    });
+};
+
+export default function EditPerson({
+    persona,
+    components,
+    personaComponents,
+}: {
+    persona: Persona;
+    components: ComponentAdmin[];
+    personaComponents: PersonaComponent[];
+}) {
+    const initialElements = mapPersonaComponentsToBuilderElements(
+        personaComponents,
+        components,
+    );
+
     const { data, setData, post, processing, errors } = useForm({
         name: persona.name,
         slug: persona.slug,
         images: persona.images,
-        components: components,
+        components: mapBuilderElementsToRequestComponents(initialElements),
     });
 
-   const [elements, setElements] = useState<Persona_component[]>(components);
-    
-    // File manager states
-    const [activePopup, setActivePopup] = useState<boolean>(false);
-    const [selectedFiles, setSelectedFiles] = useState<FileManagerFile[]>([]);
-    // Main image states
+    const [elements, setElements] = useState<BuilderElement[]>(initialElements);
+
+    // Главное изображение персоны (images)
     const [activeMainPopup, setActiveMainPopup] = useState<boolean>(false);
     const [selectedMainImage, setSelectedMainImage] = useState<FileManagerFile[]>([]);
-    const [currentImageElementId, setCurrentImageElementId] = useState<number | null>(null);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -76,7 +201,6 @@ export default function EditPage({ persona, components }: { persona: Persona, co
         });
     };
 
-    // Главное изображение персоны (content)
     const handleMainFileSelection = (files: FileManagerFile[]) => {
         setSelectedMainImage(files);
         const imageUrls = files.map((file) => file.path);
@@ -94,86 +218,11 @@ export default function EditPage({ persona, components }: { persona: Persona, co
         }
     };
 
-    const handleUpdateContent = useCallback((id: number, content: string) => {
-        const updatedElements = elements.map((element) => {
-            if (element.id === id) {
-                if (element.component_type === 'text') {
-                    return { ...element, data: [content] };
-                }
-                if (element.component_type === 'text-editor') {
-                    return { ...element, data: content };
-                }
-                if (element.component_type === 'accordion-block') {
-                    return { ...element, data: content };
-                }
-                return { ...element, data: content };
-            }
-            return element;
-        });
-
-        setElements(updatedElements);
-        setData('components', updatedElements);
-    }, [elements, setData]);
-
-    // Обработчик выбора файлов из FileManager
-    const handleFileSelection = (files: FileManagerFile[]) => {
-        // Сначала сохраняем выбранные файлы для мгновенного предпросмотра
-        setSelectedFiles(files);
-        // Затем синхронизируем данные элемента
-        if (currentImageElementId) {
-            const imageUrls = files.map((file) => file.path);
-            const updatedElements = elements.map((element) => 
-                element.id === currentImageElementId ? { ...element, data: imageUrls } : element
-            );
-            setElements(updatedElements);
-            setData('components', updatedElements);
-        }
+    const handleChangeElements = (nextElements: BuilderElement[]) => {
+        setElements(nextElements);
+        const payload = mapBuilderElementsToRequestComponents(nextElements);
+        setData('components', payload);
     };
-
-    const handleRemoveFile = (e: React.FormEvent, elementId: number, fileIndex: number) => {
-        e.preventDefault();
-
-        // Если удаляем файл из временно выбранных (предпросмотр), синхронизируем и элементы
-        if (currentImageElementId === elementId && selectedFiles.length > 0) {
-            const updatedSelectedFiles = selectedFiles.filter((_, index) => index !== fileIndex);
-            setSelectedFiles(updatedSelectedFiles);
-
-            const imageUrls = updatedSelectedFiles.map((file) => file.path);
-            const updatedElements = elements.map((element) =>
-                element.id === elementId ? { ...element, data: imageUrls } : element
-            );
-            setElements(updatedElements);
-            setData('components', updatedElements);
-            return;
-        }
-
-        // Иначе удаляем из уже сохранённых файлов элемента
-        const updatedElements = elements.map((element) => {
-            if (element.id !== elementId) return element;
-            const images = Array.isArray(element.data) ? element.data : [];
-            const nextImages = images.filter((_, index) => index !== fileIndex);
-            return { ...element, data: nextImages };
-        });
-        setElements(updatedElements);
-        setData('components', updatedElements);
-    };
-
-    const componentName = (component_type: string) => {
-        switch (component_type) {
-            case 'text':
-                return 'Текст';
-            case "text-editor":
-                return 'Текстовый редактор';
-            case 'file':
-                return 'Файлы / Изображения';
-            case 'accordion-block':
-                return 'Аккордеон';
-            case 'list-block':
-                return 'Список блоков';
-            default:
-                return component_type;
-        }
-    }
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -189,23 +238,31 @@ export default function EditPage({ persona, components }: { persona: Persona, co
                 <Alert variant="default" className="mb-4">
                     <LockIcon className="w-4 h-4" />
                     <AlertDescription>
-                      API:  /api/v1/persons/{persona.slug}
+                        API: /api/v1/persons/{persona.slug}
                     </AlertDescription>
                 </Alert>
 
-                <h1 className="text-3xl font-bold text-foreground mb-4">Редактировать "{persona.name}"</h1>
+                <h1 className="text-3xl font-bold text-foreground mb-4">
+                    Редактировать "{persona.name}"
+                </h1>
 
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
-                        <label htmlFor="content" className="block text-foreground text-sm font-medium mb-1">
-                           Фотография
+                        <label
+                            htmlFor="content"
+                            className="block text-foreground text-sm font-medium mb-1"
+                        >
+                            Фотография
                         </label>
 
                         {(() => {
                             const images = selectedMainImage.length > 0
                                 ? selectedMainImage.map((f) => f.path)
                                 : (Array.isArray(data.images) ? data.images : []);
-                            return images.length > 0 ? (
+                            if (images.length === 0) {
+                                return null;
+                            }
+                            return (
                                 <div className="flex flex-wrap gap-2 mt-2 mb-2">
                                     {images.map((url, index) => (
                                         <div key={`main-image-${index}`} className="relative">
@@ -215,30 +272,41 @@ export default function EditPage({ persona, components }: { persona: Persona, co
                                             >
                                                 <TrashIcon className="w-4 h-4" />
                                             </button>
-                                            <img src={url} alt={`Main ${index + 1}`} className="w-20 h-20 object-cover rounded-md border" />
+                                            <img
+                                                src={url}
+                                                alt={`Main ${index + 1}`}
+                                                className="w-20 h-20 object-cover rounded-md border"
+                                            />
                                         </div>
                                     ))}
                                 </div>
-                            ) : null;
+                            );
                         })()}
 
-                        <Button 
-                            variant="outline" 
+                        <Button
+                            variant="outline"
                             onClick={(e) => {
                                 e.preventDefault();
                                 setActiveMainPopup(true);
-                            }}>Выбрать файл</Button>
+                            }}
+                        >
+                            Выбрать файл
+                        </Button>
 
                         <Popup activePopup={activeMainPopup} setActivePopup={setActiveMainPopup}>
-                            <FileManagerComponent 
+                            <FileManagerComponent
                                 initialFiles={[]}
                                 setActivePopup={setActiveMainPopup}
                                 setSelectedFiles={handleMainFileSelection}
                             />
                         </Popup>
                     </div>
+
                     <div className="mb-4">
-                        <label htmlFor="title" className="block text-foreground text-sm font-medium mb-1">
+                        <label
+                            htmlFor="name"
+                            className="block text-foreground text-sm font-medium mb-1"
+                        >
                             Имя *
                         </label>
                         <Input
@@ -246,14 +314,19 @@ export default function EditPage({ persona, components }: { persona: Persona, co
                             type="text"
                             value={data.name}
                             onChange={(e) => setData('name', e.target.value)}
-                            className="w-full p-2 border rounded"                            required
+                            className="w-full p-2 border rounded"
+                            required
                         />
                         {errors.name && (
                             <p className="text-red-500 text-sm mt-1">{errors.name}</p>
                         )}
                     </div>
+
                     <div className="mb-4">
-                        <label htmlFor="title" className="block text-foreground text-sm font-medium mb-1">
+                        <label
+                            htmlFor="slug"
+                            className="block text-foreground text-sm font-medium mb-1"
+                        >
                             Slug *
                         </label>
                         <Input
@@ -261,127 +334,19 @@ export default function EditPage({ persona, components }: { persona: Persona, co
                             type="text"
                             value={data.slug}
                             onChange={(e) => setData('slug', e.target.value)}
-                            className="w-full p-2 border rounded"                            required
+                            className="w-full p-2 border rounded"
+                            required
                         />
                         {errors.slug && (
                             <p className="text-red-500 text-sm mt-1">{errors.slug}</p>
                         )}
                     </div>
 
-                    
-                    {elements.map((element, index) => (
-                    <div key={index} className="mb-4 p-4 border rounded">
-                        <div className="flex items-center justify-between mb-2">
-                            <h2 className="font-medium">{componentName(element.component_type)}</h2>
-                            {/* <button className="cursor-pointer text-red-500 hover:text-red-700" onClick={(e) => handleRemoveElement(e, element.id)}>
-                                <TrashIcon className="size-4"/>
-                            </button> */}
-                        </div>
-                    
-                    {element.component_type === 'text' && (
-                        <input 
-                            id={`text-input-${element.id}`}
-                            value={element.data?.[0] || ''}
-                            onChange={(e) => handleUpdateContent(element.id, e.target.value)}
-                            placeholder="Введите текст..."
-                            className="w-full p-2 border rounded"
-                         />
-                    )}
-                    
-                    {element.component_type === "text-editor" && (
-                        <div id={`text-editor-${element.id}`}>
-                            <TextEditor 
-                                value={
-                                    Array.isArray(element.data)
-                                        ? JSON.stringify(element.data)
-                                        : (typeof element.data === 'string' ? element.data : JSON.stringify(element.data ?? ''))
-                                }
-                                onChange={(value) => handleUpdateContent(element.id, value)} 
-                            />
-                        </div>
-                    )}
-
-                    {element.component_type === 'file' && (
-                        <>
-                           {(() => {
-                                if (currentImageElementId === element.id && selectedFiles.length > 0) {
-                                    return (
-                                        <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                                            {selectedFiles.map((file, index) => (
-                                                <div className="relative">
-                                                    <button
-                                                        key={`remove-${index}`}
-                                                        className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700"
-                                                        onClick={(e) => handleRemoveFile(e, element.id, index)}>
-                                                        <TrashIcon className="w-4 h-4" />
-                                                    </button>
-                                                    <img  
-                                                    key={`selected-${index}`}
-                                                    src={file.path} 
-                                                    alt={`Selected ${index + 1}`} 
-                                                    className="w-20 h-20 object-cover rounded-md border border-blue-500" 
-                                                    />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    );
-                                }
-                                
-                                // Иначе показываем существующие файлы из element.data
-                                if (element.data) {
-                                    const images = element.data;
-                                    if (Array.isArray(images) && images.length > 0) {
-                                        return (
-                                            <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                                                {images.map((image: string, index: number) => (
-                                                    <div key={`image-${index}`} className="relative">
-                                                        <button className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700"
-                                                        key={`remove-${index}`}
-                                                        onClick={(e) => handleRemoveFile(e, element.id, index)}>
-                                                            <TrashIcon className="w-4 h-4" />
-                                                        </button>   
-                                                    <img 
-                                                        key={`preview-${index}`}
-                                                        src={image} 
-                                                        alt={`Preview ${index + 1}`} 
-                                                        className="w-20 h-20 object-cover rounded-md border" 
-                                                    />
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        );
-                                    }
-                                }
-                                
-                                return null;
-                            })()}
-
-                          <Button 
-                              variant="outline" 
-                              onClick={(e) => {
-                                e.preventDefault();
-                                setCurrentImageElementId(element.id);
-                                setActivePopup(true);
-                            }}>Выбрать файл</Button>
-                            
-                            <Popup activePopup={activePopup} setActivePopup={setActivePopup}>
-                                <FileManagerComponent 
-                                    initialFiles={[]}
-                                    setActivePopup={setActivePopup}
-                                    setSelectedFiles={handleFileSelection}
-                                />
-                            </Popup>
-                        </>
-                    )}
-
-                    {element.component_type === 'accordion-block' && (
-                        <AccordionComponent content={element.data || ''} onChange={(value) => handleUpdateContent(element.id, value)} />
-                    )}
-                    {element.component_type === 'list-block' && (
-                        <ListBlock content={element.data || ''} onChange={(value) => handleUpdateContent(element.id, value)} />
-                    )}
-                    </div>
-                     ))}
+                    <ElementsBuilder
+                        components={components}
+                        elements={elements}
+                        onChangeElements={handleChangeElements}
+                    />
 
                     <div className="flex gap-2 mt-4">
                         <button
@@ -389,11 +354,17 @@ export default function EditPage({ persona, components }: { persona: Persona, co
                             disabled={processing}
                             className="bg-blue-600 text-white cursor-pointer px-4 p-2 rounded-sm hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                         >
-                            {processing ? 
-                                (<div className="flex items-center gap-2"><LoaderCircle className="w-4 h-4 animate-spin" /> Сохранение...</div>)
-                                : 
-                                (<div className="flex items-center gap-2"><SaveIcon className="w-4 h-4" /> Сохранить изменения</div>)
-                            }
+                            {processing ? (
+                                <div className="flex items-center gap-2">
+                                    <LoaderCircle className="w-4 h-4 animate-spin" />
+                                    Сохранение...
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-2">
+                                    <SaveIcon className="w-4 h-4" />
+                                    Сохранить изменения
+                                </div>
+                            )}
                         </button>
                         <button
                             type="button"
@@ -406,7 +377,8 @@ export default function EditPage({ persona, components }: { persona: Persona, co
                     </div>
                 </form>
             </div>
-
-       </AppLayout>
+        </AppLayout>
     );
 }
+
+

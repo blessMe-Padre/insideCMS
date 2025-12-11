@@ -71,9 +71,12 @@ class PersonaController extends Controller
             ->where('pc.persona_id', $persona->id)
             ->get();
 
+        $components = Component::all();
+
         $data = [
             'persona' => $persona,
-            'components' => $persona_components->toArray(),
+            'components' => $components,
+            'personaComponents' => $persona_components->toArray(),
         ];
 
         return Inertia::render('admin/pensona/edit-person', $data);
@@ -102,7 +105,7 @@ class PersonaController extends Controller
                 $elementData = [
                     'persona_id' => $persona->id,
                     'component_id' => $component['component_id'],
-                    'data' => $component['data'],
+                    'data' => json_decode($component['data'], true),
                 ];
                 Persona_component::create($elementData);
             }
