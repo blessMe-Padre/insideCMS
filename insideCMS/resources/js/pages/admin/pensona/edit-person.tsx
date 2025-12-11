@@ -1,5 +1,4 @@
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard, personaAdmin } from '@/routes';
 import {
@@ -8,14 +7,12 @@ import {
     type ComponentAdmin,
 } from '@/types';
 import { Head, router, useForm } from '@inertiajs/react';
-import { LoaderCircle, LockIcon, SaveIcon, TrashIcon } from 'lucide-react';
+import { LoaderCircle, LockIcon, SaveIcon} from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import FileManagerComponent from '@/components/editor/fileManager/FileManagerComponent';
-import Popup from '@/components/popup/Popup';
-import { FileManagerFile } from '@cubone/react-file-manager';
 import { Input } from '@/components/ui/input';
 import ElementsBuilder from '@/components/ElementsBuilder/ElementsBuilder';
+import MainImagesComponent from '@/components/MainImagesComponent/MainImagesComponent';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -184,10 +181,6 @@ export default function EditPerson({
 
     const [elements, setElements] = useState<BuilderElement[]>(initialElements);
 
-    // Главное изображение персоны (images)
-    const [activeMainPopup, setActiveMainPopup] = useState<boolean>(false);
-    const [selectedMainImage, setSelectedMainImage] = useState<FileManagerFile[]>([]);
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post(`/admin/persons/${persona.id}`, {
@@ -199,23 +192,6 @@ export default function EditPerson({
                 toast.error('Ошибка при обновлении персоны');
             },
         });
-    };
-
-    const handleMainFileSelection = (files: FileManagerFile[]) => {
-        setSelectedMainImage(files);
-        const imageUrls = files.map((file) => file.path);
-        setData('images', imageUrls);
-    };
-
-    const handleRemoveMainFile = (e: React.MouseEvent, fileIndex: number) => {
-        e.preventDefault();
-        const current = Array.isArray(data.images) ? data.images : [];
-        const next = current.filter((_, index) => index !== fileIndex);
-        setData('images', next);
-        if (selectedMainImage.length > 0) {
-            const updated = selectedMainImage.filter((_, index) => index !== fileIndex);
-            setSelectedMainImage(updated);
-        }
     };
 
     const handleChangeElements = (nextElements: BuilderElement[]) => {
@@ -247,60 +223,11 @@ export default function EditPerson({
                 </h1>
 
                 <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                        <label
-                            htmlFor="content"
-                            className="block text-foreground text-sm font-medium mb-1"
-                        >
-                            Фотография
-                        </label>
-
-                        {(() => {
-                            const images = selectedMainImage.length > 0
-                                ? selectedMainImage.map((f) => f.path)
-                                : (Array.isArray(data.images) ? data.images : []);
-                            if (images.length === 0) {
-                                return null;
-                            }
-                            return (
-                                <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                                    {images.map((url, index) => (
-                                        <div key={`main-image-${index}`} className="relative">
-                                            <button
-                                                className="absolute top-1 right-1 cursor-pointer text-red-500 hover:text-red-700"
-                                                onClick={(e) => handleRemoveMainFile(e, index)}
-                                            >
-                                                <TrashIcon className="w-4 h-4" />
-                                            </button>
-                                            <img
-                                                src={url}
-                                                alt={`Main ${index + 1}`}
-                                                className="w-20 h-20 object-cover rounded-md border"
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-                            );
-                        })()}
-
-                        <Button
-                            variant="outline"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                setActiveMainPopup(true);
-                            }}
-                        >
-                            Выбрать файл
-                        </Button>
-
-                        <Popup activePopup={activeMainPopup} setActivePopup={setActiveMainPopup}>
-                            <FileManagerComponent
-                                initialFiles={[]}
-                                setActivePopup={setActiveMainPopup}
-                                setSelectedFiles={handleMainFileSelection}
-                            />
-                        </Popup>
-                    </div>
+                    <MainImagesComponent
+                        label="Главная фотография"
+                        imagesList={data.images || []}
+                        setData={setData}
+                    />
 
                     <div className="mb-4">
                         <label

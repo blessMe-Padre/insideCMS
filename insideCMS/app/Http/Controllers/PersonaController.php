@@ -95,6 +95,7 @@ class PersonaController extends Controller
             'name' => $request->name,
             'slug' => $request->slug,
             'content' => $request->content,
+            'images' => $request->images,
         ]);
 
         // Пересобираем компоненты персоны
